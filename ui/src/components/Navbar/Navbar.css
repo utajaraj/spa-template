@@ -1,0 +1,110 @@
+@media only screen and (min-width:750px) {
+    #navbarToggler, #nav {
+        display: none;
+    }
+    
+}
+
+@media only screen and (max-width:750px) {
+    #navbarDesktop, #sidenav{
+        display: none;
+    }
+    #navbarToggler {
+        font-size: 24px;
+        color: var(--coolor19);
+        cursor: pointer;
+        transition: padding 0.3s ease;
+        box-sizing: content-box;
+    }
+
+    #navbarToggler:hover {
+        transition: padding 0.3s ease;
+        color: black;
+    }
+
+    #navbarToggler.pushUp:hover {
+        padding-bottom: 7px
+    }
+
+    #navbarToggler.pullDown:hover {
+        padding-top: 7px;
+    }
+
+    #togglerContainer {
+        width: 100%;
+        background-color: var(--coolor2);
+        text-align: center;
+    }
+
+    #togglerContainer>svg{
+        color: var(--coolor16);
+    }
+    #links {
+        height: 50px;
+        display: -webkit-box;
+        justify-content: center;
+        align-items: center;
+        overflow-x: auto;
+        width: 100vw;
+        overflow-y: hidden;
+    }
+
+    ::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+    }
+
+    /* Track */
+    ::-webkit-scrollbar-track {
+        background: var(--coolor1);
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+        background:var(--coolor9);
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--coolor11);
+    }
+
+    #nav.hideLinks {
+        margin-top: -50px;
+        transition: margin 0.3s ease;
+    }
+
+    #nav.showLinks {
+        margin-top: 0px;
+        transition: margin 0.3s ease;
+    }
+
+    #links>a>svg {
+        font-size: 18px;
+        margin-right: 15px;
+        color: var(--coolor16);
+        height: 24px;
+    }
+
+    #links>* {
+        min-width: 150px;
+        height: 50px;
+        display: flex;
+        width: calc(100vw/8);
+        justify-content: center;
+        align-items: center;
+        background-color:var(--coolor2);
+        margin: 0;
+        transition: all 0.3s ease;
+        color: var(--coolor16);
+        cursor: pointer;
+    }
+    #links>*>*{
+        color: var(--coolor16);
+    }
+
+    #links>*:hover {
+        background-color: #dfdfdf;
+        transition: all 0.3s ease;
+    }
+}
