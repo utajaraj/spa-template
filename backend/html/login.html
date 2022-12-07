@@ -1,0 +1,134 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garle</title>
+    <style>
+        * {
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            letter-spacing: 1.5px;
+        }
+
+        .inputContianer {
+            display: flex;
+            width: 100%;
+            margin-bottom: 15px;
+            flex-direction: column;
+        }
+
+        .inputContianer>input {
+            height: 30px;
+            padding-left: 15px;
+            background-color: #f6f6f6;
+            outline: none;
+            border: 1px solid #d0d0d0;
+        }
+
+        #body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #login {
+            padding: 20px 35px 35px;
+            height: 50vh;
+            min-width: 40vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            border-radius: 5px;
+            background: #ffffff;
+            box-shadow: -1px 2px 8px 0px rgba(162, 162, 162, 0.75);
+            -webkit-box-shadow: -1px 2px 8px 0px rgba(162, 162, 162, 0.75);
+            -moz-box-shadow: -1px 2px 8px 0px rgba(162, 162, 162, 0.75);
+        }
+
+        #submit {
+            margin-top: 10px;
+            cursor: pointer;
+            color: #f7f7f7;
+            background-color: #e62222;
+            transition: background-color 0.3s ease;
+        }
+
+        #submit:hover {
+            background-color: #ff0000;
+            transition: background-color 0.3s ease;
+        }
+
+        #background {
+            background-image: url("https://img.freepik.com/free-vector/abstract-connections-banner-design_1048-10068.jpg?w=1380&t=st=1670296305~exp=1670296905~hmac=9af99b625dbd472fb5c26f6b21cbe50ba4224e682fe01c16a1e63964ff6da510");
+        }
+    </style>
+</head>
+
+<body id="background">
+    <div id="body">
+        <div id="login">
+            <div class="">
+                <h1 style=" font-size: 48px; text-align: center;">Intranet Garle</h1>
+            </div>
+            <div class="inputContianer">
+                <label>Username</label>
+                <input id="username">
+            </div>
+            <div class="inputContianer" style="
+    margin-bottom: 0;
+">
+                <label>Password</label>
+                <input id="password">
+            </div>
+            <div style="text-align: right;width: 100%;margin-bottom: 15px;padding: 5px 0;">
+                <label style="width: fit-content;font-size: 14px;">Recuperar contraseña</label>
+            </div>
+            <div class="inputContianer">
+                <button id="submit" style=" border: none; height: 30px; font-weight: bold;">
+                    Submit
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+
+</body>
+
+</html>
+<script>
+    const submit = async () => {
+        const username = document.getElementById("username").value
+        const password = document.getElementById("password").value
+        try {
+            const response = await fetch("/login", {
+                method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                mode: 'cors', // no-cors, *cors, same-origin
+                cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                credentials: 'same-origin', // include, *same-origin, omit
+                headers: {
+                    'Content-Type': 'application/json'
+                    // 'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                redirect: 'follow', // manual, *follow, error
+                referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+                body: JSON.stringify({username,password}) // body data type must match "Content-Type" header
+            }).then(res => { return res.json() })
+
+            console.log(response);
+        } catch (error) {
+
+            if (error.message) {
+                console.log(error.message);
+            } else {
+                console.log(error);
+            }
+
+        }
+    }
+    document.getElementById("submit").addEventListener("click", submit, false)
+</script>
