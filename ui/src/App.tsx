@@ -18,7 +18,7 @@ const { Header, Sider, Content } = Layout;
 import { useState } from "react"
 import { AiFillDownSquare, AiFillUpSquare, AiFillSecurityScan } from "react-icons/ai";
 import Dashboard from './pages/Dashboard/Dashboard';
-import Analytics from './pages/Analytics/Analytics';
+import Cotizaciones from './pages/Cotizaciones/TabbingPage';
 import Users from './pages/Users/Users';
 
 function App() {
@@ -31,7 +31,7 @@ function App() {
 
     <BrowserRouter>
       <Layout style={{ minHeight: "100vh" }}>
-        <Sider id='sidenav' className={`${!show?"collapse":"extend"}`} trigger={null} collapsible collapsed={!show} width={150} >
+        <Sider id='sidenav' className={`${!show?"collapse":"extend"}`} trigger={null} collapsible collapsed={!show} width={180} >
           <div className="logo" />
           <Links show={show} setShow={setShow}/>
         </Sider>
@@ -53,7 +53,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/analytics" element={<Analytics />} />
+                <Route path="/cotizaciones" element={<Cotizaciones />} />
                 <Route path="/users" element={<Users />} />
               </Routes>
             </div>

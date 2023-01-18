@@ -13,13 +13,14 @@ interface Props {
 }
 export const Links = ({ show, setShow }: Props) => {
     return <div id="links" className={show ? "extend" : "collapse"}>
-        <Link to="/dashboard"><MdDashboard /><p>Panel</p></Link>
-        <Link to="/analytics"><HiChartBar /><p>Analytics</p></Link>
-        <Link to="/quotes"><RiBillFill /><p>Quotes</p></Link>
-        <Link to="/wo"><GiCardboardBoxClosed /><p>WO's</p></Link>
-        <Link to="/clients"><MdPrecisionManufacturing /><p>Clients</p></Link>
-        <Link to="/monitor"><AiFillSecurityScan /><p>Monitor</p></Link>
-        <Link to="/users"><HiUserCircle /><p>Users</p></Link>
+        <div style={{ justifyContent: "center" }}>
+            <img style={{ width: show ? "60px" : "40px" }} src="/garle-logo.png" />
+        </div>
+        <Link to="/cotizaciones"><RiBillFill /><p>Cotizaciones</p></Link>
+        <Link to="/odt"><GiCardboardBoxClosed /><p>Ordenes</p></Link>
+        <Link to="/clientes"><MdPrecisionManufacturing /><p>Clientes</p></Link>
+        <Link to="/configuración"><AiFillSecurityScan /><p>Configuración</p></Link>
+        <Link to="/usuarios"><HiUserCircle /><p>Users</p></Link>
     </div>
 }
 const Navbar = ({ show, setShow }: Props) => {

@@ -6,7 +6,7 @@ const Dashboard = ({ ...props }) => {
 
     return (
         <div>
-            <Calendar/>
+            <h1>Intranet de Ventas Garle</h1>
         </div>
     )
 }

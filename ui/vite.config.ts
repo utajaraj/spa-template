@@ -6,4 +6,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react(), mkcert()],
   server: { https: true },
+  build:{
+    outDir:"../backend/public"
+  }
 })
