@@ -7,6 +7,7 @@ router.get("/", (req, res) => {
 const paths = [
   "./Users/z-UsersRouter.js",
   "./Quotes/z-QuotesRouter.js",
+  "./Clients/z-ClientsRouter.js",
 ].map((route) => {
   const r = require(route);
   return r[Object.keys(r)[0]];

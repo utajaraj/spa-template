@@ -1,11 +1,13 @@
 import { useState, Dispatch, SetStateAction, useEffect } from 'react';
-import { Form, Input, Button, Select, DatePicker, InputNumber, Divider, Space, Table } from 'antd';
+import { Form, Input, Button, Select, DatePicker, InputNumber, Divider, Space, Table, notification } from 'antd';
 import type { TableRowSelection } from 'antd/es/table/interface';
 import moment from "moment"
 import type { FormInstance } from 'antd';
 import { Subject } from 'rxjs';
 import dayjs from 'dayjs'
 import { MdOutlinePlusOne } from 'react-icons/md';
+import { Requester } from "../../factors/Requester"
+import { notify } from '../../factors/notify';
 // type declarations on state setters
 const eventStream = new Subject();
 const isDecimal = (string: any) => {
@@ -22,6 +24,7 @@ const streamPartition = function (object: {}) {
     eventStream.next(object);
 }
 interface QuoteItemInterface {
+    id: number,
     name: string,
     description: string,
     category?: string,
@@ -31,7 +34,28 @@ interface QuoteItemInterface {
     cost: number,
     factor: number
 }
+interface QuoteInterface {
+    id: number,
+    reference: string,
+    currency: string,
+    clientID?: number,
+    dateOfExpiration?: string,
+    buyerID?: number,
+    agentID?: number,
+}
 
+
+
+interface ClientInterface {
+    id: number,
+    name: string,
+    accountOwnerID: number,
+    street?: string,
+    postalCode?: string,
+    city?: string,
+    state?: string,
+    country?: string,
+}
 const units = (
     <Select defaultValue="pzs" style={{ width: 85 }}>
         <Select.Option value="pzs">Piezas</Select.Option>
@@ -44,10 +68,7 @@ const units = (
 );
 
 
-interface props {
-    quoteItems: QuoteItemInterface[] | [],
-    setQuoteItems: Dispatch<SetStateAction<QuoteItemInterface[] | []>>
-}
+
 const Sign = (
     <Select defaultValue="add" style={{ width: 60 }}>
         <Select.Option value="add">+</Select.Option>
@@ -197,9 +218,9 @@ const QuotePartitionForm = () => {
                     </div>
                 </div>
 
-<div className='buttons-container'>
-                <Button htmlType="submit">Agregar Partida</Button>
-</div>
+                <div className='buttons-container'>
+                    <Button htmlType="submit">Agregar Partida</Button>
+                </div>
 
             </Form>
 
@@ -207,51 +228,52 @@ const QuotePartitionForm = () => {
     )
 }
 
+
+
 const QuotePartitionsTable = () => {
     const [quotePartitions, setQuotePartitions] = useState<any>([])
     const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
     const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
-      console.log('selectedRowKeys changed: ', newSelectedRowKeys);
-      setSelectedRowKeys(newSelectedRowKeys);
+        setSelectedRowKeys(newSelectedRowKeys);
     };
-  
+
     const rowSelection = {
-      selectedRowKeys,
-      onChange: onSelectChange,
-      selections: [
-        Table.SELECTION_ALL,
-        Table.SELECTION_INVERT,
-        Table.SELECTION_NONE,
-        {
-          key: 'odd',
-          text: 'Select Odd Row',
-          onSelect: (changableRowKeys:any) => {
-            let newSelectedRowKeys = [];
-            newSelectedRowKeys = changableRowKeys.filter((_:any, index:any) => {
-              if (index % 2 !== 0) {
-                return false;
-              }
-              return true;
-            });
-            setSelectedRowKeys(newSelectedRowKeys);
-          },
-        },
-        {
-          key: 'even',
-          text: 'Select Even Row',
-          onSelect: (changableRowKeys:any) => {
-            let newSelectedRowKeys = [];
-            newSelectedRowKeys = changableRowKeys.filter((_:any, index:any) => {
-              if (index % 2 !== 0) {
-                return true;
-              }
-              return false;
-            });
-            setSelectedRowKeys(newSelectedRowKeys);
-          },
-        },
-      ],
+        selectedRowKeys,
+        onChange: onSelectChange,
+        selections: [
+            Table.SELECTION_ALL,
+            Table.SELECTION_INVERT,
+            Table.SELECTION_NONE,
+            {
+                key: 'odd',
+                text: 'Select Odd Row',
+                onSelect: (changableRowKeys: any) => {
+                    let newSelectedRowKeys = [];
+                    newSelectedRowKeys = changableRowKeys.filter((_: any, index: any) => {
+                        if (index % 2 !== 0) {
+                            return false;
+                        }
+                        return true;
+                    });
+                    setSelectedRowKeys(newSelectedRowKeys);
+                },
+            },
+            {
+                key: 'even',
+                text: 'Select Even Row',
+                onSelect: (changableRowKeys: any) => {
+                    let newSelectedRowKeys = [];
+                    newSelectedRowKeys = changableRowKeys.filter((_: any, index: any) => {
+                        if (index % 2 !== 0) {
+                            return true;
+                        }
+                        return false;
+                    });
+                    setSelectedRowKeys(newSelectedRowKeys);
+                },
+            },
+        ],
     };
 
     const subscription = eventStream.subscribe({
@@ -340,11 +362,71 @@ const QuotePartitionsTable = () => {
 const Cotizar = ({ ...props }) => {
 
     const [createQuoteForm]: [FormInstance] = Form.useForm()
+    const [quotes, setQuotes] = useState<QuoteInterface[] | []>([])
+    const [clients, setClients] = useState<ClientInterface[] | []>([])
 
+
+    const patchQuote = () => {
+
+    }
+    const postQuote = async () => {
+
+        const startAudit = await new Requester({ url: import.meta.env.VITE_APP_APIURL + "/quotes/create/one", body: createQuoteForm.getFieldsValue() }).post()
+
+        notify(startAudit.status ? "success" : "error", startAudit.message, "")
+
+    }
+
+    const postClient = async () => {
+
+        const { value }: any = document.getElementById("newClientField")
+        const element: any = document.getElementById("newClientField")
+        const body: {} = {
+            name: value
+        }
+        const createClient = await new Requester({ url: import.meta.env.VITE_APP_APIURL + "/clients/create/one", body }).post()
+
+        if (createClient.status) {
+            // empty addeed field
+            element.value = ""
+            notify("success", createClient.message, "")
+            setClients([...clients, createClient.data[0]])
+        } else {
+            notify("error", createClient.message, "")
+        }
+
+    }
+
+    const loadSelects = async () => {
+
+        const quotesPromise = new Requester({ url: import.meta.env.VITE_APP_APIURL + "/quotes/read/mine" }).get()
+        const clientsPromise = new Requester({ url: import.meta.env.VITE_APP_APIURL + "/clients/read/mine" }).get()
+        const [resultQuotes, resultClients] = await Promise.all([quotesPromise, clientsPromise])
+        if (resultQuotes.status !== false) {
+            setQuotes(resultQuotes)
+        }
+        if (resultClients.status !== false) {
+            setClients(resultClients)
+        }
+
+    }
+
+    useEffect(() => {
+        loadSelects()
+    }, [])
     return (
         <div >
             <div className='buttons-container'>
-                <button>Cobot 11R</button>
+
+                <div style={{ marginBottom: "15px" }}>
+                    <label style={{ display: "block" }}>Cotizaciónes inconclusas</label>
+                    <Select defaultValue="" showSearch optionFilterProp="children" style={{ width: "350px" }}>
+                        <Select.Option value="">Seleccionar Cotización</Select.Option>
+                        {quotes.map((quote) => {
+                            return <Select.Option value="{quote.id}">{quote.reference}</Select.Option>
+                        })}
+                    </Select>
+                </div>
             </div>
             <div className="quoteCreator">
                 <h2>Crear Cotización</h2>
@@ -353,14 +435,24 @@ const Cotizar = ({ ...props }) => {
                         <div className="quoteCreatorFormSection">
                             <h3>Información de Cotización</h3>
                             <div>
+                                <label>Empresa</label>
+                                <Form.Item name="company">
+                                        <Select defaultValue={""} showSearch optionFilterProp="children" >
+                                            <Select.Option value="" disabled>Selecciona Empresa</Select.Option>
+                                            <Select.Option value="Garle">Garle S. de R.L de C.V</Select.Option>
+                                            <Select.Option value="GR Industrial">GR Industrial Inc.</Select.Option>
+                                        </Select>
+                                </Form.Item>
+                            </div>
+                            <div>
                                 <label>Referencia</label>
-                                <Form.Item initialValue={"Requisición 12 para planta de baterías"}>
+                                <Form.Item name="reference" initialValue={"Requisición 12 para planta de baterías"}>
                                     <Input defaultValue={"Requisición 12 para planta de baterías"} />
                                 </Form.Item>
                             </div>
                             <div>
                                 <label>Moneda</label>
-                                <Form.Item initialValue={"MXN"}>
+                                <Form.Item name="currency" initialValue={"MXN"}>
                                     <Select defaultValue={"MXN"} showSearch optionFilterProp="children" >
                                         <Select.Option value="MXN">Pesos Mexicanos</Select.Option>
                                         <Select.Option value="USD">Dolares Americanos</Select.Option>
@@ -369,46 +461,68 @@ const Cotizar = ({ ...props }) => {
                             </div>
                             <div>
                                 <label>Cliente</label>
-                                <Form.Item>
-                                    <Select defaultValue={"TPI"} showSearch optionFilterProp="children" >
-                                        <Select.Option value="Jabil">Jabil</Select.Option>
-                                        <Select.Option value="TPI">TPI</Select.Option>
+                                <Form.Item initialValue={""} name="clientID">
+                                    <Select defaultValue={""} showSearch optionFilterProp="children" dropdownRender={(menu) => (
+                                        <>
+                                            {menu}
+                                            <Divider style={{ margin: '8px 0' }} />
+                                            <Space style={{ padding: '0 8px 4px' }}>
+                                                <input
+                                                    placeholder="Crear nuevo cliente"
+                                                    id="newClientField"
+                                                />
+                                                <Button type="text" icon={<MdOutlinePlusOne />} onClick={postClient}>
+                                                    Crear
+                                                </Button>
+                                            </Space>
+                                        </>
+                                    )}>
+                                        <Select.Option disabled value={""}>Selecciona cliente</Select.Option>
+                                        {
+                                            clients.map((client) => {
+                                                return <Select.Option key={"client" + client.id} value={client.id}>{client.name}</Select.Option>
+                                            })
+                                        }
                                     </Select>
                                 </Form.Item>
                             </div>
                             <div>
                                 <label>Fecha de Vencimiento</label>
-                                <Form.Item initialValue={moment(new Date(), "DD-MM-YYYY").add(15, 'days')} >
+                                <Form.Item name="expirationDate" initialValue={dayjs().add(15, 'day')} >
                                     <DatePicker defaultValue={dayjs().add(15, 'day')} format="MMMM Do YY" />
                                 </Form.Item>
                             </div>
                             <div>
                                 <label>Comprador</label>
-                                <Form.Item initialValue="TPI">
-                                    <Select defaultValue="TPI" showSearch optionFilterProp="children" >
+                                <Form.Item name="buyerID" initialValue="1">
+                                    <Select defaultValue="1" showSearch optionFilterProp="children" >
                                         <Select.Option value="Jabil">Gerente Jabil</Select.Option>
-                                        <Select.Option value="TPI">Gerente TPI</Select.Option>
+                                        <Select.Option value="1">Gerente TPI</Select.Option>
                                     </Select>
                                 </Form.Item>
                             </div>
                             <div>
                                 <label>Agente</label>
-                                <Form.Item initialValue="TPI">
-                                    <Select defaultValue="TPI" showSearch optionFilterProp="children" >
+                                <Form.Item name="agentID" initialValue="1">
+                                    <Select defaultValue="1" showSearch optionFilterProp="children" >
                                         <Select.Option value="Jabil">Luis Moreno</Select.Option>
-                                        <Select.Option value="TPI">Victor Primo</Select.Option>
+                                        <Select.Option value="1">Victor Primo</Select.Option>
                                     </Select>
                                 </Form.Item>
                             </div>
                         </div>
+                        <div className='buttons-container'>
+                            <Button onClick={postQuote}>Empezar cotización</Button>
+                        </div>
+
                     </Form>
                     <QuotePartitionForm />
 
                 </div>
                 <QuotePartitionsTable />
                 <div className='buttons-container'>
-                    <Button>Guardar Progreso</Button>
-                    <Button>Generar Cotización</Button>
+                    <Button>Eliminar Cotización</Button>
+                    <Button onClick={patchQuote}>Generar Cotización</Button>
                 </div>
             </div>
         </div>

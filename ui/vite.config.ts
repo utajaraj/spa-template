@@ -7,6 +7,7 @@ export default defineConfig({
   plugins: [react(), mkcert()],
   server: { https: true },
   build:{
+    emptyOutDir:true,
     outDir:"../backend/public"
   }
 })
