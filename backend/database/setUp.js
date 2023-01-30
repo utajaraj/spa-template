@@ -7,6 +7,7 @@ const createDatabaseSchemas = async () => {
 
         const hasUsers = await knex.schema.hasTable('users')
         if (!hasUsers) {
+           try {
             await knex.schema.createTable('users', function (t) {
                 t.increments('id').primary().unique().notNullable();
                 t.string('user_name', 100).notNullable();
@@ -28,6 +29,9 @@ const createDatabaseSchemas = async () => {
                 t.datetime('created_at', { precision: 6 }).defaultTo(knex.fn.now(6)).notNullable()
                 t.datetime('modified_at', { precision: 6 }).defaultTo(knex.fn.now(6)).notNullable()
             })
+           } catch (error) {
+               console.log(error)
+           }
         }
         const hasCategories = await knex.schema.hasTable('categories')
         if (!hasCategories) {
