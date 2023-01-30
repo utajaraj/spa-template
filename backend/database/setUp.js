@@ -16,6 +16,7 @@ const createDatabaseSchemas = async () => {
                 t.string('user_last_name', 100).notNullable();
                 t.string('email', 100).notNullable();
                 t.string('assignedPhone', 100)
+                t.string('password', 255)
                 t.string('rfc', 100).notNullable();
                 t.string('curp', 100).notNullable();
                 t.string('city_id', 100).notNullable();
