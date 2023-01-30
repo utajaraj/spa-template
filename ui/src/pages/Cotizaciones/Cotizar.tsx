@@ -346,7 +346,6 @@ const QuotePartitionForm = (props: any) => {
                         <label>Costo</label>
                         <Form.Item initialValue={5000} name="cost" hasFeedback rules={[{ required: true, message: "Costo es obligatorio" }, { pattern: /^[+-]?((\d+(\.\d*)?)|(\.\d+))$/, message: "Este campo solo acepta decimales" }]}>
                             <InputNumber
-                                // addonBefore={Sign}
                                 formatter={(value) => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                                 parser={(value) => value!.replace(/\$\s?|(,*)/g, '')}
                                 onChange={calculatePartitionAmount}
