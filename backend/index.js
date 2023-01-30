@@ -80,6 +80,6 @@ createDatabaseSchemas()
 
 // middleware
 var httpsServer = https.createServer(credentials, app);
-httpsServer.listen(9000, () => {
-    console.log(`Running on port: 9000`)
+httpsServer.listen(8000, () => {
+    console.log(`Running on port: 8000`)
 })
