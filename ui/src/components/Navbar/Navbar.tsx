@@ -13,14 +13,49 @@ interface Props {
 }
 export const Links = ({ show, setShow }: Props) => {
     return <div id="links" className={show ? "extend" : "collapse"}>
-        <div style={{ justifyContent: "center" }}>
-            <img style={{ width: show ? "60px" : "40px" }} src="/garle-logo.png" />
+        <div id="sidenavLogo" style={{ justifyContent: "center" }}>
+            <img id="logo" style={{ width: show ? "60px" : "40px" }} src="/garle-logo.png" />
         </div>
-        <Link to="/cotizaciones"><RiBillFill /><p>Cotizaciones</p></Link>
-        <Link to="/odt"><GiCardboardBoxClosed /><p>Ordenes</p></Link>
-        <Link to="/clientes"><MdPrecisionManufacturing /><p>Clientes</p></Link>
-        <Link to="/configuración"><AiFillSecurityScan /><p>Configuración</p></Link>
-        <Link to="/usuarios"><HiUserCircle /><p>Users</p></Link>
+        <Link to="/cotizaciones">
+            <div className="linkContent">
+                <div className="circle">
+                    <RiBillFill />
+                </div>
+                <p>Cotizaciones</p>
+            </div>
+        </Link>
+        <Link to="/odt">
+            <div className="linkContent">
+                <div className="circle">
+                    <GiCardboardBoxClosed />
+                </div>
+                <p>Ordenes</p>
+            </div>
+        </Link>
+        <Link to="/odt">
+            <div className="linkContent">
+                <div className="circle">
+                    <MdPrecisionManufacturing />
+                </div>
+                <p>Clientes</p>
+            </div>
+        </Link>
+        <Link to="/odt">
+            <div className="linkContent">
+                <div className="circle">
+                    <AiFillSecurityScan />
+                </div>
+                <p>Configuración</p>
+            </div>
+        </Link>
+        <Link to="/odt">
+            <div className="linkContent">
+                <div className="circle">
+                    <HiUserCircle />
+                </div>
+                <p>Usuarios</p>
+            </div>
+        </Link>
     </div>
 }
 const Navbar = ({ show, setShow }: Props) => {

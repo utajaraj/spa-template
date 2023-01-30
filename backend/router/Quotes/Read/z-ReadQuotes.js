@@ -4,7 +4,7 @@ const { ReadMyQuotes } = require("./ReadMyQuotes");
 ReadQuotesRouter.use("/read", [ReadMyQuotes]);
 
 ReadQuotesRouter.all("/read", (req, res) => {
-  res.status(300).send("Unknown users create route");
+  res.status(300).send({ status: false, message: "Ruta de leer cotizaciones desconocida" });
 });
 
 module.exports = {

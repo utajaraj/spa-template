@@ -1,5 +1,5 @@
 import './App.css'
-import Navbar,{Links} from './components/Navbar/Navbar'
+import Navbar, { Links } from './components/Navbar/Navbar'
 import {
   BrowserRouter,
   Routes,
@@ -22,7 +22,7 @@ import Cotizaciones from './pages/Cotizaciones/TabbingPage';
 import Users from './pages/Users/Users';
 
 function App() {
-  let [show, setShow] = useState<boolean>(true)
+  let [show, setShow] = useState<boolean>(false)
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -31,11 +31,11 @@ function App() {
 
     <BrowserRouter>
       <Layout style={{ minHeight: "100vh" }}>
-        <Sider id='sidenav' className={`${!show?"collapse":"extend"}`} trigger={null} collapsible collapsed={!show} width={180} >
+        <Sider id='sidenav' className={`${!show ? "collapse" : "extend"}`} trigger={null} collapsible collapsed={!show} width={250} >
           <div className="logo" />
-          <Links show={show} setShow={setShow}/>
+          <Links show={show} setShow={setShow} />
         </Sider>
-        <Layout className={`site-layout ${!show?"collapse":"extend"}`}>
+        <Layout className={`site-layout ${!show ? "collapse" : "extend"}`}>
           <Header id='navbarDesktop'>
             <i className='trigger' onClick={() => { setShow(!show) }}>{!show ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}</i>
 

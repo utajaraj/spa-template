@@ -4,7 +4,7 @@ const { ReadMyClients } = require("./ReadMyClients");
 ReadClientsRouter.use("/read", [ReadMyClients]);
 
 ReadClientsRouter.all("/read", (req, res) => {
-  res.status(300).send("Unknown users create route");
+  res.status(300).send("Unknown clientes create route");
 });
 
 module.exports = {

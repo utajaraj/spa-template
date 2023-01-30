@@ -5,7 +5,7 @@ const { ReadClientsRouter } = require("./Read/z-ReadClients");
 ClientsRouter.use("/clients", [CreateClientsRouter,ReadClientsRouter]);
 
 ClientsRouter.all("/clients/*", (req, res) => {
-  res.status(300).send("Unknown users route");
+  res.status(300).send("Unknown clientes route");
 });
 
 module.exports = {

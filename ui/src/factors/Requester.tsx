@@ -1,17 +1,18 @@
-interface RequestIterface{
-    url?:any,
-    params?:any,
-    body?:any
+interface RequestIterface {
+    url: string,
+    method: "get" | "post" | "patch" | "delete",
+    params?: any,
+    body?: any
 }
 export class Requester {
 
-    request:RequestIterface
+    request: RequestIterface
 
-    constructor(req:any) {
+    constructor(req: any) {
         this.request = req
     }
 
-    async get() {
+    private async get() {
         let { url, params } = this.request
         return await fetch(url + `?${new URLSearchParams(params)}`, {
             headers: {
@@ -20,44 +21,65 @@ export class Requester {
             },
             credentials: 'include'
 
-        }).then((res)=>{return res.json()})
+        }).then((res) => { return res.json() })
     }
-    async post() {
+    private async post() {
         let { url, body } = this.request
         return await fetch(url, {
             body: JSON.stringify(body),
             method: "POST",
-             headers: {
+            headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
-            }, 
+            },
             credentials: 'include',
-        }).then((res)=>{return res.json()})
+        }).then((res) => { return res.json() })
     }
 
-    async patch() {
+    private async patch() {
         let { url, body } = this.request
         return await fetch(url, {
             body: JSON.stringify(body),
             method: "PATCH",
-             headers: {
+            headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
-            }, 
+            },
             credentials: 'include',
-        }).then((res)=>{return res.json()})
+        }).then((res) => { return res.json() })
     }
 
-    async delete() {
+    private async delete() {
         let { url, body } = this.request
         return await fetch(url, {
             body: JSON.stringify(body),
             method: "DELETE",
-             headers: {
+            headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
-            }, 
+            },
             credentials: 'include',
-        }).then((res)=>{return res.json()})
+        }).then((res) => { return res.json() })
+    }
+
+    send() {
+        const { method } = this.request
+        switch (method) {
+            case "get":
+                return this.get()
+                break;
+            case "post":
+                return this.post()
+                break;
+            case "patch":
+                return this.patch()
+                break;
+            case "delete":
+                return this.delete()
+                break;
+
+            default:
+                break;
+        }
     }
 }

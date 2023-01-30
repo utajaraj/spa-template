@@ -1,15 +1,24 @@
-import { useState, Dispatch, SetStateAction, useEffect } from 'react';
-import { Form, Input, Button, Select, DatePicker, InputNumber, Divider, Space, Table, notification } from 'antd';
-import type { TableRowSelection } from 'antd/es/table/interface';
-import moment from "moment"
+import { useState, useEffect, useRef } from 'react';
+import { PuffLoader } from "react-spinners"
+import { Form, Input, Button, Select, DatePicker, InputNumber, Divider, Space, Table, Tooltip } from 'antd';
 import type { FormInstance } from 'antd';
 import { Subject } from 'rxjs';
 import dayjs from 'dayjs'
 import { MdOutlinePlusOne } from 'react-icons/md';
 import { Requester } from "../../factors/Requester"
 import { notify } from '../../factors/notify';
+import { addRowsWithCalculations } from '../../factors/AddRowsWithCalculations';
+
+
+
+
 // type declarations on state setters
+
+// created partition stream
 const eventStream = new Subject();
+
+// loaded saved partitions stream
+const savedQuotesPartitionStream = new Subject();
 const isDecimal = (string: any) => {
     return /^[+-]?((\d+(\.\d*)?)|(\.\d+))$/.test(string)
 }
@@ -23,9 +32,16 @@ const formatter = new Intl.NumberFormat('en-US', {
 const streamPartition = function (object: {}) {
     eventStream.next(object);
 }
+
+const streamPartitions = function (partitions: {}) {
+    savedQuotesPartitionStream.next(partitions);
+}
+
+
+
 interface QuoteItemInterface {
     id: number,
-    name: string,
+    partition_name: string,
     description: string,
     category?: string,
     brand?: string,
@@ -45,10 +61,27 @@ interface QuoteInterface {
 }
 
 
+interface BrandsInterface {
+    id: number,
+    brand_name: string,
+    created_at?: string,
+    created_by?: string,
+    modified_at?: string,
+    modified_by?: string,
+}
+
+interface CategoriesInterface {
+    id: number,
+    category_name: string,
+    created_at?: string,
+    created_by?: string,
+    modified_at?: string,
+    modified_by?: string,
+}
 
 interface ClientInterface {
     id: number,
-    name: string,
+    client_name: string,
     accountOwnerID: number,
     street?: string,
     postalCode?: string,
@@ -56,15 +89,52 @@ interface ClientInterface {
     state?: string,
     country?: string,
 }
+
+interface BuyerInterface {
+    id: number,
+    buyer_name: string,
+    buyer_last_name?: number,
+    clientID?: string,
+    created_at?: string,
+    created_by?: string,
+    modified_at?: string,
+    modified_by?: string,
+}
+
+
+interface AgentsInterface {
+    id: number,
+    user_name: string,
+    user_middle_name: string,
+    user_last_name: string,
+    email: string,
+    assignedPhone: string,
+    rfc: string,
+    curp: string,
+    city_id: string,
+    state_id: string,
+    country_id: string,
+    position_id: string,
+    department_id: string,
+    role: string,
+    username: string,
+    created_by: string,
+    modified_by: string,
+    created_at: string,
+    modified_at: string,
+}
+
 const units = (
-    <Select defaultValue="pzs" style={{ width: 85 }}>
-        <Select.Option value="pzs">Piezas</Select.Option>
-        <Select.Option value="lt">Litros</Select.Option>
-        <Select.Option value="kg">Kilos</Select.Option>
-        <Select.Option value="unt">Unidades</Select.Option>
-        <Select.Option value="mt">Metros</Select.Option>
-        <Select.Option value="mt3">Metros³</Select.Option>
-    </Select>
+    <Form.Item name={"unit"}>
+        <Select defaultValue="pzs" style={{ width: 85 }}>
+            <Select.Option value="pzs">Piezas</Select.Option>
+            <Select.Option value="lt">Litros</Select.Option>
+            <Select.Option value="kg">Kilos</Select.Option>
+            <Select.Option value="unt">Unidades</Select.Option>
+            <Select.Option value="mt">Metros</Select.Option>
+            <Select.Option value="mt3">Metros³</Select.Option>
+        </Select>
+    </Form.Item>
 );
 
 
@@ -76,11 +146,30 @@ const Sign = (
     </Select>
 );
 
-const QuotePartitionForm = () => {
+interface PartitionInterface {
+    calculatedRow?: boolean
+    id?: string,
+    name: string,
+    description: string,
+    created_by: string,
+    modified_by: string,
+    quoteID?: number,
+    categoryID?: number,
+    brandID?: number,
+    quantity?: number,
+    cost?: number,
+    factor?: number,
+    amount?: number,
+}
+
+const QuotePartitionForm = (props: any) => {
     const [createQuoteItemForm]: [FormInstance] = Form.useForm()
     const [partitionAmount, setPartitionAmount] = useState<any>(0)
-    const [people, setPeople] = useState<any[]>([{ value: "Prueba", label: "Prueba" }])
+    const [brands, setBrands] = useState<BrandsInterface[] | []>([])
+    const [categories, setCategories] = useState<CategoriesInterface[] | []>([])
     const calculatePartitionAmount = () => {
+
+
         const cost: number = createQuoteItemForm.getFieldValue("cost")
         const factor: number = createQuoteItemForm.getFieldValue("factor")
         const quantity: number = createQuoteItemForm.getFieldValue("quantity")
@@ -92,19 +181,80 @@ const QuotePartitionForm = () => {
             createQuoteItemForm.setFieldValue("amount", amount)
         }
     }
+
+
+    const postBrand = async () => {
+
+        const { value }: any = document.getElementById("newBrandField")
+        const element: any = document.getElementById("newBrandField")
+        const body: {} = {
+            brand_name: value
+        }
+        const createBrand = await new Requester({ url: import.meta.env.VITE_APP_APIURL + "/brands/create/one", method: "post", body }).send()
+
+        if (createBrand.status) {
+            // empty addeed field
+            element.value = ""
+            notify("success", createBrand.message, "")
+            setBrands([...brands, createBrand.data[0]])
+        } else {
+            notify("error", createBrand.message, "")
+        }
+    }
+
+
+    const postCategory = async () => {
+
+        const { value }: any = document.getElementById("newCategoryField")
+        const element: any = document.getElementById("newCategoryField")
+        const body: {} = {
+            category_name: value
+        }
+        const createCategory = await new Requester({ url: import.meta.env.VITE_APP_APIURL + "/categories/create/one", method: "post", body }).send()
+
+        if (createCategory.status) {
+            // empty addeed field
+            element.value = ""
+            notify("success", createCategory.message, "")
+            setCategories([...categories, createCategory.data[0]])
+        } else {
+            notify("error", createCategory.message, "")
+        }
+    }
+
+
+    const loadPartitionSelects = async () => {
+        const [brands, categories] = await Promise.all([new Requester({ url: import.meta.env.VITE_APP_APIURL + "/brands/read/all", method: "get" }).send(), new Requester({ url: import.meta.env.VITE_APP_APIURL + "/categories/read/all", method: "get" }).send()])
+        if (brands.status !== false) {
+            setBrands(brands)
+        }
+        if (categories.status !== false) {
+
+            setCategories(categories)
+        }
+
+
+    }
+
     useEffect(() => {
+        loadPartitionSelects()
         return calculatePartitionAmount()
     }, [])
     return (
         <div>
             <Form form={createQuoteItemForm} onFinish={(values) => {
-                streamPartition(values)
+
+                document.getElementById("submitPartition")?.setAttribute("disabled", "true")
+                document.getElementById("submitPartition")?.classList.add("ant-btn-loading")
+                const partitionForm = { ...values }
+                partitionForm.quoteID = props.quoteID
+                streamPartition(partitionForm)
             }} >
                 <div className="quoteCreatorFormSection">
                     <h3>Información de Partidas</h3>
                     <div>
                         <label>Nombre</label>
-                        <Form.Item initialValue={"Batería LTI 5000"} name="name" hasFeedback rules={[{ required: true, message: "Nombre es obligatorio" }]}>
+                        <Form.Item initialValue={"Batería LTI 5000"} name="partition_name" hasFeedback rules={[{ required: true, message: "Nombre es obligatorio" }]}>
                             <Input />
                         </Form.Item>
                     </div>
@@ -116,8 +266,8 @@ const QuotePartitionForm = () => {
                     </div>
                     <div>
                         <label>Categoría</label>
-                        <Form.Item initialValue={"Prueba"} name="category" hasFeedback rules={[{ required: true, message: "Categoría es obligatoria" }]}>
-                            <Select defaultValue={"Prueba"} allowClear showSearch optionFilterProp="children" dropdownRender={(menu) => (
+                        <Form.Item initialValue={""} name="categoryID" hasFeedback rules={[{ required: true, message: "Categoría es obligatoria" }]}>
+                            <Select showSearch optionFilterProp="children" dropdownRender={(menu) => (
                                 <>
                                     {menu}
                                     <Divider style={{ margin: '8px 0' }} />
@@ -126,20 +276,17 @@ const QuotePartitionForm = () => {
                                             placeholder="Crear nueva categoría"
                                             id="newCategoryField"
                                         />
-                                        <Button type="text" icon={<MdOutlinePlusOne />} onClick={(e) => {
-                                            const { value }: any = document.getElementById("newCategoryField")
-                                            setPeople([...people, { label: value, value: value }])
-                                            const element: any = document.getElementById("newCategoryField")
-                                            element.value = ""
-                                        }}>
+                                        <Button type="text" icon={<MdOutlinePlusOne />} onClick={postCategory}>
                                             Crear
                                         </Button>
                                     </Space>
                                 </>
                             )}>
+
+                                <Select.Option value="" disabled>Selecciona categoría</Select.Option>
                                 {
-                                    people.map((item) => {
-                                        return <Select.Option value={item.value}>{item.label}</Select.Option>
+                                    categories.map((postCategory) => {
+                                        return <Select.Option key={`category_id_${postCategory.id}`} value={postCategory.id}>{postCategory.category_name}</Select.Option>
                                     })
                                 }
                             </Select>
@@ -147,32 +294,29 @@ const QuotePartitionForm = () => {
                     </div>
                     <div>
                         <label>Marca</label>
-                        <Form.Item initialValue={"Prueba"} name="brand" hasFeedback rules={[{ required: true, message: "Categoría es obligatoria" }]}>
-                            <Select defaultValue={"Prueba"} allowClear showSearch optionFilterProp="children" dropdownRender={(menu) => (
+                        <Form.Item initialValue={""} name="brandID" hasFeedback rules={[{ required: true, message: "Categoría es obligatoria" }]}>
+                            <Select showSearch optionFilterProp="children" dropdownRender={(menu) => (
                                 <>
                                     {menu}
                                     <Divider style={{ margin: '8px 0' }} />
                                     <Space style={{ padding: '0 8px 4px' }}>
                                         <input
-                                            placeholder="Crear nueva categoría"
+                                            placeholder="Crear nueva marca"
                                             id="newBrandField"
                                         />
-                                        <Button type="text" icon={<MdOutlinePlusOne />} onClick={(e) => {
-                                            const { value }: any = document.getElementById("newBrandField")
-                                            setPeople([...people, { label: value, value: value }])
-                                            const element: any = document.getElementById("newBrandField")
-                                            element.value = ""
-                                        }}>
+                                        <Button type="text" icon={<MdOutlinePlusOne />} onClick={postBrand}>
                                             Crear
                                         </Button>
                                     </Space>
                                 </>
                             )}>
+                                <Select.Option value="" disabled>Selecciona marca</Select.Option>
                                 {
-                                    people.map((item) => {
-                                        return <Select.Option value={item.value}>{item.label}</Select.Option>
+                                    brands.map((brand) => {
+                                        return <Select.Option key={`brand_id_${brand.id}`} value={brand.id}>{brand.brand_name}</Select.Option>
                                     })
                                 }
+
                             </Select>
                         </Form.Item>
                     </div>
@@ -180,9 +324,20 @@ const QuotePartitionForm = () => {
                         <label>Cantidad</label>
                         <Form.Item initialValue={12} name="quantity" hasFeedback rules={[{ required: true, message: "Cantidad es obligatoria" }, { pattern: /^[+-]?((\d+(\.\d*)?)|(\.\d+))$/, message: "Este campo solo acepta decimales" }]}>
                             <InputNumber
-                                addonAfter={units}
-                                // formatter={(value) => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                                // parser={(value) => value!.replace(/\$\s?|(,*)/g, '')}
+                                addonAfter={
+                                    <Form.Item name={"unit"} initialValue="pzs" noStyle>
+                                        <Select defaultValue="pzs" style={{ width: 85 }}>
+                                            <Select.Option value="pzs">Piezas</Select.Option>
+                                            <Select.Option value="lt">Litros</Select.Option>
+                                            <Select.Option value="kg">Kilos</Select.Option>
+                                            <Select.Option value="unt">Unidades</Select.Option>
+                                            <Select.Option value="mt">Metros</Select.Option>
+                                            <Select.Option value="mt3">Metros³</Select.Option>
+                                        </Select>
+                                    </Form.Item>
+                                }
+                                formatter={(value) => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                parser={(value) => value!.replace(/\$\s?|(,*)/g, '')}
                                 onChange={calculatePartitionAmount}
                             />
                         </Form.Item>
@@ -191,7 +346,7 @@ const QuotePartitionForm = () => {
                         <label>Costo</label>
                         <Form.Item initialValue={5000} name="cost" hasFeedback rules={[{ required: true, message: "Costo es obligatorio" }, { pattern: /^[+-]?((\d+(\.\d*)?)|(\.\d+))$/, message: "Este campo solo acepta decimales" }]}>
                             <InputNumber
-                                addonBefore={Sign}
+                                // addonBefore={Sign}
                                 formatter={(value) => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                                 parser={(value) => value!.replace(/\$\s?|(,*)/g, '')}
                                 onChange={calculatePartitionAmount}
@@ -219,7 +374,7 @@ const QuotePartitionForm = () => {
                 </div>
 
                 <div className='buttons-container'>
-                    <Button htmlType="submit">Agregar Partida</Button>
+                    <Button htmlType="submit" id="submitPartition">Agregar Partida</Button>
                 </div>
 
             </Form>
@@ -228,26 +383,76 @@ const QuotePartitionForm = () => {
     )
 }
 
+interface QuotePartitionsTableProps {
+    setGenerateQuoteIsDisabled: any
+}
 
-
-const QuotePartitionsTable = () => {
-    const [quotePartitions, setQuotePartitions] = useState<any>([])
+const QuotePartitionsTable = (props: QuotePartitionsTableProps) => {
+    const [quotePartitions, setQuotePartitions] = useState<PartitionInterface[] | []>([])
     const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+    const [selectedPartitionRows, setSelectedPartitionRows] = useState<PartitionInterface[] | []>([]);
 
-    const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
-        setSelectedRowKeys(newSelectedRowKeys);
-    };
+
+    const deletePartition = async () => {
+
+        const idsToDelete = selectedPartitionRows.map(partition => { return partition.id })
+        try {
+            const deletedQuote = await new Requester({ url: import.meta.env.VITE_APP_APIURL + "/partitions/delete/mine", method: "delete", body: { ids: idsToDelete } }).send()
+
+            const typeOfNotification = deletedQuote.status ? "success" : "error"
+
+            notify(typeOfNotification, deletedQuote.message)
+
+            const remainingQuotes = quotePartitions.filter((quotePartition) => { return !idsToDelete.includes(quotePartition.id) && !quotePartition.calculatedRow })
+
+            if (remainingQuotes.length > 0) {
+                const partitionsWithAvergagesAndTotals = addRowsWithCalculations(remainingQuotes, ["cost", "factor", "amount"], "partitionsSum", "partitionsAverage")
+                const newPartitions = partitionsWithAvergagesAndTotals.map((row) => {
+                    const newRow = { ...row }
+                    if (row.id) {
+                        newRow.key = row.id.toString()
+                    }
+
+                    return newRow
+                })
+                props.setGenerateQuoteIsDisabled(true)
+                setQuotePartitions(newPartitions)
+            } else {
+                props.setGenerateQuoteIsDisabled(true)
+                setQuotePartitions([])
+            }
+
+        } catch (error) {
+            notify("error", "Error al eliminar partida")
+        }
+    }
 
     const rowSelection = {
-        selectedRowKeys,
-        onChange: onSelectChange,
+        //The selectedRowKeys take the value of selectedItems, so when they get patched, the selection resets
+        selectedRowKeys: selectedRowKeys,
+        onChange: (selectedKeys: any, selectedRows: any, clear: any) => {
+            if (selectedKeys.length === 0) {
+                setSelectedPartitionRows([])
+                setSelectedRowKeys([]);
+            } else {
+                setSelectedPartitionRows(selectedRows)
+                setSelectedRowKeys(selectedKeys);
+            }
+        },
+        getCheckboxProps: (record: any) => {
+            if (record.calculatedRow) {
+                return {
+                    disabled: true
+                }
+            }
+        },
         selections: [
             Table.SELECTION_ALL,
             Table.SELECTION_INVERT,
             Table.SELECTION_NONE,
             {
                 key: 'odd',
-                text: 'Select Odd Row',
+                text: 'Seleccionar impares',
                 onSelect: (changableRowKeys: any) => {
                     let newSelectedRowKeys = [];
                     newSelectedRowKeys = changableRowKeys.filter((_: any, index: any) => {
@@ -261,7 +466,7 @@ const QuotePartitionsTable = () => {
             },
             {
                 key: 'even',
-                text: 'Select Even Row',
+                text: 'Seleccionar pares',
                 onSelect: (changableRowKeys: any) => {
                     let newSelectedRowKeys = [];
                     newSelectedRowKeys = changableRowKeys.filter((_: any, index: any) => {
@@ -276,27 +481,111 @@ const QuotePartitionsTable = () => {
         ],
     };
 
-    const subscription = eventStream.subscribe({
-        next(x) {
-            setQuotePartitions([...quotePartitions, x])
-        },
-        error(err) {
-            console.error('something wrong occurred: ' + err);
-        },
-        complete() {
-            console.log('done');
-        },
-    });
+
+
+    // subscribe to load of saved quote
+
+    useEffect(() => {
+        const subscription = savedQuotesPartitionStream.subscribe({
+            next(x: any) {
+
+                if (x.length == 0) {
+                    setQuotePartitions([])
+                    return
+                }
+
+                const partitionsWithAvergagesAndTotals = addRowsWithCalculations(x, ["cost", "factor", "amount"], "partitionsSum", "partitionsAverage")
+                const newPartitions = partitionsWithAvergagesAndTotals.map((row) => {
+                    const newRow = { ...row }
+                    if (row.id) {
+                        newRow.key = row.id.toString()
+                    }
+                    return newRow
+                })
+
+
+                setQuotePartitions(
+                    newPartitions
+                )
+                props.setGenerateQuoteIsDisabled(false)
+
+
+            },
+            error(err) {
+                console.error('something wrong occurred: ' + err);
+            },
+            complete() {
+                console.log('done');
+            },
+        });
+        return () => {
+            subscription.unsubscribe()
+
+        }
+    }, [])
+
+
+
+    // subscribe to click of add partition
+    useEffect(() => {
+        const subscription = eventStream.subscribe({
+            next(x) {
+
+                (async () => {
+
+                    const createPartition = await new Requester({ url: import.meta.env.VITE_APP_APIURL + "/partitions/create/one", method: "post", body: x }).send()
+
+
+                    if (createPartition.status) {
+
+                        const partitionsWithAvergagesAndTotals = addRowsWithCalculations([...quotePartitions.filter(x => { return !x.calculatedRow }), createPartition.data[0]], ["cost", "factor", "amount"], "partitionsSum", "partitionsAverage")
+                        setQuotePartitions(partitionsWithAvergagesAndTotals.map((row) => {
+
+
+                            const newRow = { ...row }
+                            if (row.id) {
+
+                                newRow.key = row.id.toString()
+                            }
+                            return newRow
+                        })
+                        )
+                        props.setGenerateQuoteIsDisabled(false)
+                    }
+
+                    document.getElementById("submitPartition")?.classList.remove("ant-btn-loading")
+                    document.getElementById("submitPartition")?.removeAttribute("disabled")
+
+                    notify(createPartition.status ? "success" : "error", createPartition.message, "")
+
+                })()
+
+
+            },
+            error(err) {
+                console.error('something wrong occurred: ' + err);
+            },
+            complete() {
+                console.log('done');
+            },
+        });
+        return () => {
+
+            subscription.unsubscribe()
+
+        }
+    }, [quotePartitions])
+
 
     return (
 
         <div className="quoteCreatorAddedItems">
             <div className='buttons-container'>
-                <Button>Eliminar Partida(s)</Button>
+                <Button disabled={selectedPartitionRows.length === 0} onClick={deletePartition}>Eliminar Partida(s)</Button>
             </div>
-            <Table rowSelection={rowSelection} dataSource={quotePartitions} style={{ width: "100%" }} scroll={{ x: "100%", y: "80vh" }} columns={[
+            <Table rowSelection={{ type: "checkbox", ...rowSelection }} dataSource={quotePartitions} style={{ width: "100%" }} scroll={{ x: "100%", y: "80vh" }} columns={[
                 {
-                    key: "name",
+                    key: "partition_name",
                     dataIndex: "name",
                     width: "100px",
                     title: "Nombre"
@@ -309,13 +598,13 @@ const QuotePartitionsTable = () => {
                 },
                 {
                     key: "category",
-                    dataIndex: "category",
+                    dataIndex: "category_name",
                     width: "100px",
                     title: "Categoría"
                 },
                 {
                     key: "brand",
-                    dataIndex: "brand",
+                    dataIndex: "brand_name",
                     width: "100px",
                     title: "Marca"
                 },
@@ -358,22 +647,124 @@ const QuotePartitionsTable = () => {
 }
 
 
+interface FetchingInterface {
+    buyers: boolean,
+    initialSelects: boolean,
+}
 
 const Cotizar = ({ ...props }) => {
-
+    const selectRef = useRef(null)
     const [createQuoteForm]: [FormInstance] = Form.useForm()
+    const [generateQuoteIsDisabled, setGenerateQuoteIsDisabled] = useState<boolean>(true)
+    const [generateQuoteIsLoading, setGenerateQuoteIsLoading] = useState<boolean>(false)
     const [quotes, setQuotes] = useState<QuoteInterface[] | []>([])
     const [clients, setClients] = useState<ClientInterface[] | []>([])
+    const [agents, setAgents] = useState<AgentsInterface[] | []>([])
+    const [selectedQuote, setSelectedQuote] = useState<QuoteInterface | {}>({})
+    const [buyers, setBuyers] = useState<BuyerInterface[] | [] | false>(false)
+    const [fetching, setFetching] = useState<FetchingInterface>({
+        buyers: false,
+        initialSelects: false
+    })
+    const [selectedClient, setSelectedClient] = useState<ClientInterface | undefined>(undefined)
 
 
-    const patchQuote = () => {
+    const setFetchingProperty = (property: keyof FetchingInterface, boolean: boolean) => {
+        const newFetchingObject: FetchingInterface = { ...fetching }
+        newFetchingObject[property] = boolean
+        setFetching(newFetchingObject)
+    }
+
+    const generateQuote = async () => {
+
+        setGenerateQuoteIsLoading(true)
+        setGenerateQuoteIsDisabled(true)
+
+
+        try {
+            const { id, reference }: any = selectedQuote
+
+            const sendQuote = await new Requester({ url: import.meta.env.VITE_APP_APIURL + `/quotes/update/submit`, method: "patch", body: { id: id } }).send()
+
+            if (sendQuote.status) {
+
+                notify("success", "Cotización generada", "La descarga iniciara automáticamente")
+
+                const pdfBinary = sendQuote.data.data
+
+                const data = new ArrayBuffer(pdfBinary.length);
+
+                const view = new Uint8Array(data);
+
+                for (let i = 0; i < pdfBinary.length; ++i) {
+                    view[i] = pdfBinary[i];
+                }
+
+
+                // create the blob object with content-type "application/pdf"               
+                var blob = new Blob([view], { type: "application/pdf" });
+                const link = document.createElement('a')
+                link.href = window.URL.createObjectURL(blob)
+                link.download = `your-file-name.pdf`
+                link.click()
+                link.remove();  //afterwards we remove the element again  
+
+
+            } else {
+                notify("error", sendQuote.message)
+            }
+
+            createQuoteForm.resetFields()
+            setQuotes(quotes.filter(quote => { return quote.id !== id }))
+            setSelectedQuote({})
+            streamPartitions([])
+
+        } catch (error) {
+
+            notify("error", "Error al generar cotización")
+
+        } finally {
+
+            setGenerateQuoteIsDisabled(false)
+            setGenerateQuoteIsLoading(false)
+        }
+
 
     }
+
     const postQuote = async () => {
 
-        const startAudit = await new Requester({ url: import.meta.env.VITE_APP_APIURL + "/quotes/create/one", body: createQuoteForm.getFieldsValue() }).post()
+        try {
+            const { id }: any = selectedQuote
+            const body = createQuoteForm.getFieldsValue()
+            if (id) {
+                body.id = id
+            }
+            const postOrPatch = id ? "update" : "create"
+            const startQuote = await new Requester({ url: import.meta.env.VITE_APP_APIURL + `/quotes/${postOrPatch}/one`, method: postOrPatch === "update" ? "patch" : "post", body }).send()
 
-        notify(startAudit.status ? "success" : "error", startAudit.message, "")
+            if (startQuote.status) {
+                if (postOrPatch === "update") {
+
+                    setQuotes(quotes.map((quote) => {
+                        if (quote.id !== id) {
+                            return quote
+                        } else {
+                            return startQuote.data[0]
+                        }
+                    }))
+                    setSelectedQuote(startQuote.data[0])
+                } else {
+                    setQuotes([...quotes, startQuote.data[0]])
+                    setSelectedQuote(startQuote.data[0])
+                }
+            }
+
+            notify(startQuote.status ? "success" : "error", startQuote.message, "")
+        } catch (error) {
+
+            notify("error", "Error inesperado")
+        }
 
     }
 
@@ -382,9 +773,9 @@ const Cotizar = ({ ...props }) => {
         const { value }: any = document.getElementById("newClientField")
         const element: any = document.getElementById("newClientField")
         const body: {} = {
-            name: value
+            client_name: value
         }
-        const createClient = await new Requester({ url: import.meta.env.VITE_APP_APIURL + "/clients/create/one", body }).post()
+        const createClient = await new Requester({ url: import.meta.env.VITE_APP_APIURL + "/clients/create/one", method: "post", body }).send()
 
         if (createClient.status) {
             // empty addeed field
@@ -397,72 +788,272 @@ const Cotizar = ({ ...props }) => {
 
     }
 
+    const postBuyer = async () => {
+
+        const { value }: any = document.getElementById("newBuyerField")
+        const element: any = document.getElementById("newBuyerField")
+        const body: {} = {
+            buyer_name: value,
+            clientID: selectedClient ? selectedClient.id : undefined
+        }
+        const createBuyer = await new Requester({ url: import.meta.env.VITE_APP_APIURL + "/buyers/create/one", method: "post", body }).send()
+
+        if (createBuyer.status) {
+            // empty addeed field
+            element.value = ""
+            notify("success", createBuyer.message, "")
+            if (buyers !== false) {
+                setBuyers([...buyers, createBuyer.data[0]])
+            }
+        } else {
+            notify("error", createBuyer.message, "")
+        }
+
+    }
     const loadSelects = async () => {
 
-        const quotesPromise = new Requester({ url: import.meta.env.VITE_APP_APIURL + "/quotes/read/mine" }).get()
-        const clientsPromise = new Requester({ url: import.meta.env.VITE_APP_APIURL + "/clients/read/mine" }).get()
-        const [resultQuotes, resultClients] = await Promise.all([quotesPromise, clientsPromise])
-        if (resultQuotes.status !== false) {
-            setQuotes(resultQuotes)
-        }
-        if (resultClients.status !== false) {
-            setClients(resultClients)
+        try {
+            setFetchingProperty('initialSelects', true)
+            const quotesPromise = new Requester({ url: import.meta.env.VITE_APP_APIURL + "/quotes/read/mine", method: "get", params: { emitted: false } }).send()
+            const clientsPromise = new Requester({ url: import.meta.env.VITE_APP_APIURL + "/clients/read/mine", method: "get" }).send()
+            const usersPromise = new Requester({ url: import.meta.env.VITE_APP_APIURL + "/users/read/all", method: "get" }).send()
+            const [resultQuotes, resultClients, resultsAgents] = await Promise.all([quotesPromise, clientsPromise, usersPromise])
+            if (resultQuotes.status !== false) {
+                setQuotes(resultQuotes)
+            }
+            if (resultClients.status !== false) {
+                setClients(resultClients)
+            }
+            if (resultsAgents.status !== false) {
+                setAgents(resultsAgents)
+            }
+
+            setFetchingProperty('initialSelects', false)
+
+            return true
+        } catch (error) {
+
+            return false
         }
 
+
+    }
+
+    const setUpNewQuote = () => {
+        createQuoteForm.resetFields()
+        streamPartitions([])
+        setSelectedQuote({})
+        if (selectRef.current !== null) {
+            selectRef.current = null
+        }
+    }
+
+    const loadSavedQuote = async (quoteID: number) => {
+
+
+        const quoteToSelect: any = quotes.filter(quote => { return quote.id === quoteID })[0]
+
+
+        setSelectedQuote(quoteToSelect)
+
+
+        const startQuoteFormSavedFields = []
+
+        for (let i: number = 0; i < Object.keys(quoteToSelect).length; i++) {
+
+            const key: any = Object.keys(quoteToSelect)[i];
+            let value: any = quoteToSelect[key]
+
+            // turn expiration date into dayjs object for the sake of the date selector widget
+            if (key === "expiration_date") {
+                value = dayjs(new Date(value)).add(15, 'day')
+            }
+
+
+            if (key === "clientID") {
+                await selectClientAndSearchBuyers(value)
+            }
+
+            startQuoteFormSavedFields.push({ name: key, value: value })
+
+        }
+
+        createQuoteForm.setFields(startQuoteFormSavedFields)
+
+
+        const savedQuotePartitions = await new Requester({ url: import.meta.env.VITE_APP_APIURL + "/partitions/read/quote", method: "get", params: { quoteID: quoteToSelect.id } }).send()
+
+        if (savedQuotePartitions.length > 0) {
+            streamPartitions(savedQuotePartitions)
+        } else {
+
+            streamPartitions([])
+            notify("info", "No se encontraron partidas para la cotización: " + quoteToSelect.reference, "Intenta agregar partidas")
+        }
+
+    }
+
+    const selectClientAndSearchBuyers = async (e: string | number) => {
+
+        setFetchingProperty("buyers", true)
+
+        const clientToSelect = clients.filter(x => { return x.id.toString() == e })[0]
+        // set selected client
+        setSelectedClient(
+            clientToSelect
+        )
+
+        createQuoteForm.setFieldValue("buyerID", undefined)
+
+        try {
+            // fetch new list of buyers for the selected client
+            const buyersResult = await new Requester({ url: import.meta.env.VITE_APP_APIURL + "/buyers/read/client", method: "get", params: { clientID: e } }).send()
+
+            if (buyersResult.status == false) {
+                throw new Error(buyersResult);
+            }
+
+            if (Array.isArray(buyersResult) && buyersResult.length == 0) {
+                notify("info", `No existen compradores para el cliente ${clientToSelect.client_name}`, "Recuerda agregar uno primero")
+            }
+
+
+            setBuyers(buyersResult)
+
+
+
+        } catch (error) {
+
+            notify("error", `Error al cargar compradores de ${clientToSelect.client_name}`)
+
+
+        } finally {
+            setFetchingProperty("buyers", false)
+            return true
+        }
+    }
+
+
+    const deleteQuote = async () => {
+
+        try {
+            const { id }: any = selectedQuote
+
+
+
+            const deletedQuote = await new Requester({ url: import.meta.env.VITE_APP_APIURL + "/quotes/delete/mine", method: "delete", body: { id: id } }).send()
+
+            const typeOfNotification = deletedQuote.status ? "success" : "error"
+
+            notify(typeOfNotification, deletedQuote.message)
+
+            if (deletedQuote.status) {
+
+                setGenerateQuoteIsDisabled(true)
+
+                setUpNewQuote()
+
+                setQuotes(quotes.filter(quote => { quote.id !== id }))
+
+            }
+
+        } catch (error) {
+
+            notify("error", "Error al eliminar cotización")
+
+        }
     }
 
     useEffect(() => {
         loadSelects()
     }, [])
+
+    if (fetching.initialSelects) {
+        return (
+            <div style={{
+                height: "500px",
+                display: "flex",
+                alignItems: "center",
+                marginTop: "250px",
+                flexDirection: "column"
+            }}>
+                <h2>Cargando...</h2>
+                <PuffLoader
+                    color={"#444"}
+                    speedMultiplier={1}
+                    size={"64px"}
+                />
+            </div>
+        )
+    }
+
+
+
+    const { reference, id }: any = selectedQuote
     return (
         <div >
             <div className='buttons-container'>
-
                 <div style={{ marginBottom: "15px" }}>
                     <label style={{ display: "block" }}>Cotizaciónes inconclusas</label>
-                    <Select defaultValue="" showSearch optionFilterProp="children" style={{ width: "350px" }}>
-                        <Select.Option value="">Seleccionar Cotización</Select.Option>
+                    <Select value={reference ? id : ""} showSearch optionFilterProp="children" style={{ width: "350px" }} onChange={loadSavedQuote}>
+                        <Select.Option value={""} disabled>Seleccionar Cotización</Select.Option>
                         {quotes.map((quote) => {
-                            return <Select.Option value="{quote.id}">{quote.reference}</Select.Option>
+                            return <Select.Option key={`quote_id_${quote.id}`} value={quote.id}>{quote.reference}</Select.Option>
                         })}
                     </Select>
                 </div>
             </div>
             <div className="quoteCreator">
-                <h2>Crear Cotización</h2>
+                <div style={{ width: "100%", display: "flex", alignItems: "center" }}>
+                    <h2>{reference ? "Trabajando" : "Crear"} Cotización<span style={{ fontWeight: 200 }}>{reference ? `: ${reference}` : ""}</span></h2>
+                    {reference ? <Button style={{ marginLeft: "15px" }} onClick={setUpNewQuote}>Nueva Cotización</Button> : null}
+                </div>
                 <div className='quoteCreatorFormContainer'>
-                    <Form form={createQuoteForm}>
+                    <Form form={createQuoteForm} onFinish={postQuote} onFinishFailed={(errors) => {
+                        notify("error", `Por favor corrige los siguientes ${errors.errorFields.length} error${errors.errorFields.length === 1 ? "" : "es"}`, <>
+                            <ul>
+                                {
+                                    errors.errorFields.map((error, i) => {
+                                        return <li key={`create_quote_error_${i}`}>{error.errors.toString()}</li>
+                                    })
+                                }
+                            </ul>
+                        </>)
+
+                    }}>
                         <div className="quoteCreatorFormSection">
                             <h3>Información de Cotización</h3>
                             <div>
-                                <label>Empresa</label>
-                                <Form.Item name="company">
-                                        <Select defaultValue={""} showSearch optionFilterProp="children" >
-                                            <Select.Option value="" disabled>Selecciona Empresa</Select.Option>
-                                            <Select.Option value="Garle">Garle S. de R.L de C.V</Select.Option>
-                                            <Select.Option value="GR Industrial">GR Industrial Inc.</Select.Option>
-                                        </Select>
+                                <label>Empresa <span className='requiredMark' /></label>
+                                <Form.Item initialValue="" name="company" hasFeedback rules={[{ required: true, message: "Empresa es obligatoria" }]}>
+                                    <Select showSearch optionFilterProp="children" >
+                                        <Select.Option value="" disabled>Selecciona Empresa</Select.Option>
+                                        <Select.Option value="Garle">Garle S. de R.L de C.V</Select.Option>
+                                        <Select.Option value="GR Industrial">GR Industrial Inc.</Select.Option>
+                                    </Select>
                                 </Form.Item>
                             </div>
                             <div>
-                                <label>Referencia</label>
-                                <Form.Item name="reference" initialValue={"Requisición 12 para planta de baterías"}>
-                                    <Input defaultValue={"Requisición 12 para planta de baterías"} />
+                                <label>Referencia <span className='requiredMark' /></label>
+                                <Form.Item name="reference" initialValue={""} hasFeedback rules={[{ required: true, message: "Referencia es obligatoria" }]}>
+                                    <Input placeholder="Ingresa referencia" />
                                 </Form.Item>
                             </div>
                             <div>
-                                <label>Moneda</label>
-                                <Form.Item name="currency" initialValue={"MXN"}>
-                                    <Select defaultValue={"MXN"} showSearch optionFilterProp="children" >
+                                <label>Moneda <span className='requiredMark' /></label>
+                                <Form.Item name="currency" initialValue={"MXN"} hasFeedback rules={[{ required: true, message: "Moneda es obligatoria" }]}>
+                                    <Select showSearch optionFilterProp="children" >
                                         <Select.Option value="MXN">Pesos Mexicanos</Select.Option>
                                         <Select.Option value="USD">Dolares Americanos</Select.Option>
                                     </Select>
                                 </Form.Item>
                             </div>
                             <div>
-                                <label>Cliente</label>
-                                <Form.Item initialValue={""} name="clientID">
-                                    <Select defaultValue={""} showSearch optionFilterProp="children" dropdownRender={(menu) => (
+                                <label>Cliente <span className='requiredMark' /></label>
+                                <Form.Item initialValue={""} name="clientID" hasFeedback rules={[{ required: true, message: "Cliente es obligatorio" }]}>
+                                    <Select showSearch optionFilterProp="children" onChange={(e) => {
+                                        selectClientAndSearchBuyers(e)
+                                    }} dropdownRender={(menu) => (
                                         <>
                                             {menu}
                                             <Divider style={{ margin: '8px 0' }} />
@@ -480,49 +1071,83 @@ const Cotizar = ({ ...props }) => {
                                         <Select.Option disabled value={""}>Selecciona cliente</Select.Option>
                                         {
                                             clients.map((client) => {
-                                                return <Select.Option key={"client" + client.id} value={client.id}>{client.name}</Select.Option>
+                                                return <Select.Option key={`client_id_${client.id}`} value={`${client.id}`}>{client.client_name}</Select.Option>
                                             })
                                         }
                                     </Select>
                                 </Form.Item>
                             </div>
                             <div>
-                                <label>Fecha de Vencimiento</label>
-                                <Form.Item name="expirationDate" initialValue={dayjs().add(15, 'day')} >
-                                    <DatePicker defaultValue={dayjs().add(15, 'day')} format="MMMM Do YY" />
+                                <label>Fecha de Vencimiento <span className='requiredMark' /></label>
+                                <Form.Item name="expiration_date" initialValue={dayjs(new Date()).add(15, 'day')} hasFeedback rules={[{ required: true, message: "Fecha de vencimiento es obligatoria" }]}>
+                                    <DatePicker allowClear={false} format="MMMM Do YY" />
                                 </Form.Item>
                             </div>
                             <div>
-                                <label>Comprador</label>
-                                <Form.Item name="buyerID" initialValue="1">
-                                    <Select defaultValue="1" showSearch optionFilterProp="children" >
-                                        <Select.Option value="Jabil">Gerente Jabil</Select.Option>
-                                        <Select.Option value="1">Gerente TPI</Select.Option>
+                                <label>Comprador <span className='requiredMark' /></label>
+                                <Form.Item initialValue="" name="buyerID" hasFeedback rules={[{ required: true, message: "Comprador es obligatorio" }]}>
+                                    <Select showSearch optionFilterProp="children" disabled={!buyers} loading={fetching.buyers} dropdownRender={(menu) => (
+                                        <>
+                                            {menu}
+                                            <Divider style={{ margin: '8px 0' }} />
+                                            <Space style={{ padding: '0 8px 4px' }}>
+                                                <input
+                                                    placeholder="Crear nuevo comprador"
+                                                    id="newBuyerField"
+                                                />
+                                                <Button type="text" icon={<MdOutlinePlusOne />} onClick={postBuyer}>
+                                                    Crear
+                                                </Button>
+                                            </Space>
+                                        </>
+                                    )}>
+                                        {
+                                            selectedClient == undefined ? <Select.Option disabled value="">Primero selecciona un cliente</Select.Option> : <Select.Option disabled value="">{fetching.buyers ? `Buscando compradores de ${selectedClient.client_name}` : "Selecciona Comprador"}</Select.Option>
+                                        }
+                                        {
+                                            // if buyers is not equal to false
+                                            !buyers || buyers.map((buyer) => {
+                                                return <Select.Option key={`buyer_id_${buyer.id}`} value={`${buyer.id}`}>{buyer.buyer_name}{buyer.buyer_last_name || ""}</Select.Option>
+                                            })
+                                        }
                                     </Select>
                                 </Form.Item>
                             </div>
                             <div>
-                                <label>Agente</label>
-                                <Form.Item name="agentID" initialValue="1">
-                                    <Select defaultValue="1" showSearch optionFilterProp="children" >
-                                        <Select.Option value="Jabil">Luis Moreno</Select.Option>
-                                        <Select.Option value="1">Victor Primo</Select.Option>
+                                <label>Agente <span className='requiredMark' /></label>
+                                <Form.Item name="agentID" initialValue="" hasFeedback rules={[{ required: true, message: "Agente es obligatorio" }]}>
+                                    <Select showSearch optionFilterProp="children" >
+                                        <Select.Option value="" disabled>Selecciona Agente</Select.Option>
+                                        {
+                                            agents.map((agent) => {
+                                                return <Select.Option key={`agent_id_${agent.id}`} value={`${agent.id}`}>{agent.user_name} {agent.user_last_name}</Select.Option>
+                                            })
+                                        }
                                     </Select>
                                 </Form.Item>
                             </div>
                         </div>
                         <div className='buttons-container'>
-                            <Button onClick={postQuote}>Empezar cotización</Button>
+                            {
+                                Object.keys(selectedQuote).length === 0 ? <Button htmlType="submit" >Empezar cotización</Button> : <Button htmlType="submit" >Actualizar cotización</Button>
+                            }
                         </div>
 
                     </Form>
-                    <QuotePartitionForm />
+                    {/* if the user selected an id show the partition */}
+                    {id ? <QuotePartitionForm quoteID={id} /> : null}
 
                 </div>
-                <QuotePartitionsTable />
+                <QuotePartitionsTable setGenerateQuoteIsDisabled={setGenerateQuoteIsDisabled} />
                 <div className='buttons-container'>
-                    <Button>Eliminar Cotización</Button>
-                    <Button onClick={patchQuote}>Generar Cotización</Button>
+                    {id ?
+                        <div>
+                            <Button disabled={id ? false : true} onClick={deleteQuote}>Eliminar Cotización</Button>
+                            <Button id="generateQuote" disabled={generateQuoteIsDisabled} onClick={generateQuote} loading={generateQuoteIsLoading}>Generar Cotización</Button>
+                        </div>
+                        :
+                        null
+                    }
                 </div>
             </div>
         </div>

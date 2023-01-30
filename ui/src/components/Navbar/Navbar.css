@@ -32,7 +32,7 @@
 
     #togglerContainer {
         width: 100%;
-        background-color: var(--coolor2);
+        background-color: var(--coolor1);
         text-align: center;
     }
 
@@ -40,7 +40,7 @@
         color: var(--coolor16);
     }
     #links {
-        height: 50px;
+        height: 80px;
         display: -webkit-box;
         justify-content: center;
         align-items: center;
@@ -70,7 +70,7 @@
     }
 
     #nav.hideLinks {
-        margin-top: -50px;
+        margin-top: -80px;
         transition: margin 0.3s ease;
     }
 
@@ -88,15 +88,15 @@
 
     #links>* {
         min-width: 150px;
-        height: 50px;
+        height: 80px;
         display: flex;
-        width: calc(100vw/8);
         justify-content: center;
         align-items: center;
-        background-color:var(--coolor2);
+        background-color: var(--coolor2);
         margin: 0;
         transition: all 0.3s ease;
         color: var(--coolor16);
+        width: 225px;
         cursor: pointer;
     }
     #links>*>*{
