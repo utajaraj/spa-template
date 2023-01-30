@@ -5,6 +5,7 @@ const createDatabaseSchemas = async () => {
 
     try {
 
+
         const hasUsers = await knex.schema.hasTable('users')
         if (!hasUsers) {
            try {
@@ -25,11 +26,12 @@ const createDatabaseSchemas = async () => {
                 t.string('role', 100).notNullable();
                 t.string('username', 100).notNullable();
                 t.integer('created_by', 100).notNullable()
-                t.integer('created_by', 100).notNullable()
+                t.integer('modified_by', 100).notNullable()
                 t.datetime('created_at', { precision: 6 }).defaultTo(knex.fn.now(6)).notNullable()
                 t.datetime('modified_at', { precision: 6 }).defaultTo(knex.fn.now(6)).notNullable()
             })
            } catch (error) {
+               console.log();
                console.log(error)
            }
         }
