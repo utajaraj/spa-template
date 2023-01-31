@@ -35,7 +35,6 @@ ReadMyPartitions.get("/mine", async (req, res) => {
       "buyers.buyer_last_name",
       "clients.client_name",
     ]).from("partitions")
-      .where({ "partitions.created_by": req.query.created_by })
       .leftJoin('categories', 'partitions.categoryID', '=', 'categories.id')
       .leftJoin('brands', 'partitions.brandID', '=', 'brands.id')
       .leftJoin('quotes', 'partitions.quoteID', '=', 'quotes.id')
