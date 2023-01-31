@@ -27,7 +27,7 @@ SubmitMyPartitions.patch("/submit", async (req, res) => {
                 "buyers.buyer_last_name",
                 "clients.client_name",
             ]).from("partitions")
-                .where({ "partitions.created_by": req.body.created_by, "partitions.quoteID": req.body.id })
+                .where({ "partitions.quoteID": req.body.id })
                 .leftJoin('categories', 'partitions.categoryID', '=', 'categories.id')
                 .leftJoin('brands', 'partitions.brandID', '=', 'brands.id')
                 .leftJoin('quotes', 'partitions.quoteID', '=', 'quotes.id')
@@ -49,18 +49,18 @@ SubmitMyPartitions.patch("/submit", async (req, res) => {
 
 
             ejs.renderFile(path.join(__dirname + "/../../../views/QuoteTemplate.ejs"), { quote, partitions, img }, async function (err, str) {
-            
+
                 if (err) {
                     res.status(400).send({ status: false, message: "Cotización generada pero no se pude descargar PDF", error: err.toString() })
                     return
                 }
 
                 try {
-                    const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox']});
+                    const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] });
                     const page = await browser.newPage();
                     await page.setContent(str, {
                         waitUntil: 'domcontentloaded',
-                        encoding: "base64" 
+                        encoding: "base64"
                     })
                     const pdf = await page.pdf({ format: 'A4' })
                     res.status(200).send({ status: true, message: "Cotización iniciada", data: pdf })

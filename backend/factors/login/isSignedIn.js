@@ -25,7 +25,7 @@ module.exports = {
             try {
                 var bytes = AES.decrypt(grtkn, process.env.AESKEY);
                 var jwt = bytes.toString(enc.Utf8);
-                const userID = decode(jwt)
+                const userID = Number(decode(jwt))
                 req.params.created_by=userID
                 req.params.modified_by=userID
                 req.query.created_by=userID
