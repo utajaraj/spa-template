@@ -4,7 +4,8 @@ const ejs = require("ejs")
 const path = require("path")
 const puppeteer = require('puppeteer');
 const { toSpanish } = require("../../../factors/math/NumberToSpanish");
-
+const { readFileSync } = require('fs');
+const img = `data:image/png;base64,${new Buffer(readFileSync(path.join(__dirname + "/../../../public/garle-logo.png"))).toString()}`
 SubmitMyPartitions.patch("/submit", async (req, res) => {
     delete req.query.modified_by
 
@@ -40,30 +41,35 @@ SubmitMyPartitions.patch("/submit", async (req, res) => {
 
         }).then(function (quoteInformation) {
 
-            const total = quoteInformation.map((partition) => { return partition.cost * (1 + partition.factor/100) * partition.quantity }).reduce((partialSum, a) => partialSum + a, 0);
+            const total = quoteInformation.map((partition) => { return partition.cost * (1 + partition.factor / 100) * partition.quantity }).reduce((partialSum, a) => partialSum + a, 0);
             const totalInWords = toSpanish(total)
             const { reference, currency, buyer_name, buyer_last_name, client_name, expiration_date, user_name, user_middle_name, user_last_name } = quoteInformation[0]
             const quote = { reference, currency, buyer_name, buyer_last_name, client_name, expiration_date, user_name, user_middle_name, user_last_name, total, totalInWords }
             const partitions = quoteInformation
 
 
-            ejs.renderFile(path.join(__dirname + "/../../../views/QuoteTemplate.ejs"), { quote,partitions }, async function (err, str) {
+            ejs.renderFile(path.join(__dirname + "/../../../views/QuoteTemplate.ejs"), { quote, partitions, img }, async function (err, str) {
+                console.log(str);
                 if (err) {
                     res.status(400).send({ status: false, message: "Cotización generada pero no se pude descargar PDF", error: err.toString() })
                     return
                 }
 
-                const browser = await puppeteer.launch({ headless: true });
-                const page = await browser.newPage();
-                await page.goto('https://garle.cloud', {"waitUntil" : "networkidle0"});
-                await page.setContent(str, {
-                    waitUntil: 'domcontentloaded'
-                })
-                const pdf = await page.pdf({ format: 'A4' })
-                res.status(200).send({ status: true, message: "Cotización iniciada", data: pdf })
-                browser.close()
+                try {
+                    const browser = await puppeteer.launch({ headless: true});
+                    const page = await browser.newPage();
+                    await page.setContent(str, {
+                        waitUntil: 'domcontentloaded',
+                        encoding: "base64" 
+                    })
+                    const pdf = await page.pdf({ format: 'A4' })
+                    res.status(200).send({ status: true, message: "Cotización iniciada", data: pdf })
+                    browser.close()
 
+                } catch (error) {
 
+                    res.status(400).send({ status: false, message: "Cotización generada, pero hubo fallo al generar PDF" })
+                }
             })
         }).catch(function (transaction) {
 
