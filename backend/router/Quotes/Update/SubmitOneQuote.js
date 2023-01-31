@@ -49,7 +49,7 @@ SubmitMyPartitions.patch("/submit", async (req, res) => {
 
 
             ejs.renderFile(path.join(__dirname + "/../../../views/QuoteTemplate.ejs"), { quote, partitions, img }, async function (err, str) {
-                console.log(str);
+            
                 if (err) {
                     res.status(400).send({ status: false, message: "Cotización generada pero no se pude descargar PDF", error: err.toString() })
                     return
