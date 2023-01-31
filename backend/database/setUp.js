@@ -106,7 +106,7 @@ const createDatabaseSchemas = async () => {
                 t.string('reference', 100).notNullable();
                 t.string('currency', 100).notNullable();
                 t.boolean('emitted', 100).defaultTo(false).notNullable();
-                t.string('expiration_Date', 100).notNullable();
+                t.string('expiration_date', 100).notNullable();
                 t.string('clientID', 100).notNullable();
                 t.foreign('clientID').references('clients.id').onDelete('cascade')
                 t.string('buyerID', 100)

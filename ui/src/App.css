@@ -199,6 +199,27 @@ tr>td {
   border-radius: 0 !important;
 }
 
+/* table context menu */
+.contextMenu{
+  display: block;
+  position: fixed;
+  background-color: var(--coolor3);
+  box-shadow: rgb(0 0 0 / 16%) 0px 1px 4px;
+  z-index: 1;
+}
+.contextMenu>p{
+  padding: 15px 30px;
+  margin: 0;
+
+}
+.contextMenu>*:hover{
+  background-color: var(--coolor5);
+  cursor: pointer;
+}
+.contextMenu.hidden{
+display: none;
+}
+
 /* forms */
 .requiredMark:after {
   content: "*";

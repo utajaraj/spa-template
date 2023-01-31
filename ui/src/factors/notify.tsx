@@ -7,5 +7,6 @@ export const notify = (type: NotificationType, title: string, description?:any) 
         message: title,
         description: description,
         placement: "topRight",
+        
     })
 }

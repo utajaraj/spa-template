@@ -6,17 +6,133 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cotización</title>
-</head>
+    <style>
+        html {
+            -webkit-print-color-adjust: exact;
+        }
 
-<body>
-    <h1>
-        <%-quote.reference%>
-    </h1>
-    <% for( let i=0; i < partitions.length; i++ ) { %>
-        <p>
-            <%%-partitions[0].partition_name%>
-        </p>
-        <% } %>
-</body>
+        h4 {
+            margin: 2px 0;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #ededed;
+            color: rgb(0, 0, 0);
+        }
+    </style>
+</head>
+<%const fecha=new Date() %>
+
+    <%const{ reference, currency, buyer_name, buyer_last_name, client_name, expiration_date, user_name,
+        user_middle_name, user_last_name, total, totalInWords }=quote%>
+
+        <body style="padding:25px">
+            <p style="color: #909090; font-size: 9px;">
+                <%-fecha%> - <%-client_name%>
+            </p>
+            <div style="display:flex; justify-content: space-between;">
+                <div style="height: 100%;width: 150px;">
+                    <img style="width: 100%;margin: 15px 0;" src="https://garle.cloud/garle-logo.png" />
+                </div>
+                <div style="width: 250px;">
+                    <h1 style="text-align: right;">
+                        Cotización
+                    </h1>
+                    <p style="text-align: right;">COT-001-2023-LSM</p>
+
+                    <p style="text-align: right">C. RAMÓN RAYON 802, ZARAGOZA, 32000 CD JUÁREZ, CHIH., MÉXICO
+                    </p>
+                </div>
+            </div>
+            <div>
+                <h4>
+                    <b>Nombre del cliente:</b>
+                    <%-client_name%>
+                </h4>
+                <h4>
+                    <b>Fecha:</b>
+                    <%-fecha%>
+                </h4>
+                <h4>
+                    <b>Válida hasta:</b>
+                    <%-expiration_date%>
+                </h4>
+            </div>
+            <div>
+                <h4>
+                    <b>Dirección:</b>
+                    N/A
+                </h4>
+                <h4>
+                    <b>Contacto:</b>
+                    <%-buyer_name%>
+                        <%-buyer_last_name%>
+                </h4>
+                <h4>
+                    <b>N. Móvil:</b>
+                    N/A
+                </h4>
+            </div>
+            <table width="100%">
+                <thead style="background-color: #d3d3d3;">
+                    <tr>
+                        <td>
+                            Sr
+                        </td>
+                        <td>
+                            Articulo
+                        </td>
+                        <td>
+                            Descripción
+                        </td>
+                        <td>
+                            Cantidad
+                        </td>
+                        <td>
+                            Precio
+                        </td>
+                        <td>
+                            Total
+                        </td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for( let i=0; i < partitions.length; i++ ) { %>
+                        <tr>
+                            <td>
+                                <%-i+1%>
+                            </td>
+                            <td>
+                                <%-partitions[i].partition_name%>
+                            </td>
+                            <td>
+                                <%-partitions[i].description%>
+                            </td>
+                            <td>
+                                <%-Number(partitions[i].quantity).toLocaleString('en')%>
+                            </td>
+                            <td>
+                                <%-Number((1+partitions[i].factor/100 ) * partitions[i].cost).toLocaleString('en')%>
+                            </td>
+                            <td>
+                                <%-Number(((1+partitions[i].factor/100 ) *
+                                    partitions[i].cost)*partitions[i].quantity).toLocaleString('en')%>
+                            </td>
+                        </tr>
+                        <% } %>
+                </tbody>
+            </table>
+            <h3 style="text-align: right;"><b>Total:</b>
+                <%-Number(total).toLocaleString('en')%>
+            </h3>
+            <h3 style="text-align: right;"><b>Total Redondeado: </b>
+                <%-Number(total).toLocaleString('en')%>
+            </h3>
+            <h3 style="text-align: right;"><b>En palabras:</b>
+                <%-currency%>
+                    <%-totalInWords%>
+            </h3>
+
+        </body>
 
 </html>

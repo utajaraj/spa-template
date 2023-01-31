@@ -41,38 +41,44 @@ app.use(
 ) //parse urlencoded request bodies
 createDatabaseSchemas()
     .then((good) => {
-        app.use("/", serveStatic(__dirname + "/assets"))
-        app.get("/login", (req, res) => {
-            if (isSignedIn(req)) {
-                res.redirect("/")
-            } else {
-                res.status(200).sendFile(__dirname + "/html/login.html")
-            }
-        })
-        app.post("/login", async (req, res) => {
-            const { username, password } = req.body
-            const isAlreadyAuthenticated = isSignedIn(req)
-            if (isAlreadyAuthenticated) {
-                res.status(200).send({ status: true, message: "Usario ya cuenta con sesión" })
-            } else {
-                const areValidCredentials = await checkCredentials(username, password)
-                if (areValidCredentials) {
-                    signUserIn(res, areValidCredentials)
+        if(good===true){
+
+            app.use("/", serveStatic(__dirname + "/assets"))
+            app.get("/login", (req, res) => {
+                if (isSignedIn(req)) {
+                    res.redirect("/")
                 } else {
-                    res.status(400).send({ status: false, message: "Credenciales de usario invalidas" })
+                    res.status(200).sendFile(__dirname + "/html/login.html")
                 }
-            }
-        })
-        app.use("/api/v1", (req, res, next) => { auth(req, res, next) })
-        app.use("/api/v1", routes)
-        app.use("/*", (req, res, next) => { auth(req, res, next) })
-        app.use("/", serveStatic(__dirname + "/public"))
-        app.all("*", (req, res) => {
-            res.status(200).send({ status: 200, message: "Unknow route" });
-        })
+            })
+            app.post("/login", async (req, res) => {
+                const { username, password } = req.body
+                const isAlreadyAuthenticated = isSignedIn(req)
+                if (isAlreadyAuthenticated) {
+                    res.status(200).send({ status: true, message: "Usario ya cuenta con sesión" })
+                } else {
+                    const areValidCredentials = await checkCredentials(username, password)
+                    if (areValidCredentials) {
+                        signUserIn(res, areValidCredentials)
+                    } else {
+                        res.status(400).send({ status: false, message: "Credenciales de usario invalidas" })
+                    }
+                }
+            })
+            app.use("/api/v1", (req, res, next) => { auth(req, res, next) })
+            app.use("/api/v1", routes)
+            app.use("/*", (req, res, next) => { auth(req, res, next) })
+            app.use("/", serveStatic(__dirname + "/public"))
+            app.all("*", (req, res) => {
+                res.status(200).send({ status: 200, message: "Unknow route" });
+            })
+        }else{
+            app.all("*", (req, res) => {
+                res.status(500).send("Error Interno, porfavor contacta a soporte");
+            })
+        }
     })
     .catch((unforseenError) => {
-        console.log(unforseenError);
         app.all("*", (req, res) => {
             res.status(500).send("DB Unavailable");
         })

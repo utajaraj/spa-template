@@ -1,32 +1,54 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, BaseSyntheticEvent } from 'react';
 import { SearchOutlined } from '@ant-design/icons';
 import type { InputRef } from 'antd';
-import { Button, Input, Space, Table, Slider, InputNumber } from 'antd';
+import { Button, Input, Space, Table, Slider, InputNumber, message } from 'antd';
 import type { ColumnsType, ColumnType } from 'antd/es/table';
 import type { FilterConfirmProps } from 'antd/es/table/interface';
+import { notify } from '../../factors/notify';
 import Highlighter from 'react-highlight-words';
 import { Requester } from '../../factors/Requester';
+import { LoadingOutlined } from '@ant-design/icons';
+import { Spin } from 'antd';
 const formatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
   currency: 'USD',
 
 });
-
+const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
 interface PartitionInterface {
-  calculatedRow?: boolean
+
   id?: string,
-  partition_name: string,
-  description: string,
-  created_by: string,
-  modified_by: string,
-  quoteID?: number,
-  categoryID?: number,
-  brandID?: number,
-  quantity?: number,
-  cost?: number,
-  factor?: number,
-  amount?: number,
+  partition_name?: string,
+  description?: string,
+  unit?: string,
+  quoteID?: string,
+  quantity?: string,
+  categoryID?: string,
+  brandID?: string,
+  cost?: string,
+  factor?: string,
+  amount?: string,
+  created_by?: string,
+  modified_by?: string,
+  created_at?: string,
+  modified_at?: string,
+  category_name?: string,
+  brand_name?: string,
+  reference?: string,
+  currency?: string,
+  buyerID?: string,
+  agentID?: string,
+  clientID?: string,
+  emitted?: string,
+  expiration_date?: string,
+  user_name?: string,
+  user_middle_name?: string,
+  user_last_name?: string,
+  buyer_name?: string,
+  buyer_last_name?: string,
+  client_name?: string,
+
 }
 
 const Cotizaciones = ({ ...props }) => {
@@ -271,17 +293,99 @@ const Cotizaciones = ({ ...props }) => {
 
   };
 
+  const [xPos, setXPos] = useState<string>("")
+  const [yPos, setYPos] = useState<string>("")
+  const [selectedRow, setSelectedRow] = useState<PartitionInterface | {}>({})
+  const [visibleContextMenu, setVisibleContextMenu] = useState<boolean>(false)
+
+  const [messageApi, contextHolder] = message.useMessage();
+  const key = 'updatable';
+  const downloadQuote = async () => {
+
+    messageApi.open({
+      key,
+      type: 'loading',
+      content: 'Loading...',
+    });
+
+    try {
+      const { quoteID, reference }: any = selectedRow
+
+      const sendQuote = await new Requester({ url: import.meta.env.VITE_APP_APIURL + `/quotes/update/submit`, method: "patch", body: { id: quoteID } }).send()
+
+      if (sendQuote.status) {
+
+        const pdfBinary = sendQuote.data.data
+
+        const data = new ArrayBuffer(pdfBinary.length);
+
+        const view = new Uint8Array(data);
+
+        for (let i = 0; i < pdfBinary.length; ++i) {
+          view[i] = pdfBinary[i];
+        }
 
 
+        // create the blob object with content-type "application/pdf"               
+        var blob = new Blob([view], { type: "application/pdf" });
+        const link = document.createElement('a')
+        link.href = window.URL.createObjectURL(blob)
+        link.download = `${reference}.pdf`
+        link.click()
+        link.remove();  //afterwards we remove the element again  
+
+        messageApi.open({
+          key,
+          type: 'success',
+          content: 'Descargada!',
+          duration: 2,
+        });
+
+      } else {
+        notify("error", sendQuote.message)
+      }
 
 
+    } catch (error) {
 
+      notify("error", "Error al generar cotización")
 
+    }finally{
+      messageApi.destroy()
+    }
+
+  }
+  const ContextMenu = () => {
+    return <div onMouseLeave={() => { setVisibleContextMenu(false) }} className={`contextMenu ${visibleContextMenu ? "" : "hidden"}`} style={{ left: xPos, top: yPos }}>
+      <p onClick={downloadQuote}>Descargar cotización</p>
+    </div>
+  }
 
   return (
     <div>
-      <h1>Cotizaciones</h1>
-      <Table dataSource={tablePartitions} style={{ width: "100%" }} scroll={{ x: "100%", y: "80vh" }} columns={[
+      {contextHolder}
+      <ContextMenu />
+      <Table onRow={
+        (record) => {
+          return {
+            onContextMenu: (e: any) => {
+              e.preventDefault()
+              setSelectedRow(record);
+              setXPos(e.clientX + "px");
+              setYPos(e.clientY + "px");
+              setVisibleContextMenu(true);
+            }
+          }
+        }
+      } dataSource={tablePartitions} style={{ width: "100%" }} scroll={{ x: "100vw", y: "80vh" }} columns={[
+        {
+          key: "reference",
+          dataIndex: "reference",
+          width: "100px",
+          title: "Referencíá",
+          ...TextSearchFilter("reference", "Referencia")
+
+        },
         {
           key: "name",
           dataIndex: "partition_name",
@@ -345,7 +449,66 @@ const Cotizaciones = ({ ...props }) => {
           render: (value) => {
             return formatter.format(Number(value))
           }
-        }
+        },
+        {
+          key: "unit",
+          dataIndex: "unit",
+          title: "Unidad",
+          width: "100px",
+        },
+        {
+          key: "user_name",
+          dataIndex: "user_name",
+          title: "Agente Cotizador",
+          width: "100px",
+          render: (value, record) => {
+            return `${record.user_name} ${record.user_middle_name || ""} ${record.user_last_name || ""}`
+          }
+        },
+        {
+          key: "currency",
+          dataIndex: "currency",
+          title: "Moneda",
+          width: "100px",
+        },
+        {
+          key: "created_at",
+          dataIndex: "created_at",
+          title: "Fecha iniciada",
+          width: "100px",
+          render: (value, record) => { return new Date(value).toLocaleDateString() }
+        },
+        {
+          key: "modified_at",
+          dataIndex: "modified_at",
+          title: "Ultíma modificación",
+          width: "100px",
+          render: (value, record) => { return new Date(value).toLocaleDateString() }
+        },
+        {
+          key: "buyer",
+          dataIndex: "buyer",
+          title: "Comprador",
+          width: "100px",
+          render: (value, record) => {
+            return `${record.buyer_name} ${record.buyer_last_name || ""}`
+          }
+        },
+        {
+          key: "client_name",
+          dataIndex: "client_name",
+          title: "Cliente",
+          width: "100px",
+        },
+        {
+          key: "expiration_date",
+          dataIndex: "expiration_date",
+          title: "Fecha de expiración",
+          width: "100px",
+          render: (value, record) => { return new Date(value).toLocaleDateString() }
+        },
+
+
       ]} />
     </div>
   )
