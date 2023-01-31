@@ -5,7 +5,7 @@ const path = require("path")
 const puppeteer = require('puppeteer');
 const { toSpanish } = require("../../../factors/math/NumberToSpanish");
 const { readFileSync } = require('fs');
-const img = `data:image/png;base64,${new Buffer(readFileSync(path.join(__dirname + "/../../../public/garle-logo.png"))).toString()}`
+const img = `data:image/png;base64,${readFileSync(path.join(__dirname + "/../../../public/garle-logo.png")).toString()}`
 SubmitMyPartitions.patch("/submit", async (req, res) => {
     delete req.query.modified_by
 
