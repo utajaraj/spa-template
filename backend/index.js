@@ -70,7 +70,7 @@ createDatabaseSchemas()
             app.use("/*", (req, res, next) => { auth(req, res, next) })
             app.use("/", serveStatic(__dirname + "/public"))
             app.all("*", (req, res) => {
-                res.status(200).send({ status: 200, message: "Unknow route" });
+                res.status(200).redirect("/");
             })
         }else{
             app.all("*", (req, res) => {
