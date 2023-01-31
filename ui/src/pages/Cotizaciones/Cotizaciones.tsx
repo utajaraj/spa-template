@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect, BaseSyntheticEvent } from 'react';
 import { SearchOutlined } from '@ant-design/icons';
 import type { InputRef } from 'antd';
-import { Button, Input, Space, Table, Slider, InputNumber, message } from 'antd';
+import { Button, Input, Space, Table, Slider, InputNumber } from 'antd';
 import type { ColumnsType, ColumnType } from 'antd/es/table';
 import type { FilterConfirmProps } from 'antd/es/table/interface';
 import { notify } from '../../factors/notify';
@@ -298,15 +298,9 @@ const Cotizaciones = ({ ...props }) => {
   const [selectedRow, setSelectedRow] = useState<PartitionInterface | {}>({})
   const [visibleContextMenu, setVisibleContextMenu] = useState<boolean>(false)
 
-  const [messageApi, contextHolder] = message.useMessage();
   const key = 'updatable';
   const downloadQuote = async () => {
-
-    messageApi.open({
-      key,
-      type: 'loading',
-      content: 'Loading...',
-    });
+    notify("success", "Generado cotización")
 
     try {
       const { quoteID, reference }: any = selectedRow
@@ -334,15 +328,14 @@ const Cotizaciones = ({ ...props }) => {
         link.click()
         link.remove();  //afterwards we remove the element again  
 
-        messageApi.open({
-          key,
-          type: 'success',
-          content: 'Descargada!',
-          duration: 2,
-        });
+
+        notify("success", "Cotización generada", "La descarga iniciara automaticamente")
+
 
       } else {
+        
         notify("error", sendQuote.message)
+        
       }
 
 
@@ -350,8 +343,6 @@ const Cotizaciones = ({ ...props }) => {
 
       notify("error", "Error al generar cotización")
 
-    }finally{
-      messageApi.destroy()
     }
 
   }
@@ -363,7 +354,6 @@ const Cotizaciones = ({ ...props }) => {
 
   return (
     <div>
-      {contextHolder}
       <ContextMenu />
       <Table onRow={
         (record) => {
