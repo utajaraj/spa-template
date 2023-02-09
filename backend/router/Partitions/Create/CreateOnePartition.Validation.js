@@ -9,21 +9,26 @@ const isDecimal = (string) => {
 const AddOnePartitionsValidation = async (body, verbose = false) => {
   const requiredParameters = {
     partition_name: {
-      missingMessage: "Nombre de articulo obligatorio",
+      missingMessage: "Nombre de articulo es obligatorio",
     },
     description: {
-      missingMessage: "Descripción de articulo obligatorio",
+      missingMessage: "Descripción de articulo es obligatorio",
     },
     unit: {
       missingMessage: "Unidad es obligatoria",
       invalidMessage: "Unidad inválida",
       function: (value) => {
-        return ["pzs","lt","kg","unt","mt","mt3"].includes(value)
+        return ["pzs", "lt", "kg", "unt", "mt", "mt3"].includes(value)
       }
     },
     quoteID: {
       missingMessage: "Cotización es obligatoria",
       invalidMessage: "Cotización inválida",
+    },
+    edd: {
+      missingMessage: "Fecha de entrega",
+      invalidMessage: "Fecha de entrega inválida",
+      dataType: UTC,
     },
     quantity: {
       missingMessage: "Cantidad es obligatorio",
@@ -45,6 +50,9 @@ const AddOnePartitionsValidation = async (body, verbose = false) => {
     categoryID: {
       invalidMessage: "Categoría inválida",
       dataType: Integer,
+    },
+    part_number: {
+      missingMessage: "Número de parte es obligatorio",
     },
     brandID: {
       invalidMessage: "Marca inválida",

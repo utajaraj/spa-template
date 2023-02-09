@@ -20,6 +20,7 @@ import { AiFillDownSquare, AiFillUpSquare, AiFillSecurityScan } from "react-icon
 import Dashboard from './pages/Dashboard/Dashboard';
 import Cotizaciones from './pages/Cotizaciones/TabbingPage';
 import Users from './pages/Users/Users';
+import ODT from './pages/ODT/ODT';
 
 function App() {
   let [show, setShow] = useState<boolean>(false)
@@ -54,7 +55,8 @@ function App() {
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/cotizaciones" element={<Cotizaciones />} />
-                <Route path="/users" element={<Users />} />
+                <Route path="/odt" element={<ODT />} />
+                {/* <Route path="/users" element={<Users />} /> */}
               </Routes>
             </div>
           </div>

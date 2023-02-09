@@ -7,6 +7,10 @@ const AddOneClientsValidation = async (body, verbose = false) => {
     client_name: {
       missingMessage: "Nombre es requerido",
     },
+    client_serialization: {
+      missingMessage: "Serialización es requerida",
+    },
+
     accountOwnerID: {
       missingMessage: "Dueño de cuenta es requerido",
       invalidMessge: "Dueño de cuenta inválido",

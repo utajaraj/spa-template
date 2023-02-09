@@ -1,13 +1,10 @@
 const { executeValidation } = require("../../../factors/login/validate");
-const { UTC, Integer } = require("../../../utlis/regex");
+const { UTC, Integer, LongDecimal } = require("../../../utlis/regex");
 
 
 
 const AddOneQuotesValidation = async (body, verbose = false) => {
   const requiredParameters = {
-    reference: {
-      missingMessage: "Referencia es obligatorio",
-    },
     company: {
       missingMessage: "Empresa es obligatoria",
       invalidMessage: "Empresa solo puede ser Garle S. de R.L de C.V o GR Industrial Inc.",
@@ -50,6 +47,11 @@ const AddOneQuotesValidation = async (body, verbose = false) => {
       invalidMessge: "Usuario modificando es inválido",
       dataType: Integer,
     },
+    exchange_rate: {
+      dataType:LongDecimal,
+      missingMessage:"Tasa de cambio es obligatoria",
+      invalidMessage: "Tasa de conversión tiene que ser un número valido"
+    },
   };
   const optionalParameters = {
 
@@ -59,7 +61,7 @@ const AddOneQuotesValidation = async (body, verbose = false) => {
     requiredParameters,
     optionalParameters,
     false,
-    false,
+    true,
     verbose
   );
 };

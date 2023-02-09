@@ -5,40 +5,47 @@ const createDatabaseSchemas = async () => {
 
     try {
 
+        const emititedQuotes = await knex.schema.hasTable('counts')
+        if (!emititedQuotes) {
+            try {
+                await knex.schema.createTable('counts', function (t) {
+                    t.integer('counts_clientID',255).unique().notNullable()
+                    t.integer('counts',255).notNullable()
+                })
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
 
         const hasUsers = await knex.schema.hasTable('users')
         if (!hasUsers) {
-           try {
-            await knex.schema.createTable('users', function (t) {
-                t.increments('id').primary().unique().notNullable();
-                t.string('user_name', 100).notNullable();
-                t.string('user_middle_name', 100).notNullable();
-                t.string('user_last_name', 100).notNullable();
-                t.string('email', 100).notNullable();
-                t.string('assignedPhone', 100)
-                t.string('password', 255)
-                t.string('rfc', 100).notNullable();
-                t.string('curp', 100).notNullable();
-                t.string('city_id', 100).notNullable();
-                t.string('state_id', 100).notNullable();
-                t.string('country_id', 100).notNullable();
-                t.string('position_id', 100).notNullable();
-                t.string('department_id', 100).notNullable();
-                t.string('role', 100).notNullable();
-                t.string('username', 100).notNullable();
-                t.integer('created_by', 100).notNullable()
-                t.integer('modified_by', 100).notNullable()
-                t.datetime('created_at', { precision: 6 }).defaultTo(knex.fn.now(6)).notNullable()
-                t.datetime('modified_at', { precision: 6 }).defaultTo(knex.fn.now(6)).notNullable()
-            })
-           } catch (error) {
-               console.log();
-               console.log(error)
-           }
+                await knex.schema.createTable('users', function (t) {
+                    t.increments('id').primary().unique().notNullable();
+                    t.string('user_name', 100).notNullable();
+                    t.string('user_middle_name', 100).notNullable();
+                    t.string('user_last_name', 100).notNullable();
+                    t.string('email', 100).notNullable();
+                    t.string('assignedPhone', 100)
+                    t.string('password', 255)
+                    t.string('rfc', 100).notNullable();
+                    t.string('curp', 100).notNullable();
+                    t.string('city_id', 100).notNullable();
+                    t.string('state_id', 100).notNullable();
+                    t.string('country_id', 100).notNullable();
+                    t.string('position_id', 100).notNullable();
+                    t.string('department_id', 100).notNullable();
+                    t.string('role', 100).notNullable();
+                    t.string('username', 100).notNullable();
+                    t.integer('created_by', 100).notNullable()
+                    t.integer('modified_by', 100).notNullable()
+                    t.datetime('created_at', { precision: 6 }).defaultTo(knex.fn.now(6)).notNullable()
+                    t.datetime('modified_at', { precision: 6 }).defaultTo(knex.fn.now(6)).notNullable()
+                })
         }
         const hasCategories = await knex.schema.hasTable('categories')
         if (!hasCategories) {
-           try {
+            try {
                 await knex.schema.createTable('categories', function (t) {
                     t.increments('id').primary().unique().notNullable();
                     t.string('category_name', 100).unique().notNullable();
@@ -47,9 +54,9 @@ const createDatabaseSchemas = async () => {
                     t.datetime('modified_at', { precision: 6 }).defaultTo(knex.fn.now(6)).notNullable()
                     t.integer('modified_by', 100).notNullable()
                 })
-           } catch (error) {
-               console.log(error);
-           }
+            } catch (error) {
+                console.log(error);
+            }
         }
 
         const hasBrands = await knex.schema.hasTable('brands')
@@ -63,12 +70,12 @@ const createDatabaseSchemas = async () => {
                 t.integer('modified_by', 100).notNullable()
             })
         }
-
         const hasClients = await knex.schema.hasTable('clients')
         if (!hasClients) {
             await knex.schema.createTable('clients', function (t) {
                 t.increments('id').primary().unique().notNullable();
                 t.string('client_name', 100).notNullable().unique();
+                t.string('client_serialization', 100).notNullable().unique();
                 t.string('street', 100);
                 t.string('postalCode', 100);
                 t.string('city', 100);
@@ -103,10 +110,11 @@ const createDatabaseSchemas = async () => {
         if (!hasQuotes) {
             await knex.schema.createTable('quotes', function (t) {
                 t.increments('id').primary().unique().notNullable();
-                t.string('reference', 100).notNullable();
+                t.string('reference', 100)
                 t.string('currency', 100).notNullable();
+                t.string('exchange_rate', 100);
                 t.boolean('emitted', 100).defaultTo(false).notNullable();
-                t.string('expiration_date', 100).notNullable();
+                t.datetime('expiration_date', { precision: 6 }).notNullable();
                 t.string('clientID', 100).notNullable();
                 t.foreign('clientID').references('clients.id').onDelete('cascade')
                 t.string('buyerID', 100)
@@ -120,7 +128,7 @@ const createDatabaseSchemas = async () => {
                 t.integer('modified_by', 100).notNullable()
             })
         }
-
+  
         const hasQuotePartitions = await knex.schema.hasTable('partitions')
         if (!hasQuotePartitions) {
 
@@ -128,7 +136,9 @@ const createDatabaseSchemas = async () => {
                 t.increments('id').primary().unique().notNullable();
                 t.string('partition_name', 100).notNullable();
                 t.string('description', 100).notNullable();
+                t.string('part_number',100)
                 t.string('unit', 100).notNullable();
+                t.datetime('edd', { precision: 6 });
                 t.integer('quoteID', 100).notNullable();
                 t.foreign('quoteID').references('quotes.id').onDelete('cascade')
                 t.decimal('quantity').notNullable();

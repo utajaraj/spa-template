@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { Tabs } from 'antd';
 import type { TabsProps } from 'antd';
 import Cotizar from './Cotizar';
-import Cotizaciones from './Cotizaciones';
+import Partitions from './Partitions';
+import PivotesAvanzados from './AdvancedPivots';
+import Quotes from './Cotizaciones';
 
 
 
@@ -10,7 +12,6 @@ import Cotizaciones from './Cotizaciones';
 
 const TabbingPage = ({ ...props }) => {
 
-  const [tabChanged, setTabChanged] = useState<string>("quote")
 
   const items: TabsProps['items'] = [
     {
@@ -18,18 +19,26 @@ const TabbingPage = ({ ...props }) => {
       label: `Cotizar`,
       children: <Cotizar />
     },
-    {
+      {
       key: 'quotes',
       label: `Cotizaciones`,
-      children: <Cotizaciones tabChanged={tabChanged} />,
+      children: <Quotes />,
+    },
+    {
+      key: 'partitions',
+      label: `Partidas`,
+      children: <Partitions />,
+    },
+    {
+      key: 'advancedPivots',
+      label: `Pivotes Avanzados`,
+      children: <PivotesAvanzados  />,
     },
   ];
 
   return (
     <div>
-      <Tabs defaultActiveKey="1" items={items} onChange={(e) => {
-        setTabChanged(e)
-      }} />
+      <Tabs defaultActiveKey="1" items={items} />
     </div>
   )
 }

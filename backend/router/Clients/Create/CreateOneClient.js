@@ -4,11 +4,48 @@ const { AddOneClientsValidation } = require("./CreateOneClient.Validation");
 
 const CreateOneQuote = require("express").Router();
 
+const createSerialization = async (string) => {
 
+  try {
+    const serializations = await knex.select("client_serialization").from("clients")
+
+
+    let serialization = ""
+
+
+    if (string.length < 4) {
+      serialization = string
+    } else {
+      serialization = `${string.charAt(0)}${string.charAt(Math.floor((string.length - 1) / 2))}${string.charAt(string.length - 1)}`
+    }
+
+    if (serializations.includes(serialization)) {
+      let count = 0
+      while (serializations.includes(serialization)) {
+        serialization = `${serialization}${count}`
+      }
+
+    } else {
+
+      return serialization.toUpperCase()
+
+    }
+
+  } catch (error) {
+    return undefined
+  }
+
+}
 
 CreateOneQuote.post("/one", async (req, res) => {
   try {
     req.body.accountOwnerID = req.body.created_by
+    if (req.body.client_name) {
+
+      req.body.client_serialization = await createSerialization(req.body.client_name)
+
+    }
+
     const validation = await AddOneClientsValidation(req.body, req.headers.verbose)
     const valid = validation.status || validation.data.invalidParameters.concat(validation.data.missingParameters).toString()
     if (valid === true) {

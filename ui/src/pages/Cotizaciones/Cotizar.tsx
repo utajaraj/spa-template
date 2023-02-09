@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { PuffLoader } from "react-spinners"
-import { Form, Input, Button, Select, DatePicker, InputNumber, Divider, Space, Table, Tooltip } from 'antd';
+import { Form, Input, Button, Select, DatePicker, InputNumber, Divider, Space, Table, Tooltip, Checkbox } from 'antd';
 import type { FormInstance } from 'antd';
 import { Subject } from 'rxjs';
 import dayjs from 'dayjs'
@@ -9,7 +9,9 @@ import { Requester } from "../../factors/Requester"
 import { notify } from '../../factors/notify';
 import { addRowsWithCalculations } from '../../factors/AddRowsWithCalculations';
 
-
+function addMinutes(date: any,) {
+    return new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+}
 
 
 // type declarations on state setters
@@ -58,6 +60,8 @@ interface QuoteInterface {
     dateOfExpiration?: string,
     buyerID?: number,
     agentID?: number,
+    client_name: string,
+    created_at: string
 }
 
 
@@ -254,19 +258,25 @@ const QuotePartitionForm = (props: any) => {
                     <h3>Información de Partidas</h3>
                     <div>
                         <label>Nombre</label>
-                        <Form.Item initialValue={"Batería LTI 5000"} name="partition_name" hasFeedback rules={[{ required: true, message: "Nombre es obligatorio" }]}>
+                        <Form.Item name="partition_name" hasFeedback rules={[{ required: true, message: "Nombre es obligatorio" }]}>
                             <Input />
                         </Form.Item>
                     </div>
                     <div>
                         <label>Descripción</label>
-                        <Form.Item initialValue={"Batería de Lithio tipo xtr-5000"} name="description" hasFeedback rules={[{ required: true, message: "Descripción es obligatoria" }]}>
+                        <Form.Item name="description" hasFeedback rules={[{ required: true, message: "Descripción es obligatoria" }]}>
+                            <Input />
+                        </Form.Item>
+                    </div>
+                    <div>
+                        <label>Número de parte</label>
+                        <Form.Item name="part_number" hasFeedback rules={[{ required: true, message: "Número de parte es obligatorio" }]}>
                             <Input />
                         </Form.Item>
                     </div>
                     <div>
                         <label>Categoría</label>
-                        <Form.Item initialValue={""} name="categoryID" hasFeedback rules={[{ required: true, message: "Categoría es obligatoria" }]}>
+                        <Form.Item name="categoryID" hasFeedback rules={[{ required: true, message: "Categoría es obligatoria" }]}>
                             <Select showSearch optionFilterProp="children" dropdownRender={(menu) => (
                                 <>
                                     {menu}
@@ -294,7 +304,7 @@ const QuotePartitionForm = (props: any) => {
                     </div>
                     <div>
                         <label>Marca</label>
-                        <Form.Item initialValue={""} name="brandID" hasFeedback rules={[{ required: true, message: "Categoría es obligatoria" }]}>
+                        <Form.Item name="brandID" hasFeedback rules={[{ required: true, message: "Categoría es obligatoria" }]}>
                             <Select showSearch optionFilterProp="children" dropdownRender={(menu) => (
                                 <>
                                     {menu}
@@ -321,8 +331,14 @@ const QuotePartitionForm = (props: any) => {
                         </Form.Item>
                     </div>
                     <div>
+                        <label>Fecha de Entrega <span className='requiredMark' /></label>
+                        <Form.Item name="edd" hasFeedback rules={[{ required: true, message: "Fecha de vencimiento es obligatoria" }]}>
+                            <DatePicker allowClear={false} format="MMMM Do YY" />
+                        </Form.Item>
+                    </div>
+                    <div>
                         <label>Cantidad</label>
-                        <Form.Item initialValue={12} name="quantity" hasFeedback rules={[{ required: true, message: "Cantidad es obligatoria" }, { pattern: /^[+-]?((\d+(\.\d*)?)|(\.\d+))$/, message: "Este campo solo acepta decimales" }]}>
+                        <Form.Item name="quantity" hasFeedback rules={[{ required: true, message: "Cantidad es obligatoria" }, { pattern: /^[+-]?((\d+(\.\d*)?)|(\.\d+))$/, message: "Este campo solo acepta decimales" }]}>
                             <InputNumber
                                 addonAfter={
                                     <Form.Item name={"unit"} initialValue="pzs" noStyle>
@@ -344,7 +360,7 @@ const QuotePartitionForm = (props: any) => {
                     </div>
                     <div>
                         <label>Costo</label>
-                        <Form.Item initialValue={5000} name="cost" hasFeedback rules={[{ required: true, message: "Costo es obligatorio" }, { pattern: /^[+-]?((\d+(\.\d*)?)|(\.\d+))$/, message: "Este campo solo acepta decimales" }]}>
+                        <Form.Item name="cost" hasFeedback rules={[{ required: true, message: "Costo es obligatorio" }, { pattern: /^[+-]?((\d+(\.\d*)?)|(\.\d+))$/, message: "Este campo solo acepta decimales" }]}>
                             <InputNumber
                                 formatter={(value) => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                                 parser={(value) => value!.replace(/\$\s?|(,*)/g, '')}
@@ -354,7 +370,7 @@ const QuotePartitionForm = (props: any) => {
                     </div>
                     <div>
                         <label>Factor</label>
-                        <Form.Item initialValue={0.48} name="factor" hasFeedback rules={[{ required: true, message: "Factor es obligatorio" }, { pattern: /^[+-]?((\d+(\.\d*)?)|(\.\d+))$/, message: "Este campo solo acepta decimales" }]}>
+                        <Form.Item name="factor" hasFeedback rules={[{ required: true, message: "Factor es obligatorio" }, { pattern: /^[+-]?((\d+(\.\d*)?)|(\.\d+))$/, message: "Este campo solo acepta decimales" }]}>
                             <InputNumber
                                 min={0}
                                 max={100}
@@ -493,6 +509,7 @@ const QuotePartitionsTable = (props: QuotePartitionsTableProps) => {
                     return
                 }
 
+
                 const partitionsWithAvergagesAndTotals = addRowsWithCalculations(x, ["cost", "factor", "amount"], "partitionsSum", "partitionsAverage")
                 const newPartitions = partitionsWithAvergagesAndTotals.map((row) => {
                     const newRow = { ...row }
@@ -585,7 +602,7 @@ const QuotePartitionsTable = (props: QuotePartitionsTableProps) => {
             <Table rowSelection={{ type: "checkbox", ...rowSelection }} dataSource={quotePartitions} style={{ width: "100%" }} scroll={{ x: "100%", y: "80vh" }} columns={[
                 {
                     key: "partition_name",
-                    dataIndex: "name",
+                    dataIndex: "partition_name",
                     width: "100px",
                     title: "Nombre"
                 },
@@ -661,6 +678,8 @@ const Cotizar = ({ ...props }) => {
     const [agents, setAgents] = useState<AgentsInterface[] | []>([])
     const [selectedQuote, setSelectedQuote] = useState<QuoteInterface | {}>({})
     const [buyers, setBuyers] = useState<BuyerInterface[] | [] | false>(false)
+    const [includeBrand, setIncludeBrand] = useState<boolean>(false)
+    const [rateIsOne, setRateIsOne] = useState<number | undefined>(1)
     const [fetching, setFetching] = useState<FetchingInterface>({
         buyers: false,
         initialSelects: false
@@ -683,7 +702,7 @@ const Cotizar = ({ ...props }) => {
         try {
             const { id, reference }: any = selectedQuote
 
-            const sendQuote = await new Requester({ url: import.meta.env.VITE_APP_APIURL + `/quotes/update/submit`, method: "patch", body: { id: id } }).send()
+            const sendQuote = await new Requester({ url: import.meta.env.VITE_APP_APIURL + `${includeBrand?"/quotes/update/submit/brands":"`/quotes/update/submit"}`, method: "patch", body: { id: id } }).send()
 
             if (sendQuote.status) {
 
@@ -704,7 +723,7 @@ const Cotizar = ({ ...props }) => {
                 var blob = new Blob([view], { type: "application/pdf" });
                 const link = document.createElement('a')
                 link.href = window.URL.createObjectURL(blob)
-                link.download = `your-file-name.pdf`
+                link.download = `${reference}.pdf`
                 link.click()
                 link.remove();  //afterwards we remove the element again  
 
@@ -761,6 +780,7 @@ const Cotizar = ({ ...props }) => {
 
             notify(startQuote.status ? "success" : "error", startQuote.message, "")
         } catch (error) {
+            console.log(error);
 
             notify("error", "Error inesperado")
         }
@@ -883,6 +903,7 @@ const Cotizar = ({ ...props }) => {
         const savedQuotePartitions = await new Requester({ url: import.meta.env.VITE_APP_APIURL + "/partitions/read/quote", method: "get", params: { quoteID: quoteToSelect.id } }).send()
 
         if (savedQuotePartitions.length > 0) {
+
             streamPartitions(savedQuotePartitions)
         } else {
 
@@ -997,7 +1018,7 @@ const Cotizar = ({ ...props }) => {
                     <Select value={reference ? id : ""} showSearch optionFilterProp="children" style={{ width: "350px" }} onChange={loadSavedQuote}>
                         <Select.Option value={""} disabled>Seleccionar Cotización</Select.Option>
                         {quotes.map((quote) => {
-                            return <Select.Option key={`quote_id_${quote.id}`} value={quote.id}>{quote.reference}</Select.Option>
+                            return <Select.Option key={`quote_id_${quote.id}`} value={quote.id}>{quote.reference + " - " + addMinutes(new Date(quote.created_at)).toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'numeric', day: 'numeric', hour: "numeric", minute: "numeric" })}</Select.Option>
                         })}
                     </Select>
                 </div>
@@ -1033,18 +1054,22 @@ const Cotizar = ({ ...props }) => {
                                 </Form.Item>
                             </div>
                             <div>
-                                <label>Referencia <span className='requiredMark' /></label>
-                                <Form.Item name="reference" initialValue={""} hasFeedback rules={[{ required: true, message: "Referencia es obligatoria" }]}>
-                                    <Input placeholder="Ingresa referencia" />
-                                </Form.Item>
-                            </div>
-                            <div>
                                 <label>Moneda <span className='requiredMark' /></label>
                                 <Form.Item name="currency" initialValue={"MXN"} hasFeedback rules={[{ required: true, message: "Moneda es obligatoria" }]}>
-                                    <Select showSearch optionFilterProp="children" >
+                                    <Select showSearch optionFilterProp="children" onChange={(e) => { setRateIsOne(e === "MXN" ? 1 : undefined) }} >
                                         <Select.Option value="MXN">Pesos Mexicanos</Select.Option>
                                         <Select.Option value="USD">Dolares Americanos</Select.Option>
                                     </Select>
+                                </Form.Item>
+                            </div>
+                            <div>
+                                <label>Tasa de cambio <span className='requiredMark' /></label>
+                                <Form.Item initialValue={1} name="exchange_rate" hasFeedback rules={[{ required: true, message: "Tasa de cambio es obligatoria" }, { pattern: /^[+]?((\d+(\.\d*)?)|(\.\d+))$/, message: "Este campo solo acepta número positivos" }]}>
+                                    <InputNumber
+                                        disabled={rateIsOne ? true : false}
+                                        formatter={(value) => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                        parser={(value) => value!.replace(/\$\s?|(,*)/g, '')}
+                                    />
                                 </Form.Item>
                             </div>
                             <div>
@@ -1141,8 +1166,14 @@ const Cotizar = ({ ...props }) => {
                 <div className='buttons-container'>
                     {id ?
                         <div>
-                            <Button disabled={id ? false : true} onClick={deleteQuote}>Eliminar Cotización</Button>
-                            <Button id="generateQuote" disabled={generateQuoteIsDisabled} onClick={generateQuote} loading={generateQuoteIsLoading}>Generar Cotización</Button>
+                            <div style={{ textAlign: "right" }}>
+                                <label>Incluir marcas</label>
+                                <Checkbox checked={includeBrand} onChange={(e) => { console.log(e); setIncludeBrand(e.target.checked) }} />
+                            </div>
+                            <div style={{ display: "flex" }}>
+                                <Button disabled={id ? false : true} onClick={deleteQuote}>Eliminar Cotización</Button>
+                                <Button id="generateQuote" disabled={generateQuoteIsDisabled} onClick={generateQuote} loading={generateQuoteIsLoading}>Generar Cotización</Button>
+                            </div>
                         </div>
                         :
                         null

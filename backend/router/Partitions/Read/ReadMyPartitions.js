@@ -4,7 +4,6 @@ const ReadMyPartitions = require("express").Router();
 
 
 ReadMyPartitions.get("/quote", async (req, res) => {
-  delete req.query.modified_by
   try {
     const partitions = await knex.select(["partitions.*", "categories.category_name", "brands.brand_name"]).from("partitions")
       .where({ "partitions.created_by": req.query.created_by, "partitions.quoteID": req.query.quoteID })
@@ -18,7 +17,6 @@ ReadMyPartitions.get("/quote", async (req, res) => {
 
 
 ReadMyPartitions.get("/mine", async (req, res) => {
-  delete req.query.modified_by
   try {
     const partitions = await knex.select(["partitions.*", "categories.category_name", "brands.brand_name",
       "quotes.reference",

@@ -20,14 +20,11 @@
             color: rgb(0, 0, 0);
         }
 
-        span.logo {
-            content: url("data:image/png;base64,...")
     </style>
 </head>
-<%const fecha=new Date() %>
+<% const fecha = new Date() %>
 
-    <%const{ reference, currency, buyer_name, buyer_last_name, client_name, expiration_date, user_name,
-        user_middle_name, user_last_name, total, totalInWords }=quote%>
+    <%const { reference, currency, buyer_name, buyer_last_name, client_name, expiration_date, user_name, user_middle_name, user_last_name, total, totalInWords } = quote %>
 
         <body style="padding:25px">
             <p style="color: #909090; font-size: 9px;">
@@ -104,6 +101,11 @@
                         <td>
                             Descripción
                         </td>
+                        <%if(includeBrand){%>
+                            <td>
+                                Marca
+                            </td>
+                        <%}%>
                         <td>
                             Cantidad
                         </td>
@@ -127,6 +129,11 @@
                             <td>
                                 <%-partitions[i].description%>
                             </td>
+                            <%if(includeBrand){%>
+                                <td>
+                                    <%-partitions[i].brand_name%>
+                                </td>
+                            <%}%>
                             <td>
                                 <%-Number(partitions[i].quantity).toLocaleString('en')%>
                             </td>

@@ -178,8 +178,23 @@ input:not(.ant-input) {
   border: 1px solid var(--coolor20);
 }
 
-/* drawer */
-
+/* pdf */
+.rpv-toolbar {
+  align-items: center!important;
+  display: flex!important;
+  width: 100%!important;
+  overflow-x: scroll!important;
+}
+.rpv-default-layout__sidebar {
+  display: flex!important;
+  padding-top: 60px!important;
+}
+.rpv-default-layout__toolbar {
+  height: 60px!important;
+}
+.rpv-default-layout__body {
+  padding-top: 60px!important;
+}
 
 /* table */
 .ant-table-wrapper {
@@ -198,7 +213,39 @@ input:not(.ant-input) {
 tr>td {
   border-radius: 0 !important;
 }
-
+.ant-tabs-content-holder{
+  overflow-x: auto;
+}
+.pvtAxisContainer, .pvtVals{
+  background-color: var(--coolor1)!important;
+  border-color: var(--coolor4)!important;
+}
+.pvtAxisContainer li span.pvtAttr{
+  padding: 7.5px 12px!important;
+  background-color: var(--coolor2)!important;
+  border-radius: 0px!important;
+  border-color: var(--coolor5)!important;
+  color: var(--coolor16)!important;
+}
+.pvtTriangle{
+  color: var(--coolor15)!important;
+}
+.pvtRenderers{
+  border: 1px solid var(--coolor4)!important;
+  background-color: var(--coolor1);
+}
+.pvtDropdownCurrent{
+  padding: 7.5px 12px!important;
+  background-color: var(--coolor2)!important;
+  border-radius: 0px!important;
+  border-color: var(--coolor5)!important;
+  color: var(--coolor16);
+}
+table.pvtTable thead tr th, table.pvtTable tbody tr th {
+  border: 1px solid var(--coolor4)!important;
+  background-color: var(--coolor1)!important;
+  color: var(--coolor16);
+}
 /* table context menu */
 .contextMenu{
   display: block;

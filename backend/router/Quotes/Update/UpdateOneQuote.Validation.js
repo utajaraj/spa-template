@@ -1,5 +1,5 @@
 const { executeValidation } = require("../../../factors/login/validate");
-const { UTC, Integer, TrueFalse } = require("../../../utlis/regex");
+const { UTC, Integer, TrueFalse, LongDecimal } = require("../../../utlis/regex");
 
 
 
@@ -13,12 +13,9 @@ const UpdateOneQuotesValidation = async (body, verbose = false) => {
 
   };
   const optionalParameters = {
-    emmited: {
-      invalidMessage: "Valor de emisión inválido",
-      dataType: TrueFalse
-    },
-    reference: {
-      missingMessage: "Referencia es obligatorio",
+    exchange_rate: {
+      dataType:LongDecimal,
+      invalidMessage: "Tasa de conversión tiene que ser un número valido"
     },
     company: {
       invalidMessage: "Empresa solo puede ser Garle S. de R.L de C.V o GR Industrial Inc.",
