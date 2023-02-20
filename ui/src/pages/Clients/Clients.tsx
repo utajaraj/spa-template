@@ -1,11 +1,11 @@
 import { Link } from "react-router-dom";
 import { Button } from "antd"
 
-const ODT = ({ ...props }) => {
+const Clients = ({ ...props }) => {
 
     return (
         <div>
-            <h1 style={{ textAlign: "center" }}>Módulo en ordenes de trabajo</h1>
+            <h1 style={{ textAlign: "center" }}>Módulo de clientes</h1>
 
             <div style={{ textAlign: "center" }}>
                 <Link to="/cotizaciones">
@@ -19,4 +19,4 @@ const ODT = ({ ...props }) => {
     )
 }
 
-export default ODT
+export default Clients

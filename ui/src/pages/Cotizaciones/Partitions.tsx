@@ -145,15 +145,13 @@ const Partitions = ({ ...props }) => {
               icon={<SearchOutlined />}
               size="small"
               style={{ width: 90 }}
-            >
-              Search
+            >Buscar
             </Button>
             <Button
               onClick={() => { setMin(0); setMax(10000000); setSelectedKeys([]); confirm(); }}
               size="small"
               style={{ width: 90 }}
-            >
-              Reset
+            >Resetear
             </Button>
             <Button
               type="link"
@@ -163,7 +161,7 @@ const Partitions = ({ ...props }) => {
                 confirm({ closeDropdown: false });
               }}
             >
-              Filter
+              Filtrar
             </Button>
             <Button
               type="link"
@@ -171,8 +169,7 @@ const Partitions = ({ ...props }) => {
               onClick={() => {
                 close();
               }}
-            >
-              close
+            >Cerrar
             </Button>
           </Space>
         </div>
@@ -230,22 +227,20 @@ const Partitions = ({ ...props }) => {
             autoFocus
             options={[]}
           />
-          <Space>
+          <Space style={{marginTop:"15px"}}>
             <Button
               type="primary"
               onClick={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
               icon={<SearchOutlined />}
               size="small"
               style={{ width: 90 }}
-            >
-              Search
+            >Buscar
             </Button>
             <Button
               onClick={() => { clearFilters && handleReset(clearFilters); setSelectedKeys([]); confirm(); }}
               size="small"
               style={{ width: 90 }}
-            >
-              Reset
+            >Resetear
             </Button>
             <Button
               type="link"
@@ -256,7 +251,7 @@ const Partitions = ({ ...props }) => {
                 setSearchedColumn(dataIndex);
               }}
             >
-              Filter
+              Filtrar
             </Button>
             <Button
               type="link"
@@ -265,7 +260,7 @@ const Partitions = ({ ...props }) => {
                 close();
               }}
             >
-              close
+              Cerrar
             </Button>
           </Space>
         </div>

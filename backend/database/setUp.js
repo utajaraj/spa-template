@@ -17,6 +17,61 @@ const createDatabaseSchemas = async () => {
             }
         }
 
+        const hasCompanySite = await knex.schema.hasTable('companysite')
+        if (!hasCompanySite) {
+            await knex.schema.createTable('companysite', function (t) {
+                t.increments('id').primary().unique().notNullable();
+                t.string('companyID', 100).notNullable().unique();
+                t.string('site_name', 100).notNullable().unique();
+                t.string('address', 100).notNullable().unique();
+                t.datetime('created_at', { precision: 6 }).defaultTo(knex.fn.now(6)).notNullable()
+                t.integer('created_by', 100).notNullable()
+                t.datetime('modified_at', { precision: 6 }).defaultTo(knex.fn.now(6)).notNullable()
+                t.integer('modified_by', 100).notNullable()
+            })
+        }
+
+        const hasClientSite = await knex.schema.hasTable('clientsite')
+        if (!hasClientSite) {
+            await knex.schema.createTable('clientsite', function (t) {
+                t.increments('id').primary().unique().notNullable();
+                t.string('clientID', 100).notNullable().unique();
+                t.string('site_name', 100).notNullable().unique();
+                t.string('address', 100).notNullable().unique();
+                t.datetime('created_at', { precision: 6 }).defaultTo(knex.fn.now(6)).notNullable()
+                t.integer('created_by', 100).notNullable()
+                t.datetime('modified_at', { precision: 6 }).defaultTo(knex.fn.now(6)).notNullable()
+                t.integer('modified_by', 100).notNullable()
+            })
+        }
+
+        const hasCompany = await knex.schema.hasTable('companies')
+        if (!hasCompany) {
+            await knex.schema.createTable('companies', function (t) {
+                t.increments('id').primary().unique().notNullable();
+                t.string('company_name', 100).notNullable().unique();
+                t.string('address', 100).notNullable().unique();
+                t.datetime('created_at', { precision: 6 }).defaultTo(knex.fn.now(6)).notNullable()
+                t.integer('created_by', 100).notNullable()
+                t.datetime('modified_at', { precision: 6 }).defaultTo(knex.fn.now(6)).notNullable()
+                t.integer('modified_by', 100).notNullable()
+            })
+        }
+
+        const hasRoles = await knex.schema.hasTable('roles')
+        if (!hasRoles) {
+                await knex.schema.createTable('roles', function (t) {
+                    t.increments('id').primary().unique().notNullable();
+                    t.string('quotes_permission', 100).notNullable();
+                    t.string('clients_permission', 100).notNullable();
+                    t.string('buyers_permission', 100).notNullable();
+                    t.boolean('wos_permission', 100).notNullable();
+                    t.string('users_permission', 255)
+                    t.boolean('configuration_permission', 255)
+                    t.integer('modified_by', 100).notNullable()
+                    t.datetime('modified_at', { precision: 6 }).defaultTo(knex.fn.now(6)).notNullable()
+                })
+        }
 
         const hasUsers = await knex.schema.hasTable('users')
         if (!hasUsers) {
@@ -26,17 +81,12 @@ const createDatabaseSchemas = async () => {
                     t.string('user_middle_name', 100).notNullable();
                     t.string('user_last_name', 100).notNullable();
                     t.string('email', 100).notNullable();
-                    t.string('assignedPhone', 100)
-                    t.string('password', 255)
-                    t.string('rfc', 100).notNullable();
-                    t.string('curp', 100).notNullable();
-                    t.string('city_id', 100).notNullable();
-                    t.string('state_id', 100).notNullable();
-                    t.string('country_id', 100).notNullable();
-                    t.string('position_id', 100).notNullable();
-                    t.string('department_id', 100).notNullable();
-                    t.string('role', 100).notNullable();
-                    t.string('username', 100).notNullable();
+                    t.string('color', 100).notNullable();
+                    t.boolean('collapsed', 100).notNullable();
+                    t.boolean('theme', 100).notNullable();
+                    t.string('password', 255).notNullable();
+                    t.string('company_siteID', 255).notNullable();
+                    t.string('roleID', 100).notNullable();
                     t.integer('created_by', 100).notNullable()
                     t.integer('modified_by', 100).notNullable()
                     t.datetime('created_at', { precision: 6 }).defaultTo(knex.fn.now(6)).notNullable()
@@ -45,7 +95,6 @@ const createDatabaseSchemas = async () => {
         }
         const hasCategories = await knex.schema.hasTable('categories')
         if (!hasCategories) {
-            try {
                 await knex.schema.createTable('categories', function (t) {
                     t.increments('id').primary().unique().notNullable();
                     t.string('category_name', 100).unique().notNullable();
@@ -54,9 +103,7 @@ const createDatabaseSchemas = async () => {
                     t.datetime('modified_at', { precision: 6 }).defaultTo(knex.fn.now(6)).notNullable()
                     t.integer('modified_by', 100).notNullable()
                 })
-            } catch (error) {
-                console.log(error);
-            }
+        
         }
 
         const hasBrands = await knex.schema.hasTable('brands')
@@ -120,7 +167,7 @@ const createDatabaseSchemas = async () => {
                 t.string('buyerID', 100)
                 t.foreign('buyerID').references('buyers.id').onDelete('cascade')
                 t.string('agentID', 100).notNullable();
-                t.string('company', 100).notNullable();
+                t.string('companyID', 100).notNullable();
                 t.foreign('agentID').references('users.id').onDelete('cascade')
                 t.datetime('created_at', { precision: 6 }).defaultTo(knex.fn.now(6)).notNullable()
                 t.integer('created_by', 100).notNullable()

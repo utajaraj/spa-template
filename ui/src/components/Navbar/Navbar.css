@@ -1,3 +1,35 @@
+.style_option_container{
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    padding: 15px;
+}
+.style_option_container>*:first-child{
+    width: 100%;
+    margin-bottom: 7.5px;
+    font-weight: bold;
+}
+.style_option_container>.style_option{
+    width: 48%;
+    margin-bottom: 15px;
+}
+.style_option>*{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.style_option{
+    height: 50px;
+    display: flex;
+    padding: 5px;
+    color: white;
+    font-weight: bold;
+    border: 2px solid black;
+    justify-content: center;
+    align-items: center;
+}
 @media only screen and (min-width:750px) {
     #navbarToggler, #nav {
         display: none;

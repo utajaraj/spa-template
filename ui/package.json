@@ -12,6 +12,7 @@
     "@react-pdf-viewer/core": "^3.11.0",
     "@react-pdf-viewer/default-layout": "^3.11.0",
     "antd": "^5.1.6",
+    "chroma-js": "^2.4.2",
     "dayjs": "^1.11.7",
     "moment": "^2.29.4",
     "pdfjs-dist": "^3.3.122",
@@ -29,6 +30,7 @@
     "rxjs": "^7.8.0"
   },
   "devDependencies": {
+    "@types/chroma-js": "^2.1.5",
     "@types/pdfjs-dist": "^2.10.378",
     "@types/react": "^18.0.24",
     "@types/react-dom": "^18.0.8",

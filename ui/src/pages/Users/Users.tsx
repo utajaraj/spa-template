@@ -1,64 +1,7 @@
-import { Drawer, Button, Table } from "antd"
+import { Drawer, Button, Table, Form, Input, Select } from "antd"
 import { ColumnsType } from "antd/es/table";
 import { useState } from "react";
-// filterDropdown: ({
-//     setSelectedKeys,
-//     selectedKeys,
-//     confirm,
-//     clearFilters,
-// }) => {
-//     let keys = []
-//     let input = document.getElementById(column._id)
-//     let value = input ? input.value : null
-//     if (value) {
-//         keys = [value]
-//     }
-//     return (
-//         <div
-//             style={{
-//                 padding: "10px",
-//                 textAlign: "right",
-//                 background: "white",
-//                 width: "250px",
-//             }}
-//         >
-//             <Input
-//                 autoFocus
-//                 id={column._id}
-//                 placeholder="Type text here"
-//                 onChange={(e) => {
-//                     keys = e.target.value ? [e.target.value] : []
-//                     confirm({ closeDropdown: false });
-//                 }}
-//                 onPressEnter={() => {
-//                     setSelectedKeys(keys)
-//                     confirm({ closeDropdown: true });
-//                 }}
-//             ></Input>
-//             <hr></hr>
-//             <Button
-//                 style={{ border: "none" }}
-//                 className="ant-btn"
-//                 onClick={() => {
-//                     clearFilters();
-//                     confirm();
-//                 }}
-//             >
-//                 Reset
-//             </Button>
-//             <Button
-//                 className="ant-btn mainButton"
-//                 onClick={() => {
-//                     setSelectedKeys(keys)
-//                     confirm({ closeDropdown: true });
-//                 }}
-//                 type="primary"
-//             >
-//                 Search
-//             </Button>
-//         </div>
-//     );
-// }
+
 interface ColumnInterface {
     title: string,
     dataIndex: string,
@@ -80,12 +23,6 @@ const UsersColumns: Array<ColumnInterface> = [
     },
 ]
 
-const generateColumns = (columnsArray: [ColumnInterface]): ColumnsType => {
-    return [{
-        title: "Five",
-        dataIndex: "five"
-    }]
-}
 
 const Users: React.FC = () => {
 
@@ -98,9 +35,79 @@ const Users: React.FC = () => {
                 Add User
             </Button>
             <Drawer title="Add User" placement="right" onClose={() => { setOpen(false) }} open={open}>
-                <p>Some contents...</p>
-                <p>Some contents...</p>
-                <p>Some contents...</p>
+                <Form>
+                    <div>
+                        <label>Correo <span className='requiredMark' /></label>
+                        <Form.Item name="email" rules={[{ required: true, message: "Correo ese requerido" }]}>
+                            <Input />
+                        </Form.Item>
+                    </div>
+                    <div>
+                        <label>Nombre <span className='requiredMark' /></label>
+                        <Form.Item name="user_nam" rules={[{ required: true, message: "Correo ese requerido" }]}>
+                            <Input />
+                        </Form.Item>
+                    </div>
+                    <div>
+                        <label>Segundo Nombre <span className='requiredMark' /></label>
+                        <Form.Item name="user_middle_name" rules={[{ required: true, message: "Correo ese requerido" }]}>
+                            <Input />
+                        </Form.Item>
+                    </div>
+                    <div>
+                        <label>Apellido <span className='requiredMark' /></label>
+                        <Form.Item name="user_last_name" rules={[{ required: true, message: "Correo ese requerido" }]}>
+                            <Input />
+                        </Form.Item>
+                    </div>
+                    <div>
+                        <label>Planta <span className='requiredMark' /></label>
+                        <Form.Item name="companySiteID" rules={[{ required: true, message: "Correo ese requerido" }]}>
+                            <Select>
+                                <Select.Option>
+                                    Ciudad Juárez
+                                </Select.Option>
+                                <Select.Option>
+                                    Chihuahua
+                                </Select.Option>
+                                <Select.Option>
+                                    Hermosillo
+                                </Select.Option>
+                                <Select.Option>
+                                    Cancún
+                                </Select.Option>
+                            </Select>
+                        </Form.Item>
+                    </div>
+                    <div>
+                        <label>Rol <span className='requiredMark' /></label>
+                        <Form.Item name="roleID" rules={[{ required: true, message: "Correo ese requerido" }]}>
+                            <Select>
+                                <Select.Option>
+                                    Gerente General
+                                </Select.Option>
+                                <Select.Option>
+                                    Gerente de Sucursal
+                                </Select.Option>
+                                <Select.Option>
+                                    Vendedor
+                                </Select.Option>
+                                <Select.Option>
+                                    Consultor Externo
+                                </Select.Option>
+                            </Select>
+                        </Form.Item>
+                    </div>
+                    <div>
+                        <label>Contraseña <span className='requiredMark' /></label>
+                        <Form.Item name="email" rules={[{ required: true, message: "Correo ese requerido" }]}>
+                            <Input />
+                        </Form.Item>
+                    </div>
+                    <div>
+                        <Button htmlType="submit">Agregar usuario</Button>
+                    </div>
+                </Form>
             </Drawer>
             <Table />
         </div>

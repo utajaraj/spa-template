@@ -1,8 +1,9 @@
 const ReadUsersRouter = require("express").Router();
 const { ReadAllUsers } = require("./ReadAllUsers");
-const {ReadAllUsersByRole} = require("./ReadAllUsersByRole");
+const { ReadAllUsersByRole } = require("./ReadAllUsersByRole");
+const { ReadMe } = require("./ReadMe");
 
-ReadUsersRouter.use("/read", [ReadAllUsers,ReadAllUsersByRole]);
+ReadUsersRouter.use("/read", [ReadAllUsers, ReadAllUsersByRole, ReadMe]);
 
 ReadUsersRouter.all("/read", (req, res) => {
   res.status(300).send("Unknown users read route");
