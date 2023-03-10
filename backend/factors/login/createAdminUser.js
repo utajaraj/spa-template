@@ -7,7 +7,7 @@ const hashPassword = require("bcrypt").hashSync
 const CreateOneUser = require("express").Router();
 
 
-const createAdminUser = async ({ username, password, company_name, company_address,user_name,user_last_name }) => {
+const createAdminUser = async ({ username, password, company_name, company_address,user_name,user_last_name, tax_id }) => {
     try {
         return await knex.transaction(async trx => {
 
@@ -17,6 +17,7 @@ const createAdminUser = async ({ username, password, company_name, company_addre
             const company = {
                 company_name: company_name,
                 company_address: company_address,
+                tax_id: tax_id,
                 created_by: 0,
                 modified_by: 0,
             }
