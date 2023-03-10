@@ -146,10 +146,8 @@ const createDatabaseSchemas = async () => {
                 t.datetime('expiration_date', { precision: 6 }).notNullable();
                 t.string('clientID', 100).notNullable();
                 t.string('buyerID', 100)
-                t.foreign('buyerID').references('buyers.id').onDelete('cascade')
                 t.string('agentID', 100).notNullable();
                 t.string('companyID', 100).notNullable();
-                t.foreign('agentID').references('users.id').onDelete('cascade')
                 t.datetime('created_at', { precision: 6 }).defaultTo(knex.fn.now(6)).notNullable()
                 t.integer('created_by', 100).notNullable()
                 t.datetime('modified_at', { precision: 6 }).defaultTo(knex.fn.now(6)).notNullable()
