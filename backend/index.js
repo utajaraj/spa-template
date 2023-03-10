@@ -13,6 +13,8 @@ const { auth } = require("./middleware/authentication")
 const { signUserIn } = require("./factors/login/signUserIn")
 const { isSignedIn } = require("./factors/login/isSignedIn")
 const { checkCredentials } = require("./factors/login/checkCredentials")
+const { needsSetUp } = require("./factors/login/needsSetUp")
+const { createAdminUser } = require("./factors/login/createAdminUser")
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", req.headers.origin)
     res.header(
@@ -39,16 +41,37 @@ app.use(
         extended: true,
     })
 ) //parse urlencoded request bodies
+
 createDatabaseSchemas()
     .then((good) => {
-        if(good===true){
-
+        if (good === true) {
+            app.post("/setUp", async (req, res) => {
+                if (needsSetUp()) {
+                    const adminUsersIsCreated = await createAdminUser(req.body)
+                    if (adminUsersIsCreated.status) {
+                        const { username, password } = req.body
+                        const areValidCredentials = await checkCredentials(username, password)
+                        if (areValidCredentials) {
+                            signUserIn(res, areValidCredentials)
+                        } else {
+                            res.status(400).send({ status: false, message: "Credenciales de usario invalidas" })
+                        }
+                    } else {
+                        res.status(400).send({ status: false, message: adminUsersIsCreated.message })
+                    }
+                }
+            })
             app.use("/", serveStatic(__dirname + "/assets"))
-            app.get("/login", (req, res) => {
+            app.get("/login", async (req, res) => {
                 if (isSignedIn(req)) {
                     res.redirect("/")
                 } else {
-                    res.status(200).sendFile(__dirname + "/html/login.html")
+                    const loadSetUp = await needsSetUp()
+                    if (loadSetUp) {
+                        res.status(200).sendFile(__dirname + "/html/setUp.html")
+                    } else {
+                        res.status(200).sendFile(__dirname + "/html/login.html")
+                    }
                 }
             })
             app.post("/login", async (req, res) => {
@@ -72,7 +95,7 @@ createDatabaseSchemas()
             app.all("*", (req, res) => {
                 res.status(200).redirect("/");
             })
-        }else{
+        } else {
             app.all("*", (req, res) => {
                 res.status(500).send("Error Interno, porfavor contacta a soporte");
             })

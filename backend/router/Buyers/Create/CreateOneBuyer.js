@@ -14,7 +14,7 @@ CreateOneBuyer.post("/one", async (req, res) => {
     if (valid === true) {
       try {
         knex("buyers").insert(req.body).then(async () => {
-          const response = await knex("buyers").select().where({ created_by: rkeq.body.created_by }).orderBy("created_at", "desc").limit(1)
+          const response = await knex("buyers").select().where({ created_by: req.body.created_by }).orderBy("created_at", "desc").limit(1)
           res.status(200).send({ status: true, message: "Comprador ha sido añadido", data: response })
         }).catch((err) => {
           if (err.code === "ER_DUP_ENTRY") {

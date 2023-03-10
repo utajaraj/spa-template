@@ -1,48 +1,43 @@
 const { executeValidation } = require("../../../factors/login/validate");
-const { UTC, Integer, LongString, Alphabetical, Email } = require("../../../utlis/regex");
+const { UTC, Integer, LongString, Alphabetical, Email, AlphabeticalSpace } = require("../../../utlis/regex");
 
 
 const AddOneUserValidation = async (body, verbose = false) => {
     const requiredParameters = {
         user_name: {
-            dataType: Alphabetical,
-            missingParameter: "Nombre es obligatorio",
-            invalidParameter: "Nombre inválido"
+            dataType: AlphabeticalSpace,
+            missingMessage: "Nombre es obligatorio",
+            invalidMessage: "Nombre inválido"
         },
         user_last_name: {
-            dataType: Alphabetical,
-            missingParameter: "Apellido es obligatorio",
-            invalidParameter: "Apellido inválido"
+            dataType: AlphabeticalSpace,
+            missingMessage: "Apellido es obligatorio",
+            invalidMessage: "Apellido inválido"
         },
         email: {
             dataType: Email,
-            missingParameter: "Correo es obligatorio",
-            invalidParameter: "Correo inválido"
+            missingMessage: "Correo es obligatorio",
+            invalidMessage: "Correo inválido"
         },
         password: {
-            missingParameter: "Contraseña es obligatoria",
+            missingMessage: "Contraseña es obligatoria",
         },
         company_siteID: {
             dataType: LongString,
-            missingParameter: "Planta es obligatorio",
-            invalidParameter: "Planta inválido"
-        },
-        roleID: {
-            dataType: Integer,
-            missingParameter: "Rol es obligatorio",
-            invalidParameter: "Rol inválido"
+            missingMessage: "Planta es obligatorio",
+            invalidMessage: "Planta inválido"
         },
         created_by: {
-            missingParameter: "Fecha de creación es obligatoria",
+            missingMessage: "Fecha de creación es obligatoria",
         },
         modified_by: {
-            missingParameter: "Fecha de edición es obligatoria",
+            missingMessage: "Fecha de edición es obligatoria",
         },
     };
     const optionalParameters = {
         user_middle_name: {
             dataType: Alphabetical,
-            invalidParameter: "Nombre inválido"
+            invalidMessage: "Nombre inválido"
         },
     };
     return executeValidation(

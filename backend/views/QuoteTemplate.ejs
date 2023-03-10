@@ -65,29 +65,34 @@
                     <b>Nombre del cliente:</b>
                     <%-client_name%>
                 </h4>
+                <% if(fecha){%>
                 <h4>
                     <b>Fecha:</b>
-                    <%-fecha%>
+                    <%-fecha.toISOString().split("T")[0].replaceAll("-","/")%>
                 </h4>
-                <h4>
-                    <b>Válida hasta:</b>
-                    <%-expiration_date%>
-                </h4>
+                
+                <%}%>
+                <% if(expiration_date){%>
+                    <h4>
+                        <b>Válida hasta:</b>
+                        <%-expiration_date.toISOString().split("T")[0].replaceAll("-","/")%>
+                    </h4>
+                <%}%>
             </div>
             <div>
-                <h4>
+                <!-- <h4>
                     <b>Dirección:</b>
                     N/A
-                </h4>
+                </h4> -->
                 <h4>
                     <b>Contacto:</b>
                     <%-buyer_name%>
                         <%-buyer_last_name%>
                 </h4>
-                <h4>
+                <!-- <h4>
                     <b>N. Móvil:</b>
                     N/A
-                </h4>
+                </h4> -->
             </div>
             <table width="100%">
                 <thead style="background-color: #d3d3d3;">
@@ -108,6 +113,9 @@
                         <%}%>
                         <td>
                             Cantidad
+                        </td>
+                        <td>
+                            Unidad
                         </td>
                         <td>
                             Precio
@@ -138,6 +146,9 @@
                                 <%-Number(partitions[i].quantity).toLocaleString('en')%>
                             </td>
                             <td>
+                                <%-partitions[i].unit%>
+                            </td>
+                            <td>
                                 <%-Number((1+partitions[i].factor /100 ) * partitions[i].cost).toLocaleString('en')%>
                             </td>
                             <td>
@@ -149,15 +160,15 @@
                 </tbody>
             </table>
             <h3 style="text-align: right;"><b>Total:</b>
-                <%-Number(total).toLocaleString('en')%>
+                <%-Number(total).toLocaleString('en')%> <%-currency%>
             </h3>
             <h3 style="text-align: right;"><b>Total Redondeado: </b>
-                <%-Number(total).toLocaleString('en')%>
+                <%-Number(total).toLocaleString('en')%> <%-currency%>
             </h3>
-            <h3 style="text-align: right;"><b>En palabras:</b>
+            <p style="text-align: right;"><b>En palabras:</b>
                 <%-currency%>
-                    <%-totalInWords%>
-            </h3>
+                    <%-totalInWords%>.
+            </p>
 
         </body>
 

@@ -171,6 +171,8 @@ const QuotePartitionForm = (props: any) => {
     const [partitionAmount, setPartitionAmount] = useState<any>(0)
     const [brands, setBrands] = useState<BrandsInterface[] | []>([])
     const [categories, setCategories] = useState<CategoriesInterface[] | []>([])
+
+
     const calculatePartitionAmount = () => {
 
 
@@ -663,6 +665,19 @@ const QuotePartitionsTable = (props: QuotePartitionsTableProps) => {
 }
 
 
+interface CompanyInterface {
+    id: number,
+    companyID: string,
+    company_name: string,
+    company_address: string,
+    created_at: string,
+    created_by: number,
+    modified_at: string,
+    modified_by: number,
+}
+
+
+
 interface FetchingInterface {
     buyers: boolean,
     initialSelects: boolean,
@@ -674,6 +689,9 @@ const Cotizar = ({ ...props }) => {
     const [generateQuoteIsDisabled, setGenerateQuoteIsDisabled] = useState<boolean>(true)
     const [generateQuoteIsLoading, setGenerateQuoteIsLoading] = useState<boolean>(false)
     const [quotes, setQuotes] = useState<QuoteInterface[] | []>([])
+    
+    const [companies, setCompanies] = useState<CompanyInterface[] | []>([])
+
     const [clients, setClients] = useState<ClientInterface[] | []>([])
     const [agents, setAgents] = useState<AgentsInterface[] | []>([])
     const [selectedQuote, setSelectedQuote] = useState<QuoteInterface | {}>({})
@@ -836,7 +854,8 @@ const Cotizar = ({ ...props }) => {
             const quotesPromise = new Requester({ url: import.meta.env.VITE_APP_APIURL + "/quotes/read/mine", method: "get", params: { emitted: false } }).send()
             const clientsPromise = new Requester({ url: import.meta.env.VITE_APP_APIURL + "/clients/read/mine", method: "get" }).send()
             const usersPromise = new Requester({ url: import.meta.env.VITE_APP_APIURL + "/users/read/all", method: "get" }).send()
-            const [resultQuotes, resultClients, resultsAgents] = await Promise.all([quotesPromise, clientsPromise, usersPromise])
+            const companiesPromise =  new Requester({ url: import.meta.env.VITE_APP_APIURL + "/companies/read/all", method: "get" }).send()
+            const [resultQuotes, resultClients, resultsAgents, resultCompanies] = await Promise.all([quotesPromise, clientsPromise, usersPromise, companiesPromise])
             if (resultQuotes.status !== false) {
                 setQuotes(resultQuotes)
             }
@@ -845,6 +864,9 @@ const Cotizar = ({ ...props }) => {
             }
             if (resultsAgents.status !== false) {
                 setAgents(resultsAgents)
+            }
+            if(resultCompanies.status!==false){
+                setCompanies(resultCompanies)
             }
 
             setFetchingProperty('initialSelects', false)
@@ -1008,7 +1030,6 @@ const Cotizar = ({ ...props }) => {
     }
 
 
-
     const { reference, id }: any = selectedQuote
     return (
         <div >
@@ -1045,11 +1066,14 @@ const Cotizar = ({ ...props }) => {
                             <h3>Información de Cotización</h3>
                             <div>
                                 <label>Empresa <span className='requiredMark' /></label>
-                                <Form.Item initialValue="" name="company" hasFeedback rules={[{ required: true, message: "Empresa es obligatoria" }]}>
+                                <Form.Item initialValue="" name="companyID" hasFeedback rules={[{ required: true, message: "Empresa es obligatoria" }]}>
                                     <Select showSearch optionFilterProp="children" >
                                         <Select.Option value="" disabled>Selecciona Empresa</Select.Option>
-                                        <Select.Option value="Garle">Garle S. de R.L de C.V</Select.Option>
-                                        <Select.Option value="GR Industrial">GR Industrial Inc.</Select.Option>
+                                        {
+                                        companies.map((company)=>{
+                                            return <Select.Option value={company.id}>{company.company_name}</Select.Option>
+                                        })   
+                                        }
                                     </Select>
                                 </Form.Item>
                             </div>

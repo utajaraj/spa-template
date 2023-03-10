@@ -12,6 +12,8 @@ const paths = [
   "./Partitions/z-PartitionsRouter.js",
   "./Brands/z-BrandsRouter.js",
   "./Categories/z-CategoriesRouter.js",
+  "./CompanySites/z-CompanySitesRouter.js",
+  "./Companies/z-CompaniesRouter.js",
 ].map((route) => {
   const r = require(route);
   return r[Object.keys(r)[0]];

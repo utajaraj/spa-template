@@ -55,7 +55,7 @@ ReadMyQuotes.get("/total", async (req, res) => {
           reference: partition.reference,
           total: partition.amount,
           numberOfPartitions: 1,
-          agent: `${partition.user_name} ${partition.user_middle_name} ${partition.user_last_name}`,
+          agent: `${partition.user_name} ${partition.user_middle_name||""} ${partition.user_last_name}`,
           categories: partition.category_name ? [partition.category_name] : [],
           brands: partition.brand_name ? [partition.brand_name] : [],
           currency: partition.currency,

@@ -38,7 +38,7 @@ interface Props {
 }
 export const Links = ({ show, setShow }: Props) => {
     const [openDrawer, setOpenDrawer] = useState<boolean>(false)
-    return <div id="links" className={show ? "extend" : "collapse"}>
+    return <div  className={`${show ? "extend" : "collapse"} links`}>
         <Modal footer={null} onCancel={() => { setOpenDrawer(false) }} closable={true} open={openDrawer}>
             <div className="style_option_container">
                 <div>

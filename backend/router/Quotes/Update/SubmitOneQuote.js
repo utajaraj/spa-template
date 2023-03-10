@@ -11,13 +11,13 @@ SubmitMyPartitions.patch("/submit", async (req, res) => {
     if (Number.isInteger(req.body.id)) {
 
         knex.transaction(async trx => {
-            const quoteInformation = await knex.select(["partitions.*", "categories.category_name", "brands.brand_name",
+            const quoteInformation = await trx.select(["partitions.*", "categories.category_name", "brands.brand_name",
                 "quotes.currency",
                 "quotes.buyerID",
                 "quotes.agentID",
                 "quotes.clientID",
                 "quotes.emitted",
-                "quotes.company",
+                "quotes.companyID",
                 "quotes.expiration_date",
                 "users.user_name",
                 "users.user_middle_name",
@@ -43,7 +43,7 @@ SubmitMyPartitions.patch("/submit", async (req, res) => {
             const quote = { reference, currency, buyer_name, buyer_last_name, client_name, expiration_date, user_name, user_middle_name, user_last_name, total, totalInWords }
 
 
-            const changeEmitted = await knex("quotes").update({ emitted: true }).where({ id: req.body.id })
+            const changeEmitted = await trx("quotes").update({ emitted: true }).where({ id: req.body.id })
             
 
 
@@ -80,7 +80,7 @@ SubmitMyPartitions.patch("/submit", async (req, res) => {
             })
         }).catch(function (transaction) {
 
-            console.log(transaction);
+           
 
             res.status(400).send({ status: false, message: "Cotización no generada" })
         })
@@ -99,13 +99,13 @@ SubmitMyPartitions.patch("/submit/brands", async (req, res) => {
     if (Number.isInteger(req.body.id)) {
 
         knex.transaction(async trx => {
-            const quoteInformation = await knex.select(["partitions.*", "categories.category_name", "brands.brand_name",
+            const quoteInformation = await trx.select(["partitions.*", "categories.category_name", "brands.brand_name",
                 "quotes.currency",
                 "quotes.buyerID",
                 "quotes.agentID",
                 "quotes.clientID",
                 "quotes.emitted",
-                "quotes.company",
+                "quotes.companyID",
                 "quotes.expiration_date",
                 "users.user_name",
                 "users.user_middle_name",
@@ -131,7 +131,7 @@ SubmitMyPartitions.patch("/submit/brands", async (req, res) => {
             const quote = { reference, currency, buyer_name, buyer_last_name, client_name, expiration_date, user_name, user_middle_name, user_last_name, total, totalInWords }
 
 
-            const changeEmitted = await knex("quotes").update({ emitted: true }).where({ id: req.body.id })
+            const changeEmitted = await trx("quotes").update({ emitted: true }).where({ id: req.body.id })
             
 
 
@@ -145,7 +145,6 @@ SubmitMyPartitions.patch("/submit/brands", async (req, res) => {
             ejs.renderFile(path.join(__dirname + "/../../../views/QuoteTemplate.ejs"), { quote, partitions,includeBrand: true}, async function (err, str) {
 
                 if (err) {
-                    console.log(err);
                     res.status(400).send({ status: false, message: "Cotización generada pero no se pude descargar PDF", error: err.toString() })
                     return
                 }

@@ -22,11 +22,11 @@ import Cotizaciones from './pages/Cotizaciones/TabbingPage';
 import ODT from './pages/ODT/ODT';
 import Clients from './pages/Clients/Clients';
 import Configuration from './pages/Configuration/Configuration';
-import Users from './pages/Users/Users';
 import { Requester } from './factors/Requester';
 import chroma from "chroma-js"
+import UsersTabbingPage from './pages/Users/UsersTabbingPage';
 
-// st theme
+// set theme
 (async () => {
   try {
     const updateMyColor = await new Requester({ url: import.meta.env.VITE_APP_APIURL + "/users/read/me", method: "get" }).send()
@@ -71,7 +71,7 @@ function App() {
   return (
 
     <BrowserRouter>
-      <Layout style={{ minHeight: "100vh" }}>
+      <Layout style={{ minHeight: "100vh" }} className="theAside">
         <Sider id='sidenav' className={`${!show ? "collapse" : "extend"}`} trigger={null} collapsible collapsed={!show} width={250} >
           <div className="logo" />
           <Links show={show} setShow={setShow} />
@@ -97,7 +97,7 @@ function App() {
                 <Route path="/clients" element={<Clients />} />
                 <Route path="/configuration" element={<Configuration />} />
                 <Route path="/odt" element={<ODT />} />
-                <Route path="/users" element={<Users />} />
+                <Route path="/users" element={<Dashboard />} />
               </Routes>
             </div>
           </div>

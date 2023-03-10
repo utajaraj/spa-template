@@ -5,12 +5,10 @@ const { UTC, Integer, LongDecimal } = require("../../../utlis/regex");
 
 const AddOneQuotesValidation = async (body, verbose = false) => {
   const requiredParameters = {
-    company: {
+    companyID: {
       missingMessage: "Empresa es obligatoria",
-      invalidMessage: "Empresa solo puede ser Garle S. de R.L de C.V o GR Industrial Inc.",
-      function: (value) => {
-        return ["Garle", "GR Industrial"].includes(value)
-      }
+      invalidMessage: "Empresa Inválida",
+      dataType:Integer
     },
     currency: {
       missingMessage: "Moneda es obligatorio",

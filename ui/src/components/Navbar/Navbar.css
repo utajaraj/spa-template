@@ -36,6 +36,10 @@
     }
     
 }
+.theAside {
+    height: 100%;
+    overflow-y: auto;
+}
 
 @media only screen and (max-width:750px) {
     #navbarDesktop, #sidenav{
@@ -71,7 +75,7 @@
     #togglerContainer>svg{
         color: var(--coolor16);
     }
-    #links {
+    .links {
         height: 80px;
         display: -webkit-box;
         justify-content: center;
@@ -81,6 +85,10 @@
         overflow-y: hidden;
     }
 
+    .linksScroll{
+        max-height: 100vh!important;
+        overflow-y: auto;
+    }
     ::-webkit-scrollbar {
         width: 5px;
         height: 5px;
@@ -111,14 +119,14 @@
         transition: margin 0.3s ease;
     }
 
-    #links>a>svg {
+    .links>a>svg {
         font-size: 18px;
         margin-right: 15px;
         color: var(--coolor16);
         height: 24px;
     }
 
-    #links>* {
+    .links>* {
         min-width: 150px;
         height: 80px;
         display: flex;
@@ -131,11 +139,11 @@
         width: 225px;
         cursor: pointer;
     }
-    #links>*>*{
+    .links>*>*{
         color: var(--coolor16);
     }
 
-    #links>*:hover {
+    .links>*:hover {
         background-color: #dfdfdf;
         transition: all 0.3s ease;
     }
