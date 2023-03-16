@@ -66,7 +66,7 @@ createDatabaseSchemas()
             })
             app.get("/login", async (req, res) => {
                 if (isSignedIn(req)) {
-                    res.redirect("/")
+                    res.redirect("/crm")
                 } else {
                     const loadSetUp = await needsSetUp()
                     if (loadSetUp) {
