@@ -108,6 +108,7 @@ input {
   outline: none !important;
   box-shadow: none !important;
 }
+
 .ant-input-affix-wrapper {
   position: relative;
   display: inline-flex;
@@ -125,9 +126,32 @@ input {
   border-radius: 6px;
   transition: all 0.2s;
 }
-.ant-input-number-input-wrap{
-  border: none!important;
+
+.ant-input-number-input-wrap {
+  border: none !important;
 }
+
+/* switch */
+.greenRed {
+  background-color: #510000 !important;
+}
+
+.greenRed:hover {
+  background-color: #f61313 !important;
+}
+
+.ant-switch.ant-switch-checked {
+  background-color: #00b77d !important;
+}
+
+.ant-switch.ant-switch-checked:hover {
+  background-color: #00de98 !important;
+}
+
+/* .ant-switch.ant-switch-checked:hover>span>span {
+  color: #404040 !important;
+} */
+
 .ant-select-single:not(.ant-select-customize-input) .ant-select-selector .ant-select-selection-search-input {
   color: var(--coolor16);
 }
@@ -404,7 +428,18 @@ input:not(.ant-input) {
 .ant-tabs-tabpane .ant-tabs-tabpane-active {
   min-height: 750px;
 }
-
+.ant-table-container table > thead > tr:first-child > :first-child, .ant-table-container table > thead > tr:first-child > :last-child {
+  border-start-start-radius: 0px!important;
+  border-start-end-radius: 0px!important;
+}
+.ant-table-wrapper table {
+  border-radius: 0px!important;
+}
+.ant-table-wrapper .ant-table-container,.ant-table-wrapper .ant-table .ant-table-header {
+  border-start-start-radius: 0px!important;
+  border-start-end-radius: 0px!important;
+  border-radius: 0px!important;
+}
 .pvtDropdownMenu {
   border: 1px solid var(--coolor5) !important;
   position: absolute;
@@ -791,11 +826,13 @@ table.pvtTable tbody tr th {
   flex-wrap: wrap;
   min-height: 750px;
 }
-#companiesPage > *:nth-child(2){
+
+#companiesPage>*:nth-child(2) {
   width: 78%;
   padding: 35px 0;
   background-color: var(--coolor1);
 }
-#companiesPage > *:nth-child(1){
+
+#companiesPage>*:nth-child(1) {
   width: 20%;
 }

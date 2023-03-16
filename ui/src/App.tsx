@@ -21,10 +21,10 @@ import Dashboard from './pages/Dashboard/Dashboard';
 import Cotizaciones from './pages/Cotizaciones/TabbingPage';
 import ODT from './pages/ODT/ODT';
 import Clients from './pages/Clients/Clients';
-import Configuration from './pages/Configuration/Configuration';
+import CompaniesTabbingPage from './pages/Configuration/Configuration';
 import { Requester } from './factors/Requester';
 import chroma from "chroma-js"
-import UsersTabbingPage from './pages/Users/UsersTabbingPage';
+import Users from './pages/Users/Users';
 
 // set theme
 (async () => {
@@ -51,6 +51,20 @@ import UsersTabbingPage from './pages/Users/UsersTabbingPage';
 
 function App() {
   let [show, setShow] = useState<any>(false)
+
+  const [company, setCompany] = useState<any>({})
+
+  const loadCompanyInformation = async () => {
+    const companyInformation = await new Requester({ url: import.meta.env.VITE_APP_APIURL + "/companies/read/one", method: "get" }).send()
+
+    if (Array.isArray(companyInformation)===false && companyInformation.status == undefined) {
+      setCompany(companyInformation)
+    }
+  }
+
+  useEffect(() => {
+    loadCompanyInformation()
+  }, [])
   useEffect(() => {
     const subscription = sidenavState.subscribe({
       next(x) {
@@ -74,14 +88,14 @@ function App() {
       <Layout style={{ minHeight: "100vh" }} className="theAside">
         <Sider id='sidenav' className={`${!show ? "collapse" : "extend"}`} trigger={null} collapsible collapsed={!show} width={250} >
           <div className="logo" />
-          <Links show={show} setShow={setShow} />
+          <Links show={show} setShow={setShow} company={company} />
         </Sider>
         <Layout className={`site-layout ${!show ? "collapse" : "extend"}`}>
           <Header id='navbarDesktop'>
             <i className='trigger' onClick={() => { setShow(!show) }}>{!show ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}</i>
           </Header>
           <div className="App">
-            <Navbar show={show} setShow={setShow} />
+            <Navbar show={show} setShow={setShow} company={company} />
             <div id="navbar">
               <div id="togglerContainer" >
                 {
@@ -95,9 +109,9 @@ function App() {
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/cotizaciones" element={<Cotizaciones />} />
                 <Route path="/clients" element={<Clients />} />
-                <Route path="/configuration" element={<Configuration />} />
+                <Route path="/configuration" element={<CompaniesTabbingPage />} />
                 <Route path="/odt" element={<ODT />} />
-                <Route path="/users" element={<Dashboard />} />
+                <Route path="/users" element={<Users />} />
               </Routes>
             </div>
           </div>

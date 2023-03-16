@@ -1,4 +1,4 @@
-import { Drawer, Button, Table, Form, Input, Select } from "antd"
+import { Drawer, Button, Table, Form, Input, Select, Modal, Switch } from "antd"
 import { ColumnsType } from "antd/es/table";
 import { useState, useEffect } from "react";
 import { NumberRangeFilter } from "../../factors/Filters/NumberRangeFilter";
@@ -15,6 +15,7 @@ interface ColumnInterface {
 }
 
 interface UsersInterface {
+    status: boolean,
     id: number,
     user_name: string,
     user_middle_name?: string,
@@ -32,23 +33,10 @@ interface UsersInterface {
     modified_at: string,
 }
 
-interface RolesInterface {
-    id: number,
-    role_name: string,
-    quotes_permission: string,
-    clients_permission: string,
-    buyers_permission: string,
-    wos_permission: boolean,
-    users_permission: string,
-    configuration_permission: boolean,
-    modified_by: number,
-    modified_at: string,
-}
-
 interface CompanySitesInterface {
     id: number,
     companyID: string,
-    site_name: string,
+    company_site_name: string,
     company_site_address: string,
     created_at: string,
     created_by: number,
@@ -74,13 +62,13 @@ const Users: React.FC = () => {
 
     const [open, setOpen] = useState(false)
     const [companySites, setCompanySites] = useState<CompanySitesInterface[] | []>([])
-    const [roles, setRoles] = useState<RolesInterface[] | []>([])
     const [companies, setCompanies] = useState<CompanyInterface[] | []>([])
     const [users, setUsers] = useState<UsersInterface[] | []>([])
 
 
-    const loadCompanySites = async () => {
-        const companySitesResult = await new Requester({ url: import.meta.env.VITE_APP_APIURL + "/companysites/read/all", method: "get" }).send()
+    const loadCompanySites = async (id: any) => {
+        const companySitesResult = await new Requester({ url: import.meta.env.VITE_APP_APIURL + `/companysites/read/company/${id}`, method: "get" }).send()
+
         try {
             setCompanySites(companySitesResult)
         } catch (error) {
@@ -90,6 +78,7 @@ const Users: React.FC = () => {
 
     const loadCompanies = async () => {
         const companiesResult = await new Requester({ url: import.meta.env.VITE_APP_APIURL + "/companies/read/all", method: "get" }).send()
+
         try {
             setCompanies(companiesResult)
         } catch (error) {
@@ -100,8 +89,8 @@ const Users: React.FC = () => {
     const loadUsers = async () => {
         const usersResult = await new Requester({ url: import.meta.env.VITE_APP_APIURL + "/users/read/all", method: "get" }).send()
         try {
-            setUsers(usersResult.map((user:any,i:number)=>{
-                user.key=`user-${i}`
+            setUsers(usersResult.map((user: any, i: number) => {
+                user.key = `user-${i}`
                 return user
             }))
         } catch (error) {
@@ -113,21 +102,78 @@ const Users: React.FC = () => {
     useEffect(() => {
         loadUsers()
         loadCompanies()
-        loadCompanySites()
     }, [])
+
+    const [createUserForm] = Form.useForm()
+    const createUser = async (form: UsersInterface) => {
+        const newUserResult = await new Requester({ url: import.meta.env.VITE_APP_APIURL + "/users/create/one", method: "post", body: form }).send()
+        if (newUserResult.status) {
+            loadUsers()
+            notify("success", "Usario creado con éxito")
+            createUserForm.resetFields()
+            return
+        } else {
+            notify("error", "Error al crear usuario", newUserResult.message || "Contacta al administrador")
+        }
+    }
+
+    const [selectedUserRow, setSelectedUserRow] = useState<{} | UsersInterface>({})
+    const [editUserDrawerVisible, setEditUserDrawerVisible] = useState<boolean>(false)
+    const [updateUserForm] = Form.useForm()
+    const editUserDrawerTitle: any = selectedUserRow
+    const title = Object.keys(editUserDrawerTitle) ? "Actualizar usuario" : `Actualizar ${editUserDrawerTitle.user_name}`
+    const [activationForm] = Form.useForm()
+
+    const updateUser = async (user: UsersInterface) => {
+        const body = user
+        body.status = !body.status
+        const updatedUserResult = await new Requester({ url: import.meta.env.VITE_APP_APIURL + "/users/update/one", method: "patch", body: body }).send()
+        if (user.status !== undefined) {
+            activationForm.setFieldValue("status", body.status)
+        }
+        if (updatedUserResult.status) {
+            loadUsers()
+            notify("success", "Usario actualizado con éxito")
+            return
+        } else {
+            notify("error", "Error al crear usuario", updatedUserResult.message || "Contacta al administrador")
+        }
+    }
+
+
+
+    const StatusForm = () => {
+        useEffect(() => {
+        }, [activationForm])
+        return <Form style={{ padding: "15px 0", textAlign: "right" }} form={activationForm} onFinish={updateUser}>
+
+            <Form.Item hidden={true} name="id" rules={[{ required: true, message: "Usuario es requerido." }]}>
+                <Input />
+            </Form.Item>
+
+            <Form.Item hidden={true} name="status" rules={[{ required: true, message: "Estatus es requerido." }]}>
+                <Input />
+            </Form.Item>
+
+            <Switch className="greenRed" checkedChildren="Activo" unCheckedChildren="Inactivo" defaultChecked={activationForm.getFieldValue("status")} onChange={() => { activationForm.submit() }} />
+        </Form>
+    }
 
     return (
         <div id="usersPage">
-            <div>
-                <Button onClick={() => { setOpen(true) }}>
-                    Agregar Usuario
-                </Button>
-            </div>
-            <Drawer title="Agregar Usuario" placement="right" onClose={() => { setOpen(false) }} open={open}>
-                <Form>
+            <Drawer title={title} open={editUserDrawerVisible} closable onClose={() => { setEditUserDrawerVisible(false) }}>
+
+                <StatusForm />
+
+                <Form form={updateUserForm} onFinish={updateUser}>
+                    <div>
+                        <Form.Item hidden={true} name="id" rules={[{ required: true, message: "Usuario es requerido." }]}>
+                            <Input />
+                        </Form.Item>
+                    </div>
                     <div>
                         <label>Correo <span className='requiredMark' /></label>
-                        <Form.Item name="email" rules={[{ required: true, message: "Correo ese requerido." }]}>
+                        <Form.Item name="email" rules={[{ required: true, message: "Correo es requerido." }]}>
                             <Input />
                         </Form.Item>
                     </div>
@@ -151,74 +197,197 @@ const Users: React.FC = () => {
                     </div>
                     <div>
                         <label>Empresa <span className='requiredMark' /></label>
-                        <Form.Item initialValue={""} name="companySiteID" rules={[{ required: true, message: "Empresa es obligatorio." }]}>
-                            <Select defaultValue={""}>
-                                <Select.Option value={""} selected disabled>
-                                    Selecciona una empresa
-                                </Select.Option>
-
+                        <Form.Item name={"companyID"} rules={[{ required: true, message: "Empresa es obligatorio." }]}>
+                            <Select onChange={loadCompanySites}>
+                                {
+                                    companies.map((company, i) => {
+                                        return <Select.Option value={company.id}>
+                                            {company.company_name}
+                                        </Select.Option>
+                                    })
+                                }
                             </Select>
                         </Form.Item>
                     </div>
                     <div>
                         <label>Sucursal <span className='requiredMark' /></label>
-                        <Form.Item name="companySiteID" rules={[{ required: true, message: "Sucursal ese requerido." }]}>
-                            <Select defaultValue={""}>
-                                <Select.Option value={""} selected disabled>
-                                    Selecciona una sucursal
-                                </Select.Option>
+                        <Form.Item name="company_siteID" rules={[{ required: true, message: "Sucursal ese requerido." }]}>
+                            <Select>
+                                {
+                                    companySites.map((companySite, i) => {
+                                        return <Select.Option value={companySite.id}>
+                                            {companySite.company_site_name}
+                                        </Select.Option>
+                                    })
+                                }
                             </Select>
                         </Form.Item>
                     </div>
                     <div>
-                        <label>Contraseña <span className='requiredMark' /></label>
-                        <Form.Item name="email" rules={[{ required: true, message: "Correo ese requerido" }]}>
+                        <Button htmlType="submit">Actualizar usuario</Button>
+                    </div>
+                </Form>
+            </Drawer>
+            <div style={{ padding: "15px 0", textAlign: "right" }}>
+                <Button onClick={() => { setOpen(true) }}>
+                    Nuevo Usuario
+                </Button>
+            </div>
+            <Drawer title="Agregar Usuario" placement="right" onClose={() => { setOpen(false) }} open={open}>
+                <Form form={createUserForm} onFinish={createUser}>
+                    <div>
+                        <label>Correo <span className='requiredMark' /></label>
+                        <Form.Item name="email" rules={[{ required: true, message: "Correo ese requerido." }]}>
                             <Input />
                         </Form.Item>
                     </div>
                     <div>
+                        <label>Contraseña <span className='requiredMark' /></label>
+                        <Form.Item name="password" rules={[{ required: true, message: "Contraseña es requerida." }]}>
+                            <Input />
+                        </Form.Item>
+                    </div>
+                    <div>
+                        <label>Nombre <span className='requiredMark' /></label>
+                        <Form.Item name="user_name" rules={[{ required: true, message: "Nombre es onbligatorio." }]}>
+                            <Input />
+                        </Form.Item>
+                    </div>
+                    <div>
+                        <label>Segundo Nombre <span className='requiredMark' /></label>
+                        <Form.Item name="user_middle_name">
+                            <Input />
+                        </Form.Item>
+                    </div>
+                    <div>
+                        <label>Apellido <span className='requiredMark' /></label>
+                        <Form.Item name="user_last_name" rules={[{ required: true, message: "Apellido se requerido." }]}>
+                            <Input />
+                        </Form.Item>
+                    </div>
+                    <div>
+                        <label>Empresa <span className='requiredMark' /></label>
+                        <Form.Item initialValue={""} rules={[{ required: true, message: "Empresa es obligatorio." }]}>
+                            <Select onChange={loadCompanySites} defaultValue={""}>
+                                <Select.Option value={""} selected disabled>
+                                    Selecciona una empresa
+                                </Select.Option>
+                                {
+                                    companies.map((company, i) => {
+                                        return <Select.Option value={company.id}>
+                                            {company.company_name}
+                                        </Select.Option>
+                                    })
+                                }
+                            </Select>
+                        </Form.Item>
+                    </div>
+                    <div>
+                        <label>Sucursal <span className='requiredMark' /></label>
+                        <Form.Item name="company_siteID" rules={[{ required: true, message: "Sucursal ese requerido." }]}>
+                            <Select defaultValue={""}>
+                                <Select.Option value={""} selected disabled>
+                                    Selecciona una sucursal
+                                </Select.Option>
+                                {
+                                    companySites.map((companySite, i) => {
+                                        return <Select.Option value={companySite.id}>
+                                            {companySite.company_site_name}
+                                        </Select.Option>
+                                    })
+                                }
+                            </Select>
+                        </Form.Item>
+                    </div>
+                    <div style={{ padding: "15px 0", textAlign: "right" }}>
                         <Button htmlType="submit">Agregar usuario</Button>
                     </div>
                 </Form>
             </Drawer>
 
-            <Table dataSource={users} columns={[
-                {
-                    key: "user_name",
-                    dataIndex: "user_name",
-                    width: "50px",
-                    title: "Nombre",
-                    ...TextSearchFilter("user_name", "Nombre"),
-                },
-                {
-                    key: "user_middle_name",
-                    dataIndex: "user_middle_name",
-                    width: "50px",
-                    title: "Segundo Nombre",
-                    ...TextSearchFilter("user_middle_name", "Segundo Nombre"),
-                },
-                {
-                    key: "user_last_name",
-                    dataIndex: "user_last_name",
-                    width: "50px",
-                    title: "Apellido",
-                    ...TextSearchFilter("user_last_name", "Apellido"),
-                },
-                {
-                    key: "role_name",
-                    dataIndex: "role_name",
-                    width: "50px",
-                    title: "Rol",
-                    ...TextSearchFilter("role_name", "Rol"),
-                },
-                {
-                    key: "company_site_name",
-                    dataIndex: "company_site_name",
-                    width: "85px",
-                    title: "Sucursal",
-                    ...TextSearchFilter("company_site_name", "Sucursal"),
-                },
-            ]} />
+            <Table
+                onRow={
+                    (row: any, key) => {
+                        return {
+                            onClick: async (e) => {
+                                setEditUserDrawerVisible(true)
+                                activationForm.setFields([
+                                    {
+                                        name: "status",
+                                        value: row.status||false
+                                    },
+                                    {
+                                        name: "id",
+                                        value: row.id
+                                    },
+                                ])
+                                await loadCompanySites(row.companyID)
+                                updateUserForm.setFields([
+                                    {
+                                        name: "user_name",
+                                        value: row.user_name
+                                    },
+                                    {
+                                        name: "id",
+                                        value: row.id
+                                    },
+                                    {
+                                        name: "user_middle_name",
+                                        value: row.user_middle_name
+                                    },
+                                    {
+                                        name: "user_last_name",
+                                        value: row.user_last_name
+                                    },
+                                    {
+                                        name: "email",
+                                        value: row.email
+                                    },
+                                    {
+                                        name: "companyID",
+                                        value: Number(row.companyID)
+                                    },
+                                    {
+                                        name: "company_siteID",
+                                        value: Number(row.company_siteID)
+                                    },
+
+                                ])
+                                setSelectedUserRow(row)
+                            }
+                        }
+                    }
+                }
+                dataSource={users} columns={[
+                    {
+                        key: "user_name",
+                        dataIndex: "user_name",
+                        width: "50px",
+                        title: "Nombre",
+                        ...TextSearchFilter("user_name", "Nombre"),
+                    },
+                    {
+                        key: "user_middle_name",
+                        dataIndex: "user_middle_name",
+                        width: "50px",
+                        title: "Segundo Nombre",
+                        ...TextSearchFilter("user_middle_name", "Segundo Nombre"),
+                    },
+                    {
+                        key: "user_last_name",
+                        dataIndex: "user_last_name",
+                        width: "50px",
+                        title: "Apellido",
+                        ...TextSearchFilter("user_last_name", "Apellido"),
+                    },
+                    {
+                        key: "company_site_name",
+                        dataIndex: "company_site_name",
+                        width: "85px",
+                        title: "Sucursal",
+                        ...TextSearchFilter("company_site_name", "Sucursal"),
+                    },
+                ]} />
         </div>
     )
 }

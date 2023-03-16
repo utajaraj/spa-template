@@ -1,5 +1,5 @@
 const { knex } = require("../../../database/connection");
-const { AddOneCompaniesValidation } = require("./CreateOneCompany.Validation");
+const { AddOneCompanyValidation } = require("./CreateOneCompany.Validation");
 
 
 const CreateOneCompany = require("express").Router();
@@ -8,7 +8,7 @@ const CreateOneCompany = require("express").Router();
 
 CreateOneCompany.post("/one", async (req, res) => {
   try {
-    const validation = await AddOneCompaniesValidation(req.body, req.headers.verbose)
+    const validation = await AddOneCompanyValidation(req.body, req.headers.verbose)
     const valid = validation.status || validation.data.invalidParameters.concat(validation.data.missingParameters).toString()
     if (valid === true) {
       try {
@@ -34,7 +34,7 @@ CreateOneCompany.post("/one", async (req, res) => {
       res.status(400).send({ status: false, message: valid })
     }
   } catch (error) {
-    res.status(400).send({ status: false, message: "Error de servidor" })
+    res.status(400).send({ status: false, message: "Error de servidor", error: error.toString() })
   }
 });
 

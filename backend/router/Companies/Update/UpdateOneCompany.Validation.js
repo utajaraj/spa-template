@@ -7,7 +7,7 @@ const UpdateOneCompanyValidation = async (body, verbose = false) => {
     company_name: {
       missingMessage: "Nombre es requerido",
     },
-    address: {
+    company_address: {
       missingMessage: "Dirección es requerida",
     },
     tax_id: {

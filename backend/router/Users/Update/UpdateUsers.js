@@ -1,10 +1,26 @@
 const { knex } = require("../../../database/connection");
 const { respond } = require("../../../utlis/response");
+const { UpdateOneUserValidation } = require("./ValidateUpdateOneUser");
 
 
 const UpdateUsers = require("express").Router();
 
+UpdateUsers.patch("/one", async (req, res) => {
+    try {
+        const isValid = await UpdateOneUserValidation(req.body)
+        delete req.body.companyID
+        if(isValid.status){
+            await knex("users").update(req.body).where({ id: req.body.id })
+            res.status(200).send({ status: true, message: "Usuarioactualizado con éxito." })
 
+        }else{
+            res.status(400).send({ status: false, message: `${isValid.data.invalidParameters.toString()}` + `${isValid.data.missingParameters.toString()}` })
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({ status: false, message: "No se pudo actualizar el usuario" })
+    }
+});
 
 UpdateUsers.patch("/theme", async (req, res) => {
     try {

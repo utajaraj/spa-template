@@ -7,7 +7,7 @@ const UpdateOneCompanySiteValidation = async (body, verbose = false) => {
     company_site_name: {
       missingMessage: "Nombre es requerido",
     },
-    address: {
+    company_site_address: {
       missingMessage: "Dirección es requerida",
     },
     modified_by: {

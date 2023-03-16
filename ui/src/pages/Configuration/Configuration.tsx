@@ -1,22 +1,37 @@
-import { Link } from "react-router-dom";
-import { Button } from "antd"
+import React, { useState } from 'react';
+import { Tabs } from 'antd';
+import type { TabsProps } from 'antd';
+import Companies from './Companies';
+import Categories from './Categories';
+import Brands from './Brands';
 
-const Configuration = ({ ...props }) => {
+
+const CompaniesTabbingPage = ({ ...props }) => {
+
+
+    const items: TabsProps['items'] = [
+        {
+            key: 'empresas',
+            label: `Empresas`,
+            children: <Companies />
+        },
+        {
+            key: 'marcas',
+            label: `Marcas`,
+            children: <Brands />
+        },
+        {
+            key: 'categorias',
+            label: `Categorias`,
+            children: <Categories />
+        },
+    ];
 
     return (
         <div>
-            <h1 style={{ textAlign: "center" }}>Módulo de configuración</h1>
-
-            <div style={{ textAlign: "center" }}>
-                <Link to="/cotizaciones">
-                    <Button>
-                        Cotizaciones
-                    </Button>
-                </Link>
-            </div>
-
+            <Tabs defaultActiveKey="appConfig" items={items} />
         </div>
     )
 }
 
-export default Configuration
+export default CompaniesTabbingPage

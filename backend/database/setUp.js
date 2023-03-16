@@ -19,7 +19,7 @@ const createDatabaseSchemas = async () => {
             await knex.schema.createTable('companysites', function (t) {
                 t.increments('id').primary().unique().notNullable();
                 t.string('companyID', 100).notNullable().unique();
-                t.string('address', 100).notNullable().unique();
+                t.string('company_site_address', 100).notNullable().unique();
                 t.string('company_site_name', 100).notNullable().unique();
                 t.datetime('created_at', { precision: 6 }).defaultTo(knex.fn.now(6)).notNullable()
                 t.integer('created_by', 100).notNullable()
@@ -47,6 +47,9 @@ const createDatabaseSchemas = async () => {
             await knex.schema.createTable('companies', function (t) {
                 t.increments('id').primary().unique().notNullable();
                 t.string('company_name', 100).notNullable().unique();
+                t.string('comppany_comercial_name', 100).unique();
+                t.string('comppany_color', 100).unique();
+                t.string('logo_name', 100).unique();
                 t.string('company_address', 100).notNullable().unique();
                 t.string('tax_id', 100).notNullable().unique();
                 t.datetime('created_at', { precision: 6 }).defaultTo(knex.fn.now(6)).notNullable()
@@ -65,7 +68,7 @@ const createDatabaseSchemas = async () => {
                 t.string('user_name', 100).notNullable();
                 t.string('user_middle_name', 100);
                 t.string('user_last_name', 100).notNullable();
-                t.string('email', 100).notNullable();
+                t.string('email', 100).unique().notNullable();
                 t.string('color', 100).notNullable();
                 t.boolean('collapsed', 100).notNullable();
                 t.boolean('theme', 100).notNullable();

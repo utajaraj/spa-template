@@ -255,6 +255,14 @@ const Quotes = ({ ...props }) => {
 
         },
         {
+          key: "reference",
+          dataIndex: "reference",
+          width: "50px",
+          title: "No. Cotización",
+          ...TextSearchFilter("reference", "No. Cotización"),
+
+        },
+        {
           key: "profit",
           dataIndex: "profit",
           width: "85px",

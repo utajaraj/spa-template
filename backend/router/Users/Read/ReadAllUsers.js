@@ -7,7 +7,8 @@ ReadAllUsers.get("/all", async (req, res) => {
   try {
     const response = await knex.select([
       "users.*",
-      "companysites.company_site_name"
+      "companysites.company_site_name",
+      "companysites.companyID"
     ]).from("users")
     .leftJoin('companysites', 'users.company_siteID', '=', 'companysites.id')
     res.send(response);

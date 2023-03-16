@@ -7,6 +7,9 @@ const AddOneCompanySitesValidation = async (body, verbose = false) => {
     companyID: {
       missingMessage: "Nombre de sucursal es requerido",
     },
+    company_site_address: {
+      missingMessage: "Dirección de sucursal es requerido",
+    },
     company_site_name: {
       missingMessage: "Nombre de sucursal es requerido",
     },

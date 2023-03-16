@@ -1,0 +1,38 @@
+.updateCompanyForm{
+    padding: 0 35px 35px;
+}
+.updateCompanySiteForm{
+    padding: 35px;
+    background: var(--coolor3);
+}
+.CompanySiteSelector{
+    padding: 15px;
+    background: var(--coolor4);
+    margin: 10px 0;
+    transition: background 0.3s ease;
+}
+.CompanySiteSelector:hover{
+    background: var(--coolor19)!important;
+    color: white;
+    transition: background 0.3s ease;
+    cursor: pointer;
+}
+.CompanySiteSelector.active{
+    background: var(--coolor20)!important;
+    transition: background 0.3s ease;
+    cursor: pointer;
+    color: white;
+}
+
+.catalogueContainer{
+    display: flex;
+    justify-content: space-between;
+}
+.catalogueContainer>*{
+    width: 45%;
+}
+.catalogueContainer>*>*{
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: var(--coolor3);
+}

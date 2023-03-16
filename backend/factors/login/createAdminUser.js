@@ -37,7 +37,7 @@ const createAdminUser = async ({ username, password, company_name, company_addre
             const companySite = {
                 companyID: newCompany,
                 company_site_name: `${company_name} - Planta 1`,
-                address: company_address,
+                company_site_address: company_address,
                 created_by: 0,
                 modified_by: 0,
             }

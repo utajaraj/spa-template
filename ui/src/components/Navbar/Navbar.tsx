@@ -1,4 +1,4 @@
-import { Dispatch, useState } from "react"
+import { Dispatch, useEffect, useState } from "react"
 import { AiFillSecurityScan } from "react-icons/ai";
 import { MdPrecisionManufacturing } from "react-icons/md"
 import { RiBillFill } from "react-icons/ri"
@@ -12,7 +12,7 @@ import { Modal } from "antd"
 import { Requester } from "../../factors/Requester";
 import { notify } from "../../factors/notify";
 import { Subject } from 'rxjs';
-export const sidenavState =  new Subject();
+export const sidenavState = new Subject();
 
 const setMyTheme = async (color: string | undefined, theme: boolean | undefined, collapsed: boolean | undefined) => {
     const updateMyColor = await new Requester({ url: import.meta.env.VITE_APP_APIURL + "/users/update/theme", method: "patch", body: { color, theme, collapsed } }).send()
@@ -34,17 +34,22 @@ const setMyTheme = async (color: string | undefined, theme: boolean | undefined,
 }
 interface Props {
     show: boolean;
-    setShow: Dispatch<boolean>
+    setShow: Dispatch<boolean>,
+    company:any
 }
-export const Links = ({ show, setShow }: Props) => {
+
+
+export const Links = ({ show, setShow, company }: Props) => {
+
+
     const [openDrawer, setOpenDrawer] = useState<boolean>(false)
-    return <div  className={`${show ? "extend" : "collapse"} links`}>
+    return <div className={`${show ? "extend" : "collapse"} links`}>
         <Modal footer={null} onCancel={() => { setOpenDrawer(false) }} closable={true} open={openDrawer}>
             <div className="style_option_container">
                 <div>
                     Color de aplicación
                 </div>
-                <div style={{ padding: "15px", backgroundColor: "var(--coolor20)", width: "100%", marginBottom:"15px", color:"white", fontWeight:"bold", textAlign:"center" }}>
+                <div style={{ padding: "15px", backgroundColor: "var(--coolor20)", width: "100%", marginBottom: "15px", color: "white", fontWeight: "bold", textAlign: "center" }}>
                     Color seleccionado
                 </div>
                 <div className="style_option" onClick={() => { setMyTheme("#5b3de2", undefined, undefined) }} style={{ color: "#5b3de2", borderColor: "#5b3de2" }}>Azul</div>
@@ -70,7 +75,7 @@ export const Links = ({ show, setShow }: Props) => {
             </div>
         </Modal>
         <div id="sidenavLogo" style={{ justifyContent: "center" }}>
-            <img id="logo" style={{ width: show ? "60px" : "40px" }} src="/garle-logo.png" />
+            <img id="logo" style={{ width: show ? "170px" : "65px" }} src={company.logo_name ? `/${ company.logo_name}.svg` : ""} />
         </div>
         <Link to="/cotizaciones">
             <div className="linkContent">
@@ -122,13 +127,13 @@ export const Links = ({ show, setShow }: Props) => {
         </Link>
     </div>
 }
-const Navbar = ({ show, setShow }: Props) => {
+const Navbar = ({ show, setShow, company }: Props) => {
 
 
 
     return (
         <div id="nav" className={`${show ? "showLinks" : "hideLinks"}`}>
-            <Links show={show} setShow={setShow} />
+            <Links show={show} setShow={setShow}  company={company}/>
         </div>
     )
 }

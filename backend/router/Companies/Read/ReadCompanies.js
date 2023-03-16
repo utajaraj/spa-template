@@ -12,6 +12,15 @@ ReadCompanies.get("/all", async (req, res) => {
   }
 });
 
+ReadCompanies.get("/one", async (req, res) => {
+  try {
+    const companies = await knex("companies").first()
+    res.status(200).send(companies)
+  } catch (error) {
+    res.status(200).send([])
+  }
+});
+
 
 ReadCompanies.get("/id/:id", async (req, res) => {
   try {

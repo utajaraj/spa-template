@@ -15,7 +15,7 @@ ReadCompanySites.get("/all", async (req, res) => {
 
 ReadCompanySites.get("/id/:id", async (req, res) => {
   try {
-    const companies = await knex("companysites").where({id:req.params.id})
+    const companies = await knex("companysites").where({companyID:req.params.id})
     res.status(200).send(companies)
   } catch (error) {
     res.status(200).send([])
