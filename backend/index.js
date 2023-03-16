@@ -1,8 +1,8 @@
 var https = require("https")
 const { readFileSync } = require("fs")
 require("dotenv").config()
-var privateKey = readFileSync(__dirname + process.env.KEYPATH +".key", "utf8")
-var certificate = readFileSync(__dirname + process.env.CERTPATH+".crt", "utf8")
+var privateKey = readFileSync(__dirname  +"/garlecloud.key", "utf8")
+var certificate = readFileSync(__dirname +"/garlecloud.crt", "utf8")
 var credentials = { key: privateKey, cert: certificate }
 const express = require("express")
 const app = express()
@@ -93,9 +93,9 @@ createDatabaseSchemas()
             app.use("/api/v1", (req, res, next) => { auth(req, res, next) })
             app.use("/api/v1", routes)
             app.use("/api/*", (req, res, next) => { auth(req, res, next) })
-            app.use("/crm", serveStatic(__dirname + "/public"))
+            app.get("/crm", serveStatic(__dirname + "/public"))
             app.all("*", (req, res) => {
-                res.status(200).redirect("/");
+                res.status(200).redirect("/login");
             })
         } else {
             app.all("*", (req, res) => {
