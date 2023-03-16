@@ -93,7 +93,7 @@ createDatabaseSchemas()
             app.use("/api/v1", (req, res, next) => { auth(req, res, next) })
             app.use("/api/v1", routes)
             app.use("/api/*", (req, res, next) => { auth(req, res, next) })
-            app.use("/", serveStatic(__dirname + "/public"))
+            app.use("/crm", serveStatic(__dirname + "/public"))
             app.all("*", (req, res) => {
                 res.status(200).redirect("/");
             })
