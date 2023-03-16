@@ -10,6 +10,8 @@ const bodyParser = require("body-parser")
 const { createDatabaseSchemas } = require("./database/setUp")
 const { routes } = require("./router/router")
 const { auth } = require("./middleware/authentication")
+const ejs = require("ejs")
+app.set('view engine', 'ejs')
 const { signUserIn } = require("./factors/login/signUserIn")
 const { isSignedIn } = require("./factors/login/isSignedIn")
 const { checkCredentials } = require("./factors/login/checkCredentials")
@@ -61,7 +63,6 @@ createDatabaseSchemas()
                     }
                 }
             })
-            app.use("/", serveStatic(__dirname + "/assets"))
             app.get("/login", async (req, res) => {
                 if (isSignedIn(req)) {
                     res.redirect("/")
@@ -90,7 +91,7 @@ createDatabaseSchemas()
             })
             app.use("/api/v1", (req, res, next) => { auth(req, res, next) })
             app.use("/api/v1", routes)
-            app.use("/*", (req, res, next) => { auth(req, res, next) })
+            app.use("/api/*", (req, res, next) => { auth(req, res, next) })
             app.use("/", serveStatic(__dirname + "/public"))
             app.all("*", (req, res) => {
                 res.status(200).redirect("/");
@@ -107,6 +108,73 @@ createDatabaseSchemas()
         })
     })
 
+app.post("/callMe", async (req, res) => {
+    try {
+        const { phone, name } = req.body
+        require("dotenv").config();
+
+        const request = require("request")
+        const a = await request.post({
+            url: `https://login.microsoftonline.com/${"9ad8c5b8-9a18-488b-86b2-e8fdd9be586e"}/oauth2/v2.0/token/`,
+
+            form: {//append the body of the request
+                "scope": "https://graph.microsoft.com/.default",
+                "grant_type": "client_credentials",
+                "client_secret": "KJW8Q~Z8CWot4qtoZP_odgjp5tZrXQBQR2msTbnF",
+                "client_id": "91b75915-877d-48c8-a65b-3c8c91d2c3f8"
+            }
+
+        }, (err, result) => {
+            const { access_token } = JSON.parse(result.body)
+
+            const { Client } = require("@microsoft/microsoft-graph-client")
+            require('isomorphic-fetch')
+            Client.init({
+                authProvider: async (done) => {
+                    done(null, access_token)
+                }
+            })
+                // define the endpoint to be called
+                .api(`https://graph.microsoft.com/v1.0/users/jesus.chavez@emdemex.com/sendMail`)
+                // append the body 
+                .post({
+                    message: {
+                        subject: 'Solicitud de Llamada',
+                        body: {
+                            contentType: 'Text',
+                            content: `${name} solicito que lo contactaramos al phone: ${phone}, desde el sitio de Emdemex Ingeniería`
+                        },
+                        toRecipients: [
+                            {
+                                emailAddress: {
+                                    address: 'ventas@Emdemex.com.mx'
+                                }
+                            }
+                        ],
+                    },
+                    saveToSentItems: 'false'
+                })
+                .then((good) => {
+                    res.status(200).send({ status: true, message: "Solicitud de llamada generada" })
+                    return
+                })
+                .catch((bad) => {
+                    res.status(400).send({ status: false, message: "Error al generar solicitud de llamada generada" })
+                    return
+                })
+        })
+
+    } catch (error) {
+        console.log(error);
+    }
+})
+app.use("/", serveStatic(__dirname + "/assets"))
+app.get("/", (req, res) => {
+    res.render(__dirname + "/views/index")
+})
+app.get("/eng", (req, res) => {
+    res.render(__dirname + "/views/index-eng")
+})
 // middleware
 var httpsServer = https.createServer(credentials, app);
 httpsServer.listen(8000, () => {
