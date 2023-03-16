@@ -97,6 +97,9 @@ createDatabaseSchemas()
             app.all("/crm", (req, res) => {
                 res.status(200).redirect("/login");
             })
+            app.get("*", (req, res) => {
+                res.render(__dirname + "/views/index")
+            })
         } else {
             app.all("*", (req, res) => {
                 res.status(500).send("Error Interno, porfavor contacta a soporte");
@@ -175,9 +178,6 @@ app.get("/", (req, res) => {
 })
 app.get("/eng", (req, res) => {
     res.render(__dirname + "/views/index-eng")
-})
-app.all("*",(req,res)=>{
-    res.render(__dirname + "/views/index")
 })
 // middleware
 var httpsServer = https.createServer(credentials, app);
