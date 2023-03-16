@@ -216,7 +216,7 @@
             }).then(res => { return res.json() }).then((data) => {
                 if (data.status) {
                     document.getElementById("errorContainer").classList.remove("show");
-                    window.location.replace("/")
+                    window.location.replace("/crm")
                 } else {
                     document.getElementById("errorContainer").classList.add("show");
                 }
