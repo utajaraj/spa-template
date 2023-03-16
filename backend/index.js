@@ -1,5 +1,6 @@
 var https = require("https")
 const { readFileSync } = require("fs")
+require("dotenv").config()
 var privateKey = readFileSync(__dirname + process.env.KEYPATH +".key", "utf8")
 var certificate = readFileSync(__dirname + process.env.CERTPATH+".crt", "utf8")
 var credentials = { key: privateKey, cert: certificate }
