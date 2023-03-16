@@ -8,7 +8,7 @@ const AddOneQuotesValidation = async (body, verbose = false) => {
     companyID: {
       missingMessage: "Empresa es obligatoria",
       invalidMessage: "Empresa Inválida",
-      dataType:Integer
+      dataType: Integer
     },
     currency: {
       missingMessage: "Moneda es obligatorio",
@@ -46,8 +46,8 @@ const AddOneQuotesValidation = async (body, verbose = false) => {
       dataType: Integer,
     },
     exchange_rate: {
-      dataType:LongDecimal,
-      missingMessage:"Tasa de cambio es obligatoria",
+      dataType: LongDecimal,
+      missingMessage: "Tasa de cambio es obligatoria",
       invalidMessage: "Tasa de conversión tiene que ser un número valido"
     },
   };

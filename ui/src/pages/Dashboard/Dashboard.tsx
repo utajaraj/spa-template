@@ -7,7 +7,7 @@ const Dashboard = ({ ...props }) => {
 
     return (
         <div>
-            <h1 style={{ textAlign: "center" }}>Intranet de Ventas Aliado</h1>
+            <h1 style={{ textAlign: "center" }}>Intranet de Ventas Garle</h1>
 
             <div style={{ textAlign: "center" }}>
                 <Link to="/cotizaciones">
