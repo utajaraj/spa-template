@@ -17,11 +17,9 @@ const UpdateOneQuotesValidation = async (body, verbose = false) => {
       dataType:LongDecimal,
       invalidMessage: "Tasa de conversión tiene que ser un número valido"
     },
-    company: {
-      invalidMessage: "Empresa solo puede ser Garle S. de R.L de C.V o GR Industrial Inc.",
-      function: (value) => {
-        return ["Garle", "GR Industrial"].includes(value)
-      }
+    companyID: {
+      dataType: Integer,
+      invalidMessage:"Empresa inválida."
     },
     currency: {
       options: ["MXN", "USD"],

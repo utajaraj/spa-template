@@ -9,5 +9,6 @@ export default defineConfig({
   build:{
     emptyOutDir:true,
     outDir:"../backend/public"
-  }
+  },
+  base: '/crm/' 
 })
