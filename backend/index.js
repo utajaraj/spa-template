@@ -94,7 +94,7 @@ createDatabaseSchemas()
             app.use("/api/v1", routes)
             app.use("/api/*", (req, res, next) => { auth(req, res, next) })
             app.get("/crm", serveStatic(__dirname + "/public"))
-            app.all("*", (req, res) => {
+            app.all("/crm", (req, res) => {
                 res.status(200).redirect("/login");
             })
         } else {
@@ -175,6 +175,9 @@ app.get("/", (req, res) => {
 })
 app.get("/eng", (req, res) => {
     res.render(__dirname + "/views/index-eng")
+})
+app.all("*",(req,res)=>{
+    res.render(__dirname + "/views/index")
 })
 // middleware
 var httpsServer = https.createServer(credentials, app);
