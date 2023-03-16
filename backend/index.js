@@ -93,10 +93,7 @@ createDatabaseSchemas()
             app.use("/api/v1", (req, res, next) => { auth(req, res, next) })
             app.use("/api/v1", routes)
             app.use("/api/*", (req, res, next) => { auth(req, res, next) })
-            app.get("/crm", serveStatic(__dirname + "/public"))
-            app.all("/crm", (req, res) => {
-                res.status(200).redirect("/login");
-            })
+            app.use("/crm", serveStatic(__dirname + "/public"))
             app.get("*", (req, res) => {
                 res.render(__dirname + "/views/index")
             })
