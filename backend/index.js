@@ -1,7 +1,7 @@
 var https = require("https")
 const { readFileSync } = require("fs")
-var privateKey = readFileSync(__dirname + "/garlecloud.key", "utf8")
-var certificate = readFileSync(__dirname + "/garlecloud.crt", "utf8")
+var privateKey = readFileSync(__dirname + process.env.KEYPATH +".key", "utf8")
+var certificate = readFileSync(__dirname + process.env.CERTPATH+".crt", "utf8")
 var credentials = { key: privateKey, cert: certificate }
 const express = require("express")
 const app = express()
@@ -177,6 +177,6 @@ app.get("/eng", (req, res) => {
 })
 // middleware
 var httpsServer = https.createServer(credentials, app);
-httpsServer.listen(8000, () => {
-    console.log(`Running on port: 8000`)
+httpsServer.listen(process.env.SRVPORT, () => {
+    console.log(`Running on port: ${process.env.SRVPORT}`)
 })
