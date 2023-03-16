@@ -24,7 +24,7 @@
 
 
     <div class="uk-position-relative hero-nav">
-        <img src="images/arms.jpg" style="width:100%;position: absolute;filter: brightness(0.2);"
+        <img src="/images/arms.jpg" style="width:100%;position: absolute;filter: brightness(0.2);"
             alt="Automatizacion Industrial">
         <div uk-sticky="start: 200; animation: uk-animation-slide-top; sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; cls-inactive: uk-navbar-transparent"
             class="uk-sticky uk-sticky-below uk-sticky-fixed"
@@ -42,14 +42,11 @@
 
 
                         <div class="uk-navbar-right">
-
+                            
+                            <a href="#contactForm"><button class="focusContact">Contact</button></a>
                             <ul class="uk-navbar-nav" role="group">
-                                <li class="uk-active" role="presentation"><a href="#" tabindex="-1"
-                                        role="menuitem">Inicio</a></li>
-                                <li role="presentation"><a href="#contactForm" tabindex="-1"
-                                        role="menuitem">Contacto</a></li>
-                                <!-- <li role="presentation"><a href="/english" tabindex="-1" role="menuitem">English</a> -->
-                                </li>
+                                <li class="uk-active"><a href="#" tabindex="-1" role="menuitem">Home</a></li>
+                                <li><a href="/" tabindex="-1" role="menuitem">Español</a></li>
                             </ul>
                         </div>
 
@@ -93,7 +90,7 @@
             <p>Aliado provides cutting-edge IT consulting, development, and integration services. Handling software
                 validations, legacy migrations, risk, compliance & resilience management, BI, AI, and the full lifecycle
                 of enterprise IT Solutions.</p>
-            <a href="#contactForm"><button>Contact</button></a>
+            <a href="#contactForm"><button class="focusContact">Contact</button></a>
         </div>
         <div class="servicio" style="
     width: 30%;
@@ -104,7 +101,7 @@
             <h4>Value Added Automation.</h4>
             <p>We provide cost-effective manufacturing and manufacturing automation solutions. With our deep domain
                 expertise, we provide value-added solutions in robotics, machine, systems, and factory automation.</p>
-            <a href="#contactForm"><button>Contact</button></a>
+            <a href="#contactForm"><button class="focusContact">Contact</button></a>
         </div>
         <div class="servicio" style="
     width: 30%;
@@ -117,7 +114,7 @@
                 custom industrial data analysis and IIOT integrations to enable faster, better, smarter business
                 decisions.
             </p>
-            <a href="#contactForm"><button>Contact</button></a>
+            <a href="#contactForm"><button class="focusContact">Contact</button></a>
         </div>
     </div>
 
@@ -138,7 +135,7 @@
                 biotech, healthcare and food manufacturing sectors . We also implement industry best practices to ensure
                 the compliance of your processes in accordance with FDA, EU, or other regulatory standards.
             </p>
-            <a href="#contactForm"><button>Contact</button></a>
+            <a href="#contactForm"><button class="focusContact">Contact</button></a>
         </div>
         <div class="servicio" style="
     width: 30%;
@@ -151,7 +148,7 @@
                 We ensure the security and performance of your enterprise network and your data centers, by developing a
                 resilient infrastructure with robust workload capacity for the most demanding business needs.
             </p>
-            <a href="#contactForm"><button>Contact</button></a>
+            <a href="#contactForm"><button class="focusContact">Contact</button></a>
         </div>
         <div class="servicio" style="
     width: 30%;
@@ -165,14 +162,14 @@
                 abrasives, safety equipment, industrial products, machinery, measuring, general tooling, seals, paint
                 and floors.
             </p>
-            <a href="#contactForm"><button>Contact</button></a>
+            <a href="#contactForm"><button class="focusContact">Contact</button></a>
         </div>
     </div>
     <div class="tag">
         <p>
             We are helping comanies<b>achieve amazing results solving difficult problems</b>.
         </p>
-        <a href="#contactForm"><button>Contact Us</button></a>
+        <a href="#contactForm"><button class="focusContact">Contact Us</button></a>
     </div>
     <footer>
         <div class="information">
@@ -222,18 +219,18 @@
             </div>
         </div>
         <div class="contact" id="contactForm">
-            <div id="phoneError">Número celular inválido.</div>
+            <div id="phoneError">Invalid phone number.</div>
             <div class="inputContainer">
-                <label for="name">Nombre</label>
+                <label for="name">Name</label>
                 <input id="name" placeholder="E.g. Jose" />
             </div>
             <div class="inputContainer">
-                <label for="cel">Número de teléfono</label>
+                <label for="cel">Phone Number</label>
                 <input id="cel" type="number" placeholder="6561234576" />
             </div>
             <button id="callMe">
                 <div uk-spinner id="loader"></div>
-                Quiero que me contacten
+                Contact me.
             </button>
         </div>
     </footer>
@@ -245,8 +242,18 @@
 <script>
     const button = document.getElementById("callMe")
     const loader = document.getElementById("loader")
-    const submit = async () => {
+    const elements = document.getElementsByClassName("focusContact")
 
+    const focusContact = () => {
+        document.getElementById("name").focus()
+    }
+
+    for (let i = 0; i < elements.length; i++) {
+        const element = elements[i];
+        element.addEventListener("click", focusContact)
+    }
+
+    const submit = async () => {
         const phone = document.getElementById("cel").value
         const name = document.getElementById("name").value
         const isTenDigitPhone = /^(?:\d{2}-\d{3}-\d{3}-\d{3}|\d{10})$/.test(phone)
@@ -277,6 +284,7 @@
 
 
     }
+    
     button.addEventListener("click", submit)
 </script>
 

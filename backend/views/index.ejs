@@ -1,16 +1,16 @@
 <html lang="es-MX" data-website-id="2" data-main-object="website.page(7,)" data-is-published="True"
     data-can-publish="True" data-translatable="1" data-view-xmlid="website.homepage" data-viewid="2506"
-    data-oe-company-name="Aliado" data-country="MX" data-logged="true" data-browser="chrome,110.0.0.0">
+    data-oe-company-name="Emdemex LLC" data-country="MX" data-logged="true" data-browser="chrome,110.0.0.0">
 
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="default_title" content=" Home | Aliado ">
+    <meta name="default_title" content=" Home | Emdemex LLC ">
     <meta name="default_description">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Home | Aliado">
-    <meta property="og:site_name" content="Aliado">
+    <meta property="og:title" content="Home | Emdemex LLC">
+    <meta property="og:site_name" content="Emdemex LLC">
     <meta property="og:url" content="https://www.alido.com.mx">
     <link rel="stylesheet" href="/main.css">
     <link rel="stylesheet" href="/aliado.css">
@@ -46,9 +46,8 @@
                             <ul class="uk-navbar-nav" role="group">
                                 <li class="uk-active" role="presentation"><a href="#" tabindex="-1"
                                         role="menuitem">Inicio</a></li>
-                                <li role="presentation"><a href="#contactForm" tabindex="-1"
-                                        role="menuitem">Contacto</a></li>
-                                <!-- <li role="presentation"><a href="/english" tabindex="-1" role="menuitem">English</a> -->
+                                <li role="presentation"><a class="focusContact" href="#contactForm" tabindex="-1" role="menuitem">Contacto</a></li>
+                                <li role="presentation"><a href="/eng" tabindex="-1" role="menuitem">English</a>
                                 </li>
                             </ul>
                         </div>
@@ -65,18 +64,17 @@
         flex-wrap: wrap;
         padding-left: 10vw;">
             <div style="width:75%">
-                <h1 class="hero-line">
-                    Engineering Tecnical Services and Industrial Supplies
-                </h1>
-                <p class="hero-sub-line">Aliado provides quality enterprise solutions in industrial supplies,
-                    engineering services, and enterprise management to large businesses and fortune 500 companies. In
-                    the following business sectors: Industrial, IT, Manufacturing, Agriculture, Pharmaceutical, Medical
-                    Devices, Finance.</p>
+                <h1 class="hero-line">Servicios de Ingeniería Técnica y
+                    Proveeduría Industrial</h1>
+                <p class="hero-sub-line">Emdemex LLC es proveedor de soluciones de calidad en proveduría
+                    industrial, servicios de ingeniería, y gestión empresarial para empresa grandes y de fortune 500. En
+                    los siguientes sectores de industria: tecnologías de la información, manofactura, farmaceutica,
+                    equipos médicos, y finanzas</p>
             </div>
         </div>
     </div>
     <div style="text-align:center;padding: 35px;">
-        <h2 class="sectionTitle" style=" font-size: 48px;">Solutions</h2>
+        <h2 class="sectionTitle" style=" font-size: 48px;">Servicios</h2>
     </div>
     <div class="servicios" style="
     display: flex;
@@ -89,35 +87,39 @@
 ">
             <img src="/images/ui.jpg" />
             <h3>Servicios de TI</h3>
-            <h4>Cutting-edge IT Consulting.</h4>
-            <p>Aliado provides cutting-edge IT consulting, development, and integration services. Handling software
-                validations, legacy migrations, risk, compliance & resilience management, BI, AI, and the full lifecycle
-                of enterprise IT Solutions.</p>
-            <a href="#contactForm"><button>Contact</button></a>
+            <h4>Consultoría de TI de punta.</h4>
+            <p>Aliado es proveedor avanzado de consultoría en TI, desarrollo de software, y digitalización empresarial.
+                Manejando validaciónes de software, migraciones de legado, riesgo, aseguranza &amp; gestiónde
+                resilencia, BI, AI, y el ciclo de vida completo de solutiones en tecnologías de la información.</p>
+            <button class="focusContact">Contacto</button>
         </div>
         <div class="servicio" style="
     width: 30%;
     padding: 0px;
 ">
-            <img src="/images/arms.jpg">
-            <h3>Industrial Automation.</h3>
-            <h4>Value Added Automation.</h4>
-            <p>We provide cost-effective manufacturing and manufacturing automation solutions. With our deep domain
-                expertise, we provide value-added solutions in robotics, machine, systems, and factory automation.</p>
-            <a href="#contactForm"><button>Contact</button></a>
+            <img src="/images/arms.jpg" style="
+
+">
+            <h3>Automatización Industrial.</h3>
+            <h4>Agregando valor con automatización.</h4>
+            <p>Somos proveedores de soluciones costeables de automatización industrial. Con nuestra experiencia en el
+                dominio, encontramos soluciones de valor-añadido en robótica, maquinaría, sistemas, y automatización de
+                manofactura.</p>
+            <button class="focusContact">Contacto</button>
         </div>
         <div class="servicio" style="
     width: 30%;
     padding: 0px;
 ">
-            <img src="/images/iiot.jpg">
-            <h3>Indutrial IOT and Business Intelligence</h3>
-            <h4>Extend operational visibility.</h4>
-            <p>Around 20% of manufacturing data is never used. And even a smaller percentage is analyzed. We provide
-                custom industrial data analysis and IIOT integrations to enable faster, better, smarter business
-                decisions.
+            <img src="/images/iiot.jpg" style="
+
+">
+            <h3>IOT Industrial e Inteligencia de Negocios</h3>
+            <h4>Extiende tu visibilidad operacional.</h4>
+            <p>Somos proveedores de soluciones en análisis de datos e integración de IIOT para habilitar decisiones
+                empresarial más rápidas, mejores, e inteligentes.​
             </p>
-            <a href="#contactForm"><button>Contact</button></a>
+            <button class="focusContact">Contacto</button>
         </div>
     </div>
 
@@ -131,62 +133,67 @@
     padding: 0px;
 ">
             <img src="/images/validation.jpg">
-            <h3>Process, System and Machine Validations.</h3>
-            <h4>Assurance in Regulatory Compliance.</h4>
+            <h3>Validación de procesos, sistemas y maquínas.</h3>
+            <h4>Certeza en aseguranza regulatoria .</h4>
             <p>
-                We are qualified in the commissioning and qualification of industrial installations in the pharma,
-                biotech, healthcare and food manufacturing sectors . We also implement industry best practices to ensure
-                the compliance of your processes in accordance with FDA, EU, or other regulatory standards.
+                Estamos capacitados en la instalación, validación y mantenimiento de instalaciones industriales en,
+                farmacéutica, biotecnología, sector salud, y alimentos. Implementando las mejores prácticas de la
+                industria para asegurar el cumplimiento de tus procesos de acuerdo con la FDA, EU, y otros estandares
+                regulatorios.
             </p>
-            <a href="#contactForm"><button>Contact</button></a>
+            <button class="focusContact">Contacto</button>
         </div>
         <div class="servicio" style="
     width: 30%;
     padding: 0px;
 ">
             <img src="/images/dataCenter.jpg">
-            <h3>Network Infrastructure and Data Centers.</h3>
-            <h4>Cost Effective Data Center and Cloud Infrastructure.</h4>
+            <h3>Infraestructura de Redes y Centros de Datos.</h3>
+            <h4>Centros de Datos Costeables e Infraestructura en la Nube.
+                .</h4>
             <p>
-                We ensure the security and performance of your enterprise network and your data centers, by developing a
-                resilient infrastructure with robust workload capacity for the most demanding business needs.
+                Aseguramos la seguridad y desempeño de tu red empresarial y tus centros de datos, desarrollando una
+                infraestructura resiliente con una robusta capacidad de carga para satisfacer las operaciones mas
+                demandantes.
             </p>
-            <a href="#contactForm"><button>Contact</button></a>
+            <button class="focusContact">Contacto</button>
         </div>
         <div class="servicio" style="
     width: 30%;
     padding: 0px;
 ">
-            <img src="/images/ui.jpg">
-            <h3>Industrial Supplies</h3>
-            <h4>Efficient solutions in quality industrial supplies.</h4>
+            <img src="/images/ui.jpg" style="
+
+">
+            <h3>Proveeduría Industrial</h3>
+            <h4>Soluciones efectivas en proveeduría industrial.</h4>
             <p>
-                Steel and Iron, electric material, material handling, packaging, automation and industrial controls,
-                abrasives, safety equipment, industrial products, machinery, measuring, general tooling, seals, paint
-                and floors.
+                Fierro y acero, material eléctrico, manejo de material, empacado, automatización y controles
+                industriales, maquinaría, medición, herremientas en general, sellados, pintura y pisos.
             </p>
-            <a href="#contactForm"><button>Contact</button></a>
+            <button class="focusContact">Contacto</button>
         </div>
     </div>
     <div class="tag">
         <p>
-            We are helping comanies<b>achieve amazing results solving difficult problems</b>.
+            Estamos ayudando a empresas a <b>lograr grandes resultados resolviendo problemas difíciles</b>.
         </p>
-        <a href="#contactForm"><button>Contact Us</button></a>
+        <button class="focusContact">Contáctanos</button>
     </div>
     <footer>
         <div class="information">
             <div class="about">
-                <h2>About Us</h2>
+                <h2>Sobre Nosotros</h2>
                 <p>
-                    We believe that profesionalsm is to deliver quality solutions. We have the talent forged only by
-                    years of solving engineering challenges, and when it comes to customer service we don not just go
-                    the extra mile, we go further.
+                    Creamos que profesionalismo es entregar soluciones de calidad. Tenemos el talento forgado por años
+                    de
+                    resolver problemas, Y cuando se trata de servicio al cliente no solo vamos lejos, vamos más allá.
                 </p>
                 <p>
-                    Aliado was born from the desire to facilitate systems, products, and processes. Our mantra is to
-                    resolve problems others ignore.
-                    <b>Profesionalsm. Expertise. Service</b>
+                    A.I.C.M. nació del deseo de facilitar sistemas, productos, y procesos. Y nuestro mantra es resolver
+                    problemas difíciles.
+                    Y nuestra manera de trabajar se resume en tres palabras:
+                    <b>Profesionalismo. Experiencia. Servicio</b>
                 </p>
             </div>
             <div class="location">
@@ -202,7 +209,7 @@
                     </p>
                     <h2>
 
-                        Email: sales@Aliado.com
+                        Email: sales@emdemex.com
                     </h2>
                 </div>
                 <div class="site">
@@ -237,16 +244,24 @@
             </button>
         </div>
     </footer>
-    <div
-        style="font-weight: bold; color:white;background-color: black; width: 100%;text-align: center;padding: 0 25px;">
-        Aliado © All Rights Reserved. <%-new Date().getFullYear()%>
+    <div style="font-weight: bold; color:white;background-color: black; width: 100%;text-align: center;padding: 0 25px;">
+        Aliado Ingeniera Continua Mexicana © Todos los derechos reservados <%-new Date().getFullYear()%>
     </div>
 </body>
 <script>
     const button = document.getElementById("callMe")
     const loader = document.getElementById("loader")
+    const elements = document.getElementsByClassName("focusContact")
+    const focusContact = ()=>{
+        document.getElementById("name").focus()
+    } 
+    
+    for (let i = 0; i < elements.length; i++) {
+        const element = elements[i];
+        element.addEventListener("click", focusContact)
+    }
     const submit = async () => {
-
+        
         const phone = document.getElementById("cel").value
         const name = document.getElementById("name").value
         const isTenDigitPhone = /^(?:\d{2}-\d{3}-\d{3}-\d{3}|\d{10})$/.test(phone)
@@ -274,7 +289,7 @@
         } else {
             errorField.classList.add("show")
         }
-
+        
 
     }
     button.addEventListener("click", submit)
