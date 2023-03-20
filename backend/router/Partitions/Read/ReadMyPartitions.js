@@ -39,8 +39,12 @@ ReadMyPartitions.get("/mine", async (req, res) => {
       .leftJoin('clients', 'quotes.clientID', '=', 'clients.id')
       .leftJoin('buyers', 'quotes.buyerID', '=', 'buyers.id')
       .leftJoin('users', 'quotes.agentID', '=', 'users.id')
+    for (let i = 0; i < partitions.length; i++) {
+      partitions[i].emitted=partitions[i].emitted?"Sí":"No"
+    }
     res.status(200).send(partitions)
   } catch (error) {
+    console.log("error");
     res.status(200).send([])
   }
 });

@@ -77,7 +77,7 @@ export const Links = ({ show, setShow, company }: Props) => {
         <div id="sidenavLogo" style={{ justifyContent: "center" }}>
             <img id="logo" style={{ width: show ? "170px" : "65px" }} src={company.logo_name ? `/${ company.logo_name}.svg` : ""} />
         </div>
-        <Link to="/cotizaciones">
+        <Link to="/crm/cotizaciones">
             <div className="linkContent">
                 <div className="circle">
                     <RiBillFill />
@@ -85,7 +85,7 @@ export const Links = ({ show, setShow, company }: Props) => {
                 <p>Cotizaciones</p>
             </div>
         </Link>
-        <Link to="/odt">
+        <Link to="/crm/odt">
             <div className="linkContent">
                 <div className="circle">
                     <GiCardboardBoxClosed />
@@ -93,7 +93,7 @@ export const Links = ({ show, setShow, company }: Props) => {
                 <p>Ordenes</p>
             </div>
         </Link>
-        <Link to="/clients">
+        <Link to="/crm/clients">
             <div className="linkContent">
                 <div className="circle">
                     <MdPrecisionManufacturing />
@@ -101,7 +101,7 @@ export const Links = ({ show, setShow, company }: Props) => {
                 <p>Clientes</p>
             </div>
         </Link>
-        <Link to="/configuration">
+        <Link to="/crm/configuration">
             <div className="linkContent">
                 <div className="circle">
                     <AiFillSecurityScan />
@@ -109,7 +109,7 @@ export const Links = ({ show, setShow, company }: Props) => {
                 <p>Configuración</p>
             </div>
         </Link>
-        <Link to="/users">
+        <Link to="/crm/users">
             <div className="linkContent">
                 <div className="circle">
                     <HiUserCircle />

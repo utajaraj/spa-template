@@ -42,9 +42,8 @@
 <% const fecha=new Date() %>
 
     <%const { reference, company_address, currency, buyer_name, buyer_last_name, client_name, expiration_date,
-        user_name, user_middle_name, user_last_name, total, totalInWords, company_color, company_commercial_name }=quote
+        user_name, user_middle_name, user_last_name, total, totalInWords, company_color, company_commercial_name, company_name }=quote
         %>
-
         <body style="padding:25px">
             <p style="color: #909090; font-size: 9px;">
                 <%-fecha%> - <%-client_name%>
@@ -54,7 +53,7 @@
                     <%-logo||""%>
                 </div>
                 <div>
-                    <h1 style=<%-`"font-size:18px;padding:15px;text-align:center;background-color:${company_color||'#000'};margin:0;color:white"`%>><%-company_commercial_name||company_name%></h1>
+                    <h1 style="font-size:18px;padding:15px;text-align:center;color:black"><%-company_name||company_commercial_name%></h1>
                     <p style="padding:15px;text-align:center;margin: 0;">Tel. 6563605285</p>
                     <h2 style="text-align:center;margin:0">Sucursales</h2>
                     <p style="padding:0 0 15px;text-align:center;margin:0">Ciudad Juárez-El Paso TX</p>
@@ -107,7 +106,7 @@
                 </h4> -->
             </div>
             <table width="100%">
-                <thead style=<%-`"background-color: ${company_color}"`%>>
+                <thead style=<%-`"background-color: ${company_color||"#000"}"`%>>
                     <tr>
                         <td>
                             Sr
@@ -126,9 +125,12 @@
                                 Marca
                             </td>
                             <%}%>
-                                <td>
-                                    Cantidad
-                                </td>
+                            <td style="width:50px">
+                                Cantidad
+                            </td>
+                            <td>
+                                Tiempo de entrega
+                            </td>
                                 <td>
                                     Unidad
                                 </td>
@@ -160,9 +162,12 @@
                                     <%-partitions[i].brand_name%>
                                 </td>
                                 <%}%>
-                                    <td>
-                                        <%-Number(partitions[i].quantity).toLocaleString('en')%>
-                                    </td>
+                                <td>
+                                    <%-Number(partitions[i].quantity).toLocaleString('en')%>
+                                </td>
+                                <td>
+                                    <%-partitions[i].edd%> días
+                                </td>
                                     <td>
                                         <%-partitions[i].unit%>
                                     </td>

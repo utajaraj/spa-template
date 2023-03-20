@@ -17,8 +17,9 @@ const createDatabaseSchemas = async () => {
         const hasCompanySites = await knex.schema.hasTable('companysites')
         if (!hasCompanySites) {
             await knex.schema.createTable('companysites', function (t) {
+                t.boolean('active', 100).notNullable().defaultTo(true);
                 t.increments('id').primary().unique().notNullable();
-                t.string('companyID', 100).notNullable().unique();
+                t.string('companyID', 100).notNullable()
                 t.string('company_site_address', 100).notNullable().unique();
                 t.string('company_site_name', 100).notNullable().unique();
                 t.datetime('created_at', { precision: 6 }).defaultTo(knex.fn.now(6)).notNullable()
@@ -31,6 +32,7 @@ const createDatabaseSchemas = async () => {
         const hasClientSite = await knex.schema.hasTable('clientsite')
         if (!hasClientSite) {
             await knex.schema.createTable('clientsite', function (t) {
+                t.boolean('active', 100).notNullable().defaultTo(true);
                 t.increments('id').primary().unique().notNullable();
                 t.string('clientID', 100).notNullable().unique();
                 t.string('site_name', 100).notNullable().unique();
@@ -45,10 +47,11 @@ const createDatabaseSchemas = async () => {
         const hasCompany = await knex.schema.hasTable('companies')
         if (!hasCompany) {
             await knex.schema.createTable('companies', function (t) {
+                t.boolean('active', 100).notNullable().defaultTo(true);
                 t.increments('id').primary().unique().notNullable();
                 t.string('company_name', 100).notNullable().unique();
-                t.string('comppany_comercial_name', 100).unique();
-                t.string('comppany_color', 100).unique();
+                t.string('company_comercial_name', 100).unique();
+                t.string('company_color', 100).unique();
                 t.string('logo_name', 100).unique();
                 t.string('company_address', 100).notNullable().unique();
                 t.string('tax_id', 100).notNullable().unique();
@@ -64,6 +67,8 @@ const createDatabaseSchemas = async () => {
         const hasUsers = await knex.schema.hasTable('users')
         if (!hasUsers) {
             await knex.schema.createTable('users', function (t) {
+                
+                t.boolean('active', 100).notNullable().defaultTo(true);
                 t.increments('id').primary().unique().notNullable();
                 t.string('user_name', 100).notNullable();
                 t.string('user_middle_name', 100);
@@ -83,6 +88,7 @@ const createDatabaseSchemas = async () => {
         const hasCategories = await knex.schema.hasTable('categories')
         if (!hasCategories) {
             await knex.schema.createTable('categories', function (t) {
+                t.boolean('active', 100).notNullable().defaultTo(true);
                 t.increments('id').primary().unique().notNullable();
                 t.string('category_name', 100).unique().notNullable();
                 t.datetime('created_at', { precision: 6 }).defaultTo(knex.fn.now(6)).notNullable()
@@ -96,6 +102,7 @@ const createDatabaseSchemas = async () => {
         const hasBrands = await knex.schema.hasTable('brands')
         if (!hasBrands) {
             await knex.schema.createTable('brands', function (t) {
+                t.boolean('active', 100).notNullable().defaultTo(true);
                 t.increments('id').primary().unique().notNullable();
                 t.string('brand_name', 100).unique().notNullable();
                 t.datetime('created_at', { precision: 6 }).defaultTo(knex.fn.now(6)).notNullable()
@@ -107,6 +114,7 @@ const createDatabaseSchemas = async () => {
         const hasClients = await knex.schema.hasTable('clients')
         if (!hasClients) {
             await knex.schema.createTable('clients', function (t) {
+                t.boolean('active', 100).notNullable().defaultTo(true);
                 t.increments('id').primary().unique().notNullable();
                 t.string('client_name', 100).notNullable().unique();
                 t.string('client_serialization', 100).notNullable().unique();
@@ -126,6 +134,7 @@ const createDatabaseSchemas = async () => {
         const hasBuyers = await knex.schema.hasTable('buyers')
         if (!hasBuyers) {
             await knex.schema.createTable('buyers', function (t) {
+                       t.boolean('active', 100).notNullable().defaultTo(true);
                 t.increments('id').primary().unique().notNullable();
                 t.string('buyer_name', 100).notNullable();
                 t.string('buyer_last_name', 100);
@@ -165,9 +174,10 @@ const createDatabaseSchemas = async () => {
                 t.increments('id').primary().unique().notNullable();
                 t.string('partition_name', 100).notNullable();
                 t.string('description', 100).notNullable();
+                t.string('status', 100);
                 t.string('part_number', 100)
                 t.string('unit', 100).notNullable();
-                t.datetime('edd', { precision: 6 });
+                t.integer('edd', 100);
                 t.integer('quoteID', 100).notNullable();
                 t.decimal('quantity').notNullable();
                 t.integer('categoryID', 100);

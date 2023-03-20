@@ -64,11 +64,7 @@ ReadMyQuotes.get("/total", async (req, res) => {
           buyer: `${partition.buyer_name}${partition.buyer_last_name ? " " + partition.buyer_last_name : ""}`,
           cost: partition.cost,
           factor: partition.cost,
-          edd: [new Date(partition.edd).toLocaleDateString('en', {
-            year: "2-digit",
-            month: "2-digit",
-            day: "2-digit"
-          })],
+          edd: partition.edd,
           expiration_date: new Date(partition.expiration_date).toLocaleDateString('en', {
             year: "2-digit",
             month: "2-digit",

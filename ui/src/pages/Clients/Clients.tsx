@@ -8,7 +8,7 @@ const Clients = ({ ...props }) => {
             <h1 style={{ textAlign: "center" }}>Módulo de clientes</h1>
 
             <div style={{ textAlign: "center" }}>
-                <Link to="/cotizaciones">
+                <Link to="/crm/cotizaciones">
                     <Button>
                         Cotizaciones
                     </Button>

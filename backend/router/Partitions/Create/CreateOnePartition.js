@@ -52,7 +52,6 @@ CreateOneQuote.post("/one", async (req, res) => {
                 }
             }
 
-            req.body.edd = new Date(new Date(req.body.edd).toLocaleString('en-US', {timeZone: 'America/Denver'})).toISOString().replace(/T/, ' ').replace(/\..+/, '')
 
             knex("partitions").insert(req.body).then(async (e) => {
 

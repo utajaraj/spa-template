@@ -26,6 +26,7 @@ const formatter = new Intl.NumberFormat('en-US', {
 interface PartitionInterface {
 
   key: any,
+  status?: string,
   id?: string,
   partition_name?: string,
   description?: string,
@@ -227,7 +228,7 @@ const Partitions = ({ ...props }) => {
             autoFocus
             options={[]}
           />
-          <Space style={{marginTop:"15px"}}>
+          <Space style={{ marginTop: "15px" }}>
             <Button
               type="primary"
               onClick={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
@@ -280,7 +281,7 @@ const Partitions = ({ ...props }) => {
         }
       },
       sorter: (a: any, b: any) => {
-        return a[dataIndex].localeCompare(b[dataIndex]);
+        return a[dataIndex]?.localeCompare(b[dataIndex]);
       },
       render: (value: any) => {
         return searchedColumn === dataIndex ? (
@@ -398,14 +399,33 @@ const Partitions = ({ ...props }) => {
     }
 
   }
-
+  // const statuses = ["Abierta", "Requerida", "No Requerida"]
+  // const updatePartitionStatus = async (a: any) => {
+  //   const row: any = selectedRow
+  //   const { id } = row
+  //   const body = {
+  //     id: id,
+  //     status: a,
+  //   }
+  //   const updatePartition = await new Requester({ url: import.meta.env.VITE_APP_APIURL + "partitions/update/status", method: "patch", body}).send()
+  // }
 
   const ContextMenu = () => {
+    useEffect(() => { }, [selectedRow])
+    const row: any = selectedRow
+    const { status } = row
     return <div onMouseLeave={() => { setVisibleContextMenu(false) }} className={`contextMenu ${visibleContextMenu ? "" : "hidden"}`} style={{ left: xPos, top: yPos }}>
-      <p onClick={() => { viewQuote(true) }}>Ver Cotización con marcas</p>
-      <p onClick={() => { viewQuote(false) }}>Ver Cotización sin marcas</p>
-      <p onClick={() => { downloadQuote(false) }}>Descargar cotización sin marcas</p>
-      <p onClick={() => { downloadQuote(true) }}>Descargar cotización con marcas</p>
+      <p>Ver Cotización <button onClick={() => { viewQuote(true) }}>Con Marcas</button><button onClick={() => { viewQuote(false) }}>Sin Marcas</button></p>
+      <p>Descargar Cotización <button onClick={() => { downloadQuote(true) }}>Con Marcas</button><button onClick={() => { downloadQuote(false) }}>Sin Marcas</button></p>
+      {/* <p>Cambiar estatus <Select onChange={updatePartitionStatus} style={{ width: "250px" }} defaultValue={status || ""}>
+        <Select.Option value={""} selected disabled>Selecciona Estatus</Select.Option>
+        {
+          statuses.map((status, i) => {
+            return <Select.Option value={status} key={"status" + i}>{status}</Select.Option>
+          })
+        }
+      </Select>
+      </p> */}
     </div>
   }
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
@@ -413,7 +433,7 @@ const Partitions = ({ ...props }) => {
     <div>
       {
         viewQuoteLink == null ? null :
-          <Modal closable={true} onCancel={() => { setViewQuoteLink(null); setShowQuoteView(false); viewQuoteLink.remove() }} style={{height:"100%",top:10}} open={showQuoteView} cancelButtonProps={{ style: { display: 'none' } }} onOk={() => { setViewQuoteLink(null); setShowQuoteView(false); viewQuoteLink.remove() }}>
+          <Modal closable={true} onCancel={() => { setViewQuoteLink(null); setShowQuoteView(false); viewQuoteLink.remove() }} style={{ height: "100%", top: 10 }} open={showQuoteView} cancelButtonProps={{ style: { display: 'none' } }} onOk={() => { setViewQuoteLink(null); setShowQuoteView(false); viewQuoteLink.remove() }}>
 
 
             <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.3.122/build/pdf.worker.js">
@@ -440,6 +460,20 @@ const Partitions = ({ ...props }) => {
           }
         }
       } dataSource={tablePartitions} style={{ width: "100%" }} scroll={{ x: "100vw", y: "80vh" }} columns={[
+        {
+          key: "emitted",
+          dataIndex: "emitted",
+          width: "150px",
+          title: "Emitida",
+          ...TextSearchFilter("emitted", "Emitida"),
+        },
+        {
+          key: "status",
+          dataIndex: "status",
+          width: "150px",
+          title: "Estatus",
+          ...TextSearchFilter("status", "Estatus"),
+        },
         {
           key: "reference",
           dataIndex: "reference",

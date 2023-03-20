@@ -67,10 +67,10 @@ function App() {
   }, [])
   useEffect(() => {
     const subscription = sidenavState.subscribe({
-      next(x) {
+      next(x:any) {
         setShow(x)
       },
-      error(err) {
+      error(err:any) {
         console.error('something wrong occurred: ' + err);
       },
       complete() {
@@ -106,12 +106,12 @@ function App() {
             <div id="body">
               <Routes>
                 <Route path="/" element={<Dashboard />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/cotizaciones" element={<Cotizaciones />} />
-                <Route path="/clients" element={<Clients />} />
-                <Route path="/configuration" element={<CompaniesTabbingPage />} />
-                <Route path="/odt" element={<ODT />} />
-                <Route path="/users" element={<Users />} />
+                <Route path="/crm/dashboard" element={<Dashboard />} />
+                <Route path="/crm/cotizaciones" element={<Cotizaciones />} />
+                <Route path="/crm/clients" element={<Clients />} />
+                <Route path="/crm/configuration" element={<CompaniesTabbingPage />} />
+                <Route path="/crm/odt" element={<ODT />} />
+                <Route path="/crm/users" element={<Users />} />
               </Routes>
             </div>
           </div>
