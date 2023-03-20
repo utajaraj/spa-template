@@ -272,7 +272,7 @@ const QuotePartitionForm = (props: any) => {
                     </div>
                     <div>
                         <label>Número de parte</label>
-                        <Form.Item name="part_number" hasFeedback rules={[{ required: true, message: "Número de parte es obligatorio" }]}>
+                        <Form.Item name="part_number" >
                             <Input />
                         </Form.Item>
                     </div>
@@ -333,9 +333,10 @@ const QuotePartitionForm = (props: any) => {
                         </Form.Item>
                     </div>
                     <div>
-                        <label>Fecha de Entrega <span className='requiredMark' /></label>
-                        <Form.Item name="edd" hasFeedback rules={[{ required: true, message: "Fecha de vencimiento es obligatoria" }]}>
-                            <DatePicker allowClear={false} format="MMMM Do YY" />
+                        <label>Tiempo de entrega <span className='requiredMark' /></label>
+
+                        <Form.Item name="edd" hasFeedback>
+                            <InputNumber min={0} max={100} addonBefore={"días"} />
                         </Form.Item>
                     </div>
                     <div>
@@ -444,7 +445,7 @@ const QuotePartitionsTable = (props: QuotePartitionsTableProps) => {
         }
     }
 
-    const rowSelection = {
+    const rowSelection: any = {
         //The selectedRowKeys take the value of selectedItems, so when they get patched, the selection resets
         selectedRowKeys: selectedRowKeys,
         onChange: (selectedKeys: any, selectedRows: any, clear: any) => {
@@ -529,7 +530,7 @@ const QuotePartitionsTable = (props: QuotePartitionsTableProps) => {
 
 
             },
-            error(err) {
+            error(err: any) {
                 console.error('something wrong occurred: ' + err);
             },
             complete() {
@@ -547,7 +548,7 @@ const QuotePartitionsTable = (props: QuotePartitionsTableProps) => {
     // subscribe to click of add partition
     useEffect(() => {
         const subscription = eventStream.subscribe({
-            next(x) {
+            next(x: any) {
 
                 (async () => {
 
@@ -580,7 +581,7 @@ const QuotePartitionsTable = (props: QuotePartitionsTableProps) => {
 
 
             },
-            error(err) {
+            error(err: any) {
                 console.error('something wrong occurred: ' + err);
             },
             complete() {
@@ -689,7 +690,7 @@ const Cotizar = ({ ...props }) => {
     const [generateQuoteIsDisabled, setGenerateQuoteIsDisabled] = useState<boolean>(true)
     const [generateQuoteIsLoading, setGenerateQuoteIsLoading] = useState<boolean>(false)
     const [quotes, setQuotes] = useState<QuoteInterface[] | []>([])
-    
+
     const [companies, setCompanies] = useState<CompanyInterface[] | []>([])
 
     const [clients, setClients] = useState<ClientInterface[] | []>([])
@@ -713,6 +714,7 @@ const Cotizar = ({ ...props }) => {
 
     const generateQuote = async () => {
 
+
         setGenerateQuoteIsLoading(true)
         setGenerateQuoteIsDisabled(true)
 
@@ -720,7 +722,7 @@ const Cotizar = ({ ...props }) => {
         try {
             const { id, reference }: any = selectedQuote
 
-            const sendQuote = await new Requester({ url: import.meta.env.VITE_APP_APIURL + `${includeBrand?"/quotes/update/submit/brands":"`/quotes/update/submit"}`, method: "patch", body: { id: id } }).send()
+            const sendQuote = await new Requester({ url: import.meta.env.VITE_APP_APIURL + `${includeBrand ? "/quotes/update/submit/brands" : "/quotes/update/submit"}`, method: "patch", body: { id: id } }).send()
 
             if (sendQuote.status) {
 
@@ -756,6 +758,7 @@ const Cotizar = ({ ...props }) => {
             streamPartitions([])
 
         } catch (error) {
+
 
             notify("error", "Error al generar cotización")
 
@@ -854,7 +857,7 @@ const Cotizar = ({ ...props }) => {
             const quotesPromise = new Requester({ url: import.meta.env.VITE_APP_APIURL + "/quotes/read/mine", method: "get", params: { emitted: false } }).send()
             const clientsPromise = new Requester({ url: import.meta.env.VITE_APP_APIURL + "/clients/read/mine", method: "get" }).send()
             const usersPromise = new Requester({ url: import.meta.env.VITE_APP_APIURL + "/users/read/all", method: "get" }).send()
-            const companiesPromise =  new Requester({ url: import.meta.env.VITE_APP_APIURL + "/companies/read/all", method: "get" }).send()
+            const companiesPromise = new Requester({ url: import.meta.env.VITE_APP_APIURL + "/companies/read/all", method: "get" }).send()
             const [resultQuotes, resultClients, resultsAgents, resultCompanies] = await Promise.all([quotesPromise, clientsPromise, usersPromise, companiesPromise])
             if (resultQuotes.status !== false) {
                 setQuotes(resultQuotes)
@@ -865,7 +868,7 @@ const Cotizar = ({ ...props }) => {
             if (resultsAgents.status !== false) {
                 setAgents(resultsAgents)
             }
-            if(resultCompanies.status!==false){
+            if (resultCompanies.status !== false) {
                 setCompanies(resultCompanies)
             }
 
@@ -1070,9 +1073,9 @@ const Cotizar = ({ ...props }) => {
                                     <Select showSearch optionFilterProp="children" >
                                         <Select.Option value="" disabled>Selecciona Empresa</Select.Option>
                                         {
-                                        companies.map((company)=>{
-                                            return <Select.Option value={company.id}>{company.company_name}</Select.Option>
-                                        })   
+                                            companies.map((company) => {
+                                                return <Select.Option value={company.id}>{company.company_name}</Select.Option>
+                                            })
                                         }
                                     </Select>
                                 </Form.Item>

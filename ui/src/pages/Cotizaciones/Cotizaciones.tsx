@@ -1,14 +1,12 @@
-import { useRef, useState, useEffect } from 'react';
-import { SearchOutlined } from '@ant-design/icons';
-import type { InputRef } from 'antd';
-import { Button, Select, Space, Table, Slider, InputNumber, Modal } from 'antd';
-import type { ColumnType } from 'antd/es/table';
-import type { FilterConfirmProps } from 'antd/es/table/interface';
+import { useState, useEffect } from 'react';
+import { Space, Table, Modal, Badge, Dropdown } from 'antd';
 import { notify } from '../../factors/notify';
-import Highlighter from 'react-highlight-words';
+
+import { DownOutlined } from '@ant-design/icons';
 import { Requester } from '../../factors/Requester';
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
 
+import type { TableColumnsType } from 'antd';
 // Core viewer
 import { Viewer, Worker } from '@react-pdf-viewer/core';
 
@@ -185,6 +183,13 @@ const Quotes = ({ ...props }) => {
 
   }
 
+  interface ExpandedDataType {
+    key: React.Key;
+    date: string;
+    name: string;
+    upgradeNum: string;
+  }
+
   const ContextMenu = () => {
     return <div onMouseLeave={() => { setVisibleContextMenu(false) }} className={`contextMenu ${visibleContextMenu ? "" : "hidden"}`} style={{ left: xPos, top: yPos }}>
       <p onClick={() => { viewQuote(true) }}>Ver Cotización con marcas</p>
@@ -193,6 +198,146 @@ const Quotes = ({ ...props }) => {
       <p onClick={() => { downloadQuote(true) }}>Descargar cotización con marcas</p>
     </div>
   }
+
+  const items = [
+    { key: '1', label: 'Action 1' },
+    { key: '2', label: 'Action 2' },
+  ];
+
+  const expandedRowRender = (row:any,key:any) => {
+
+    const columns: TableColumnsType<ExpandedDataType> = [
+      {
+        key: "reference",
+        dataIndex: "reference",
+        width: "150px",
+        title: "Referencía",
+
+      },
+      {
+        key: "name",
+        dataIndex: "partition_name",
+        width: "250px",
+        title: "Nombre",
+
+      },
+      {
+        key: "description",
+        dataIndex: "description",
+        width: "250px",
+        title: "Descripción",
+      },
+      {
+        key: "category",
+        dataIndex: "category_name",
+        width: "250px",
+        title: "Categoría",
+
+      },
+      {
+        key: "brand",
+        dataIndex: "brand_name",
+        width: "250px",
+        title: "Marca",
+      },
+      {
+        key: "quantity",
+        dataIndex: "quantity",
+        title: "Cantidad",
+        width: "150px",
+      },
+      {
+        key: "cost",
+        dataIndex: "cost",
+        title: "Costo",
+        width: "150px",
+        render: (value) => {
+          return formatter.format(Number(value))
+        }
+      },
+      {
+        key: "factor",
+        dataIndex: "factor",
+        title: "Factor",
+        width: "150px",
+        render: (value) => {
+          return `${value} %`
+        }
+      },
+      {
+        key: "amount",
+        dataIndex: "amount",
+        title: "Monto",
+        width: "250px",
+        render: (value) => {
+          return formatter.format(Number(value))
+        }
+      },
+      {
+        key: "unit",
+        dataIndex: "unit",
+        title: "Unidad",
+        width: "250px",
+      },
+      {
+        key: "user_name",
+        dataIndex: "user_name",
+        title: "Agente Cotizador",
+        width: "250px",
+        render: (value, record:any) => {
+          return `${record.user_name} ${record.user_middle_name || ""} ${record.user_last_name || ""}`
+        },
+        
+      },
+      {
+        key: "currency",
+        dataIndex: "currency",
+        title: "Moneda",
+        width: "250px",
+      },
+      {
+        key: "created_at",
+        dataIndex: "created_at",
+        title: "Fecha iniciada",
+        width: "250px",
+        render: (value, record) => { return new Date(value).toLocaleDateString() }
+      },
+      {
+        key: "modified_at",
+        dataIndex: "modified_at",
+        title: "Ultíma modificación",
+        width: "250px",
+        render: (value, record) => { return new Date(value).toLocaleDateString() }
+      },
+      {
+        key: "buyer",
+        dataIndex: "buyer",
+        title: "Comprador",
+        width: "250px",
+        render: (value, record:any) => {
+          return `${record.buyer_name} ${record.buyer_last_name || ""}`
+        }
+      },
+      {
+        key: "client_name",
+        dataIndex: "client_name",
+        title: "Cliente",
+        width: "250px",
+      },
+      {
+        key: "expiration_date",
+        dataIndex: "expiration_date",
+        title: "Fecha de expiración",
+        width: "250px",
+        render: (value, record) => { return new Date(value).toLocaleDateString() }
+      },
+
+
+    ]
+    
+    return <Table columns={columns} dataSource={row.partitions} pagination={false} />;
+  };
+
 
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
   return (
@@ -225,31 +370,19 @@ const Quotes = ({ ...props }) => {
             }
           }
         }
-      } dataSource={tablePartitions} style={{ width: "100%" }} scroll={{ x: "100vw", y: "80vh" }} columns={[
-        // agent: 'Jeseus Alfredo Chavez',
-        // categories: [ 'Cheve' ],
-        // brands: [ 'Corona' ],
-        // currency: 'USD',
-        // client: 'Corona',
-        // part_number: [ '2', '2', '2', '2' ],
-        // buyer: 'Antonino Fernández Rodríguez null',
-        // cost: 40,
-        // factor: 10,
-        // edd: [ '02/08/23' ],
-        // expiration_date: '02/23/23',
-        // created_at: '02/09/23',
-        // numberOfPartitions: 4,
+      } dataSource={tablePartitions} style={{ width: "100%" }} scroll={{ x: "100vw", y: "80vh" }}
+      expandable={{ expandedRowRender, defaultExpandedRowKeys: ['0'] }}
+       columns={[
         {
           key: "numberOfPartitions",
           dataIndex: "numberOfPartitions",
-          width: "50px",
+          width: "75px",
           title: "Número de partidas",
-
         },
         {
           key: "emitted",
           dataIndex: "emitted",
-          width: "50px",
+          width: "75px",
           title: "Emitida",
           ...TextSearchFilter("emitted", "Emitida"),
 
@@ -257,7 +390,7 @@ const Quotes = ({ ...props }) => {
         {
           key: "reference",
           dataIndex: "reference",
-          width: "50px",
+          width: "80px",
           title: "No. Cotización",
           ...TextSearchFilter("reference", "No. Cotización"),
 
@@ -307,7 +440,7 @@ const Quotes = ({ ...props }) => {
           key: "expiration_date",
           dataIndex: "expiration_date",
           title: "Fecha de expiración",
-          width: "50px",
+          width: "150px",
           render: (value, record) => { return new Date(value).toLocaleDateString() }
         },
 

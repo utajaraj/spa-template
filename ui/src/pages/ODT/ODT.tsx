@@ -8,7 +8,7 @@ const ODT = ({ ...props }) => {
             <h1 style={{ textAlign: "center" }}>Módulo en ordenes de trabajo</h1>
 
             <div style={{ textAlign: "center" }}>
-                <Link to="/cotizaciones">
+                <Link to="/crm/cotizaciones">
                     <Button>
                         Cotizaciones
                     </Button>

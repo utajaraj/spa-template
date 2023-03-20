@@ -67,9 +67,9 @@ const Users: React.FC = () => {
 
 
     const loadCompanySites = async (id: any) => {
-        const companySitesResult = await new Requester({ url: import.meta.env.VITE_APP_APIURL + `/companysites/read/company/${id}`, method: "get" }).send()
-
+        
         try {
+            const companySitesResult = await new Requester({ url: import.meta.env.VITE_APP_APIURL + `/companysites/read/id/${id}`, method: "get" }).send()
             setCompanySites(companySitesResult)
         } catch (error) {
             notify("error", "No se pudieron cargar las sucursales.")
@@ -159,6 +159,7 @@ const Users: React.FC = () => {
         </Form>
     }
 
+    
     return (
         <div id="usersPage">
             <Drawer title={title} open={editUserDrawerVisible} closable onClose={() => { setEditUserDrawerVisible(false) }}>
@@ -310,17 +311,17 @@ const Users: React.FC = () => {
                     (row: any, key) => {
                         return {
                             onClick: async (e) => {
-                                setEditUserDrawerVisible(true)
                                 activationForm.setFields([
                                     {
                                         name: "status",
-                                        value: row.status||false
+                                        value: row.active||false
                                     },
                                     {
                                         name: "id",
                                         value: row.id
                                     },
                                 ])
+                                
                                 await loadCompanySites(row.companyID)
                                 updateUserForm.setFields([
                                     {
@@ -353,6 +354,7 @@ const Users: React.FC = () => {
                                     },
 
                                 ])
+                                setEditUserDrawerVisible(true)
                                 setSelectedUserRow(row)
                             }
                         }

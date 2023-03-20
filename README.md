@@ -1,2 +1,2 @@
 # intranetGarle
-Intranet de ventas para empresa de proveeduría industrial
+Intranet de ventas aliado ingenieria mexicana continua

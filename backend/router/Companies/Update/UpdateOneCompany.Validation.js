@@ -1,5 +1,5 @@
 const { executeValidation } = require("../../../factors/login/validate");
-const { UTC, Integer } = require("../../../utlis/regex");
+const { UTC, Integer, TrueFalse } = require("../../../utlis/regex");
 
 
 const UpdateOneCompanyValidation = async (body, verbose = false) => {
@@ -17,6 +17,10 @@ const UpdateOneCompanyValidation = async (body, verbose = false) => {
       missingMessage: "Usuario modificando es requerido",
       invalidMessge: "Usuario modificando es inválido",
       dataType: Integer,
+    },
+    active: {
+      invalidMessge: "Estatus de empresa",
+      dataType: TrueFalse,
     },
   };
   const requiredParameters = {

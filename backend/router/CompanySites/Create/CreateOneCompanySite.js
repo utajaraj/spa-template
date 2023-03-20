@@ -17,14 +17,14 @@ CreateOneCompanySite.post("/one", async (req, res) => {
           res.status(200).send({ status: true, message: "Sucursal ha sido añadida", data: response })
         }).catch((err) => {
           if (err.code === "ER_DUP_ENTRY") {
-            res.status(400).send({ status: false, message: `La sucursal: ${req.body.name} ya ha sido registrado`, data: err.sqlMessage })
+            res.status(400).send({ status: false, message: `La sucursal: ${req.body.company_site_name} ya ha sido registrado`, data: err.sqlMessage })
           } else {
             res.status(400).send({ status: false, message: "No se pudo crear la sucursal nueva", data: err.sqlMessage })
           }
         })
       } catch (error) {
         if (error.code === "ER_DUP_ENTRY") {
-          res.status(400).send({ status: false, message: `El sucursal: ${req.body.name} ya ha sido registrada`, data: error.sqlMessage })
+          res.status(400).send({ status: false, message: `El sucursal: ${req.body.company_site_name} ya ha sido registrada`, data: error.sqlMessage })
         } else {
           res.status(400).send({ status: false, message: "No se pudo crear la sucursal nueva", data: error.sqlMessage })
         }

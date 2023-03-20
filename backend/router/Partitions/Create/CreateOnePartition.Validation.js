@@ -21,6 +21,13 @@ const AddOnePartitionsValidation = async (body, verbose = false) => {
         return ["pzs", "lt", "kg", "unt", "mt", "mt3"].includes(value)
       }
     },
+    status: {
+      missingMessage: "Estatus es obligatoria",
+      invalidMessage: "Estatus inválido",
+      function: (value) => {
+        return ["Abierta","Requerida", "No Requerida", "Adquisicion", "Stock", "Transito", "Entregado", "En Tienda","Retraso","Lento Movimiento","Sin Cliente"].includes(value)
+      }
+    },
     quoteID: {
       missingMessage: "Cotización es obligatoria",
       invalidMessage: "Cotización inválida",
@@ -28,7 +35,7 @@ const AddOnePartitionsValidation = async (body, verbose = false) => {
     edd: {
       missingMessage: "Fecha de entrega",
       invalidMessage: "Fecha de entrega inválida",
-      dataType: UTC,
+      dataType: Integer,
     },
     quantity: {
       missingMessage: "Cantidad es obligatorio",

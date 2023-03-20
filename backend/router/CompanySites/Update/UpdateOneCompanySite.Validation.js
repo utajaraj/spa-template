@@ -15,6 +15,10 @@ const UpdateOneCompanySiteValidation = async (body, verbose = false) => {
       invalidMessge: "Usuario modificando es inválido",
       dataType: Integer,
     },
+    active: {
+      invalidMessge: "Estatus de sucursal",
+      dataType: TrueFalse,
+    },
   };
   const requiredParameters = {
     id:{

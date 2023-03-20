@@ -1,8 +1,9 @@
+const path = require("path")
 var https = require("https")
 const { readFileSync } = require("fs")
 require("dotenv").config()
-var privateKey = readFileSync(__dirname + "/garlecloud.key", "utf8")
-var certificate = readFileSync(__dirname + "/garlecloud.crt", "utf8")
+var privateKey = readFileSync(path.join(__dirname + process.env.KEYPATH), "utf8")
+var certificate = readFileSync(path.join(__dirname + process.env.CERTPATH), "utf8")
 var credentials = { key: privateKey, cert: certificate }
 const express = require("express")
 const app = express()
@@ -18,6 +19,7 @@ const { isSignedIn } = require("./factors/login/isSignedIn")
 const { checkCredentials } = require("./factors/login/checkCredentials")
 const { needsSetUp } = require("./factors/login/needsSetUp")
 const { createAdminUser } = require("./factors/login/createAdminUser")
+const { knex } = require("./database/connection")
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", req.headers.origin)
     res.header(
@@ -70,9 +72,11 @@ createDatabaseSchemas()
                 } else {
                     const loadSetUp = await needsSetUp()
                     if (loadSetUp) {
-                        res.status(200).sendFile(__dirname + "/html/setUp.html")
+                        res.status(200).render(__dirname + "/views/setUp.ejs")
                     } else {
-                        res.status(200).sendFile(__dirname + "/html/login.html")
+                        const result = await knex("companies").select()
+                        const title = result[0].company_name
+                        res.status(200).render(__dirname + "/views/login.ejs",{title})
                     }
                 }
             })

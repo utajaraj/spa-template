@@ -45,8 +45,9 @@ const Empresas: React.FC = () => {
 
     const selectCompany = async (id: Number) => {
         const selectedCompany = companies.filter(company => company.id === id)
-        const results = await new Requester({ url: import.meta.env.VITE_APP_APIURL + `/companysites/read/id/${id}`, method: "get" }).send()
+        const results = await new Requester({ url: import.meta.env.VITE_APP_APIURL + `/companysites/read/id/${id}`, method: "get" }).send()     
         setCompanySites(results)
+        setSelectedCompanySite({})
         setSelectedCompany(selectedCompany[0])
     }
 
@@ -95,12 +96,54 @@ const Empresas: React.FC = () => {
     }
 
     const [CompanyForm] = Form.useForm()
+    const [DeleteCompanyForm] = Form.useForm()
 
     const EditCompanyForm = () => {
         const selection: any = selectedCompany
-        const { company_name, company_address, id, tax_id } = selection
+        const { company_name, company_address, id, tax_id, active } = selection
+        useEffect(()=>{
+            DeleteCompanyForm.setFields([
+                {
+                    name:"id",
+                    value:id
+                },
+                {
+                    name:"active",
+                    value:active
+                },
+                {
+                    name:"company_address",
+                    value:company_address
+                },
+            ])
+            CompanyForm.setFields([
+                {
+                    name:"id",
+                    value:id
+                },
+                {
+                    name:"company_name",
+                    value:company_name
+                },
+                {
+                    name:"company_address",
+                    value:company_address
+                },
+                {
+                    name:"tax_id",
+                    value:tax_id
+                },
+            ])
+        },[selection])
         return <div className="updateCompanyForm">
+            <div style={{display:"flex", justifyContent:"space-between"}}>
             <h2>Información de la Empresa.</h2>
+            <Form form={DeleteCompanyForm} onFinish={(fields) => { patchCompany(fields) }}>
+                <Form.Item hidden initialValue={id} name="id" rules={[{ required: true, message: "ID es requerido." }]}></Form.Item>
+                <Form.Item hidden initialValue={!active} name="active" rules={[{ required: true, message: "Estatus de empresa es requerido." }]}></Form.Item>
+                <Button htmlType="submit">{active?"Desactivar":"Activar"} empresa</Button>
+            </Form>
+            </div>
             <Form form={CompanyForm} onFinish={(fields) => { patchCompany(fields) }}>
                 <Form.Item hidden initialValue={id} name="id" rules={[{ required: true, message: "ID es requerido." }]}>
                     <Input />
@@ -190,10 +233,10 @@ const Empresas: React.FC = () => {
                                 Selecciona empresa
                             </Select.Option>
                             {
-                                companies.map((company,i)=>{
+                                companies.map((company, i) => {
                                     return <Select.Option value={company.id}>
-                                    {company.company_name}
-                                </Select.Option>
+                                        {company.company_name}
+                                    </Select.Option>
                                 })
                             }
                         </Select>
@@ -220,7 +263,28 @@ const Empresas: React.FC = () => {
 
     const EditCompanySiteForm = () => {
         const selection: any = selectedCompanySite
-        const { company_site_name, company_site_address, id } = selection
+        const { company_site_name, company_site_address, id,active } = selection
+        useEffect(()=>{
+ 
+            CompanySiteForm.setFields([
+                {
+                    name:"id",
+                    value:id
+                },
+                {
+                    name:"company_name",
+                    value:company_site_name
+                },
+                {
+                    name:"company_address",
+                    value:company_site_address
+                },
+                {
+                    name:"active",
+                    value:active
+                },
+            ])
+        },[])
         return <div className="updateCompanySiteForm">
             <h2>Información de la Sucursal.</h2>
             <Form form={CompanySiteForm} onFinish={(fields) => { patchCompanySite(fields) }}>
@@ -266,6 +330,7 @@ const Empresas: React.FC = () => {
             </div>
             <div id="companiesPage">
                 <div className="companiesAndSites">
+                    <p>Selecciona Empresa</p>
                     <Select defaultValue={""}
                         style={{ width: "100%" }}
                         showSearch
