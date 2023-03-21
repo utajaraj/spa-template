@@ -63,8 +63,10 @@ SubmitMyPartitions.patch("/submit", async (req, res) => {
         }).then(function ({ quote, partitions }) {
 
             const logo = fs.readFileSync(__dirname + `/../../../assets/${quote.logo_name}.svg`)
+            
+            const quoteBackground = fs.readFileSync(__dirname + `/../../../assets/quote-background.svg`)
 
-            ejs.renderFile(path.join(__dirname + "/../../../views/QuoteTemplate.ejs"), { quote, partitions, includeBrand: false, logo }, async function (err, str) {
+            ejs.renderFile(path.join(__dirname + "/../../../views/QuoteTemplate.ejs"), { quote, partitions, includeBrand: false, logo, quoteBackground }, async function (err, str) {
     
 
                 if (err) {
@@ -164,8 +166,9 @@ SubmitMyPartitions.patch("/submit/brands", async (req, res) => {
 
 
             const logo = fs.readFileSync(__dirname + `/../../../assets/${quote.logo_name}.svg`)
+            const quoteBackground = fs.readFileSync(__dirname + `/../../../assets/quote-background.svg`)
 
-            ejs.renderFile(path.join(__dirname + "/../../../views/QuoteTemplate.ejs"), { quote, partitions, includeBrand: true, logo}, async function (err, str) {
+            ejs.renderFile(path.join(__dirname + "/../../../views/QuoteTemplate.ejs"), { quote, partitions, includeBrand: true, logo,quoteBackground}, async function (err, str) {
 
                 if (err) {
                     res.status(400).send({ status: false, message: "Cotización generada pero no se pudo descargar PDF", error: err.toString() })

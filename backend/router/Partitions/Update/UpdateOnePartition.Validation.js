@@ -6,7 +6,7 @@ const isDecimal = (string) => {
 }
 
 
-const AddOnePartitionsValidation = async (body, verbose = false) => {
+const UpdateOnePartitionsValidation = async (body, verbose = false) => {
   const requiredParameters = {
     partition_name: {
       missingMessage: "Nombre de articulo es obligatorio",
@@ -99,5 +99,5 @@ const AddOnePartitionsValidation = async (body, verbose = false) => {
   );
 };
 module.exports = {
-  AddOnePartitionsValidation: AddOnePartitionsValidation,
+  UpdateOnePartitionsValidation: UpdateOnePartitionsValidation,
 };

@@ -1,12 +1,12 @@
-const CreatePartitionsRouter = require("express").Router();
-const { CreateOneQuote } = require("./UpdateOnePartition");
+const UpdatePartitionsRouter = require("express").Router();
+const { UpdateOneQuote } = require("./UpdateOnePartition");
 
-CreatePartitionsRouter.use("/create", [CreateOneQuote]);
+UpdatePartitionsRouter.use("/update", [UpdateOneQuote]);
 
-CreatePartitionsRouter.all("/create", (req, res) => {
-  res.status(300).send("Unknown partitions create route");
+UpdatePartitionsRouter.all("/update", (req, res) => {
+  res.status(300).send("Unknown partitions update route");
 });
 
 module.exports = {
-  CreatePartitionsRouter: CreatePartitionsRouter,
+  UpdatePartitionsRouter: UpdatePartitionsRouter,
 };

@@ -308,6 +308,7 @@ const Partitions = ({ ...props }) => {
   const [viewQuoteLink, setViewQuoteLink] = useState<any>(null)
   const [showQuoteView, setShowQuoteView] = useState<boolean>(false)
 
+
   const downloadQuote = async (brands: boolean) => {
     notify("success", "Generado cotización")
 
@@ -399,25 +400,46 @@ const Partitions = ({ ...props }) => {
     }
 
   }
-  // const statuses = ["Abierta", "Requerida", "No Requerida"]
-  // const updatePartitionStatus = async (a: any) => {
-  //   const row: any = selectedRow
-  //   const { id } = row
-  //   const body = {
-  //     id: id,
-  //     status: a,
-  //   }
-  //   const updatePartition = await new Requester({ url: import.meta.env.VITE_APP_APIURL + "partitions/update/status", method: "patch", body}).send()
-  // }
+  const statuses =  ["Abierta","Requerida", "No Requerida", "Adquisición", "Stock", "Tránsito", "Entregado", "En Tienda","Retraso","Lento Movimiento","Sin Cliente"]
+  const [selectedStatus, setSelectedStatus] = useState<any>("")
+  const updatePartitionStatus = async (a: any) => {
+
+    try {
+      const row: any = selectedRow
+      const { id } = row
+      const body = {
+        id: id,
+        status: a,
+      }
+      const updatePartition = await new Requester({ url: import.meta.env.VITE_APP_APIURL + "/partitions/update/status", method: "patch", body }).send()
+      if (updatePartition.status) {
+        const newRow = { ...selectedRow, ...{ status: a } }
+        setSelectedStatus(a)
+        setSelectedRow(newRow)
+        setTablePartitions(tablePartitions.map((partition: any, i) => {
+          if (partition.id === id) {
+            return newRow
+          } else {
+            return partition
+          }
+        }))
+        notify("success", updatePartition.message)
+      } else {
+        notify("error", updatePartition.message)
+      }
+    } catch (error) {
+      notify("error", "No se pudo cambiar el estatus")
+    }
+  }
+
+
 
   const ContextMenu = () => {
-    useEffect(() => { }, [selectedRow])
-    const row: any = selectedRow
-    const { status } = row
+    useEffect(() => { }, [selectedStatus])
     return <div onMouseLeave={() => { setVisibleContextMenu(false) }} className={`contextMenu ${visibleContextMenu ? "" : "hidden"}`} style={{ left: xPos, top: yPos }}>
       <p>Ver Cotización <button onClick={() => { viewQuote(true) }}>Con Marcas</button><button onClick={() => { viewQuote(false) }}>Sin Marcas</button></p>
       <p>Descargar Cotización <button onClick={() => { downloadQuote(true) }}>Con Marcas</button><button onClick={() => { downloadQuote(false) }}>Sin Marcas</button></p>
-      {/* <p>Cambiar estatus <Select onChange={updatePartitionStatus} style={{ width: "250px" }} defaultValue={status || ""}>
+      <p>Cambiar estatus <Select onChange={updatePartitionStatus} style={{ width: "250px" }} defaultValue={selectedStatus}>
         <Select.Option value={""} selected disabled>Selecciona Estatus</Select.Option>
         {
           statuses.map((status, i) => {
@@ -425,7 +447,7 @@ const Partitions = ({ ...props }) => {
           })
         }
       </Select>
-      </p> */}
+      </p>
     </div>
   }
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
@@ -455,6 +477,7 @@ const Partitions = ({ ...props }) => {
               setSelectedRow(record);
               setXPos(e.clientX + "px");
               setYPos(e.clientY + "px");
+              setSelectedStatus(record.status || "")
               setVisibleContextMenu(true);
             }
           }
