@@ -12,6 +12,7 @@ CreateOneQuote.post("/one", async (req, res) => {
         let isAnExistentBrand = true
         let isAnExistentCategory = true
         let isAnExistentQuote = true
+        req.body.status="Abierta"
         const validation = await AddOnePartitionsValidation(req.body, req.headers.verbose)
         const valid = validation.status || validation.data.invalidParameters.concat(validation.data.missingParameters).toString()
         if (valid === true) {
@@ -52,7 +53,6 @@ CreateOneQuote.post("/one", async (req, res) => {
                 }
             }
 
-            req.body.status="Abierta"
             knex("partitions").insert(req.body).then(async (e) => {
 
                 const lastInserted = await knex.select(["partitions.*", "categories.category_name", "brands.brand_name"]).from("partitions").where({ "partitions.created_by": req.body.created_by })
