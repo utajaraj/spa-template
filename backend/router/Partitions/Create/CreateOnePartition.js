@@ -52,7 +52,7 @@ CreateOneQuote.post("/one", async (req, res) => {
                 }
             }
 
-
+            req.body.status="Abierta"
             knex("partitions").insert(req.body).then(async (e) => {
 
                 const lastInserted = await knex.select(["partitions.*", "categories.category_name", "brands.brand_name"]).from("partitions").where({ "partitions.created_by": req.body.created_by })
