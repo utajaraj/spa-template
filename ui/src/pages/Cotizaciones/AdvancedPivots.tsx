@@ -6,10 +6,10 @@ import createPlotlyRenderers from 'react-pivottable/PlotlyRenderers';
 import 'react-pivottable/pivottable.css';
 import PivotTableUI from 'react-pivottable/PivotTableUI';
 import { Requester } from '../../factors/Requester';
+import { Button } from 'antd';
 interface PartitionInterface {
 
     id?: string,
-    partition_name?: string,
     description?: string,
     unit?: string,
     quoteID?: string,
@@ -51,8 +51,6 @@ const PivotesAvanzados = ({ ...props }) => {
 
         const savedQuotePartitions = await new Requester({ url: import.meta.env.VITE_APP_APIURL + "/partitions/read/mine", method: "get" }).send()
 
-        console.log(savedQuotePartitions[0]);
-
 
         setTablePartitions(savedQuotePartitions.map((partition: any) => {
             return {
@@ -75,7 +73,6 @@ const PivotesAvanzados = ({ ...props }) => {
                     day: "2-digit"
                 }),
                 "Factor": partition.factor,
-                "Articulo": partition.partition_name,
                 "Descripción": partition.description,
                 "NDC": partition.reference,
                 "Unidad": partition.unit,
@@ -102,7 +99,9 @@ const PivotesAvanzados = ({ ...props }) => {
 
     return (
         <div>
-
+ <div style={{ textAlign: "right", padding: "15px 0" }}>
+        <Button onClick={() => { loadTablePartitions() }}>Refrescar</Button>
+      </div>
             <PivotTableUI renderers={Object.assign({}, TableRenderers, PlotlyRenderers)} data={tablePartitions} {...settings} onChange={(s: any) => setSettings(s)} />
 
 

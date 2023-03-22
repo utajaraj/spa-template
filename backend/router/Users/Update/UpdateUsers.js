@@ -17,7 +17,6 @@ UpdateUsers.patch("/one", async (req, res) => {
             res.status(400).send({ status: false, message: `${isValid.data.invalidParameters.toString()}` + `${isValid.data.missingParameters.toString()}` })
         }
     } catch (error) {
-        console.log(error);
         res.status(400).send({ status: false, message: "No se pudo actualizar el usuario" })
     }
 });

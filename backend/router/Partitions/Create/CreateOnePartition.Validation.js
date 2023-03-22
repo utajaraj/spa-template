@@ -8,9 +8,6 @@ const isDecimal = (string) => {
 
 const AddOnePartitionsValidation = async (body, verbose = false) => {
   const requiredParameters = {
-    partition_name: {
-      missingMessage: "Nombre de articulo es obligatorio",
-    },
     description: {
       missingMessage: "Descripción de articulo es obligatorio",
     },

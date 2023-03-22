@@ -43,7 +43,6 @@ const streamPartitions = function (partitions: {}) {
 
 interface QuoteItemInterface {
     id: number,
-    partition_name: string,
     description: string,
     category?: string,
     brand?: string,
@@ -258,12 +257,6 @@ const QuotePartitionForm = (props: any) => {
             }} >
                 <div className="quoteCreatorFormSection">
                     <h3>Información de Partidas</h3>
-                    <div>
-                        <label>Nombre</label>
-                        <Form.Item name="partition_name" hasFeedback rules={[{ required: true, message: "Nombre es obligatorio" }]}>
-                            <Input />
-                        </Form.Item>
-                    </div>
                     <div>
                         <label>Descripción</label>
                         <Form.Item name="description" hasFeedback rules={[{ required: true, message: "Descripción es obligatoria" }]}>
@@ -603,12 +596,7 @@ const QuotePartitionsTable = (props: QuotePartitionsTableProps) => {
                 <Button disabled={selectedPartitionRows.length === 0} onClick={deletePartition}>Eliminar Partida(s)</Button>
             </div>
             <Table rowSelection={{ type: "checkbox", ...rowSelection }} dataSource={quotePartitions} style={{ width: "100%" }} scroll={{ x: "100%", y: "80vh" }} columns={[
-                {
-                    key: "partition_name",
-                    dataIndex: "partition_name",
-                    width: "100px",
-                    title: "Nombre"
-                },
+           
                 {
                     key: "description",
                     dataIndex: "description",
@@ -801,8 +789,6 @@ const Cotizar = ({ ...props }) => {
 
             notify(startQuote.status ? "success" : "error", startQuote.message, "")
         } catch (error) {
-            console.log(error);
-
             notify("error", "Error inesperado")
         }
 
@@ -898,10 +884,10 @@ const Cotizar = ({ ...props }) => {
         const quoteToSelect: any = quotes.filter(quote => { return quote.id === quoteID })[0]
 
 
+
         setSelectedQuote(quoteToSelect)
 
-
-        const startQuoteFormSavedFields = []
+        const startQuoteFormSavedFields :any = [] 
 
         for (let i: number = 0; i < Object.keys(quoteToSelect).length; i++) {
 
@@ -910,15 +896,22 @@ const Cotizar = ({ ...props }) => {
 
             // turn expiration date into dayjs object for the sake of the date selector widget
             if (key === "expiration_date") {
-                value = dayjs(new Date(value)).add(15, 'day')
+                console.log(value)
+                value = dayjs(new Date(value))
             }
 
 
             if (key === "clientID") {
                 await selectClientAndSearchBuyers(value)
             }
+            if (key === "id") {
+                
+                startQuoteFormSavedFields.push({ name: key, value: value.toString() })
+            }else{
 
-            startQuoteFormSavedFields.push({ name: key, value: value })
+                startQuoteFormSavedFields.push({ name: key, value: value })
+            }
+
 
         }
 
@@ -1074,7 +1067,7 @@ const Cotizar = ({ ...props }) => {
                                         <Select.Option value="" disabled>Selecciona Empresa</Select.Option>
                                         {
                                             companies.map((company) => {
-                                                return <Select.Option value={company.id}>{company.company_name}</Select.Option>
+                                                return <Select.Option value={company.id.toString()}>{company.company_name}</Select.Option>
                                             })
                                         }
                                     </Select>
@@ -1195,7 +1188,7 @@ const Cotizar = ({ ...props }) => {
                         <div>
                             <div style={{ textAlign: "right" }}>
                                 <label>Incluir marcas</label>
-                                <Checkbox checked={includeBrand} onChange={(e) => { console.log(e); setIncludeBrand(e.target.checked) }} />
+                                <Checkbox checked={includeBrand} onChange={(e) => {  setIncludeBrand(e.target.checked) }} />
                             </div>
                             <div style={{ display: "flex" }}>
                                 <Button disabled={id ? false : true} onClick={deleteQuote}>Eliminar Cotización</Button>

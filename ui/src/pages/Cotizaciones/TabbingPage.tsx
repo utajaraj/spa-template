@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Tabs } from 'antd';
 import type { TabsProps } from 'antd';
 import Cotizar from './Cotizar';
@@ -12,6 +12,21 @@ import Quotes from './Cotizaciones';
 
 const TabbingPage = ({ ...props }) => {
 
+  let [loadQuote, setLoadQuotes] = useState<boolean>(true)
+  let [loadPartitions, setLoadPartitions] = useState<boolean>(true)
+  let [loadPivots, setLoadPivots] = useState<boolean>(true)
+
+  const checkForLoad = (key: string) => {
+    if (key === "quotes") {
+      setLoadQuotes(!loadQuote)
+    }
+    if (key === "partitions") {
+      setLoadPartitions(!loadQuote)
+    }
+    if (key === "advancedPivots") {
+      setLoadPivots(!loadQuote)
+    }
+  }
 
   const items: TabsProps['items'] = [
     {
@@ -19,26 +34,27 @@ const TabbingPage = ({ ...props }) => {
       label: `Cotizar`,
       children: <Cotizar />
     },
-      {
+    {
       key: 'quotes',
       label: `Cotizaciones`,
-      children: <Quotes />,
+      children: <Quotes loadQuote={loadQuote} />,
+
     },
     {
       key: 'partitions',
       label: `Partidas`,
-      children: <Partitions />,
+      children: <Partitions loadPartitions={loadPartitions} />,
     },
     {
       key: 'advancedPivots',
       label: `Pivotes Avanzados`,
-      children: <PivotesAvanzados  />,
+      children: <PivotesAvanzados loadPivots={loadPivots} />,
     },
   ];
 
   return (
     <div>
-      <Tabs defaultActiveKey="1" items={items} />
+      <Tabs defaultActiveKey="1" items={items} onChange={checkForLoad} />
     </div>
   )
 }

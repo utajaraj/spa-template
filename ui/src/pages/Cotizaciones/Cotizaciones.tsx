@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Space, Table, Modal, Badge, Dropdown } from 'antd';
+import { Table, Modal, Button } from 'antd';
 import { notify } from '../../factors/notify';
 
 import { DownOutlined } from '@ant-design/icons';
@@ -24,7 +24,6 @@ const formatter = new Intl.NumberFormat('en-US', {
 interface PartitionInterface {
 
   id?: string,
-  partition_name?: string,
   description?: string,
   unit?: string,
   quoteID?: string,
@@ -59,17 +58,20 @@ interface PartitionInterface {
   client?: string,
 
 }
- 
+
 const Quotes = ({ ...props }) => {
 
   const [tablePartitions, setTablePartitions] = useState<PartitionInterface[] | []>([])
 
-
+  const [loadingQuotes, setLoadingQuotes] = useState<boolean>(true)
 
   const loadTablePartitions = async () => {
 
+    setLoadingQuotes(true)
+
     const savedQuotePartitions = await new Requester({ url: import.meta.env.VITE_APP_APIURL + "/quotes/read/total", method: "get" }).send()
 
+    setLoadingQuotes(false)
 
     setTablePartitions(savedQuotePartitions)
 
@@ -77,7 +79,7 @@ const Quotes = ({ ...props }) => {
 
   useEffect(() => {
     loadTablePartitions()
-  }, [])
+  }, [props.loadQuote])
 
   type PartitionKey = keyof PartitionInterface;
 
@@ -204,7 +206,7 @@ const Quotes = ({ ...props }) => {
     { key: '2', label: 'Action 2' },
   ];
 
-  const expandedRowRender = (row:any,key:any) => {
+  const expandedRowRender = (row: any, key: any) => {
 
     const columns: TableColumnsType<ExpandedDataType> = [
       {
@@ -212,13 +214,6 @@ const Quotes = ({ ...props }) => {
         dataIndex: "reference",
         width: "150px",
         title: "Referencía",
-
-      },
-      {
-        key: "name",
-        dataIndex: "partition_name",
-        width: "250px",
-        title: "Nombre",
 
       },
       {
@@ -284,10 +279,10 @@ const Quotes = ({ ...props }) => {
         dataIndex: "user_name",
         title: "Agente Cotizador",
         width: "250px",
-        render: (value, record:any) => {
+        render: (value, record: any) => {
           return `${record.user_name} ${record.user_middle_name || ""} ${record.user_last_name || ""}`
         },
-        
+
       },
       {
         key: "currency",
@@ -314,7 +309,7 @@ const Quotes = ({ ...props }) => {
         dataIndex: "buyer",
         title: "Comprador",
         width: "250px",
-        render: (value, record:any) => {
+        render: (value, record: any) => {
           return `${record.buyer_name} ${record.buyer_last_name || ""}`
         }
       },
@@ -334,7 +329,7 @@ const Quotes = ({ ...props }) => {
 
 
     ]
-    
+
     return <Table columns={columns} dataSource={row.partitions} pagination={false} />;
   };
 
@@ -342,6 +337,9 @@ const Quotes = ({ ...props }) => {
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
   return (
     <div>
+      <div style={{ textAlign: "right", padding: "15px 0" }}>
+        <Button onClick={() => { loadTablePartitions() }}>Refrescar</Button>
+      </div>
       {
         viewQuoteLink == null ? null :
           <Modal closable={true} onCancel={() => { setViewQuoteLink(null); setShowQuoteView(false); viewQuoteLink.remove() }} style={{ height: "100%", top: 10 }} open={showQuoteView} cancelButtonProps={{ style: { display: 'none' } }} onOk={() => { setViewQuoteLink(null); setShowQuoteView(false); viewQuoteLink.remove() }}>
@@ -358,7 +356,7 @@ const Quotes = ({ ...props }) => {
           </Modal>
       }
       <ContextMenu />
-      <Table onRow={
+      <Table loading={loadingQuotes} onRow={
         (record) => {
           return {
             onContextMenu: (e: any) => {
@@ -371,81 +369,81 @@ const Quotes = ({ ...props }) => {
           }
         }
       } dataSource={tablePartitions} style={{ width: "100%" }} scroll={{ x: "100vw", y: "80vh" }}
-      expandable={{ expandedRowRender, defaultExpandedRowKeys: ['0'] }}
-       columns={[
-        {
-          key: "numberOfPartitions",
-          dataIndex: "numberOfPartitions",
-          width: "75px",
-          title: "Número de partidas",
-        },
-        {
-          key: "emitted",
-          dataIndex: "emitted",
-          width: "75px",
-          title: "Emitida",
-          ...TextSearchFilter("emitted", "Emitida"),
+        expandable={{ expandedRowRender }}
+        columns={[
+          {
+            key: "numberOfPartitions",
+            dataIndex: "numberOfPartitions",
+            width: "75px",
+            title: "Número de partidas",
+          },
+          {
+            key: "emitted",
+            dataIndex: "emitted",
+            width: "75px",
+            title: "Emitida",
+            ...TextSearchFilter("emitted", "Emitida"),
 
-        },
-        {
-          key: "reference",
-          dataIndex: "reference",
-          width: "80px",
-          title: "No. Cotización",
-          ...TextSearchFilter("reference", "No. Cotización"),
+          },
+          {
+            key: "reference",
+            dataIndex: "reference",
+            width: "80px",
+            title: "No. Cotización",
+            ...TextSearchFilter("reference", "No. Cotización"),
 
-        },
-        {
-          key: "profit",
-          dataIndex: "profit",
-          width: "85px",
-          title: "Utilidad",
-          ...NumberRangeFilter("profit", "Utilidad"),
-          render: (value) => {
-            return formatter.format(Number(value))
-          }
-        },
-        {
-          key: "total",
-          dataIndex: "total",
-          width: "85px",
-          title: "Total",
-          ...NumberRangeFilter("total", "Total"),
-          render: (value) => {
-            return formatter.format(Number(value))
-          }
-        },
-        {
-          key: "agent",
-          dataIndex: "agent",
-          width: "100px",
-          title: "Agente",
-          ...TextSearchFilter("agent", "Agente")
+          },
+          {
+            key: "profit",
+            dataIndex: "profit",
+            width: "85px",
+            title: "Utilidad",
+            ...NumberRangeFilter("profit", "Utilidad"),
+            render: (value) => {
+              return formatter.format(Number(value))
+            }
+          },
+          {
+            key: "total",
+            dataIndex: "total",
+            width: "85px",
+            title: "Total",
+            ...NumberRangeFilter("total", "Total"),
+            render: (value) => {
+              return formatter.format(Number(value))
+            }
+          },
+          {
+            key: "agent",
+            dataIndex: "agent",
+            width: "100px",
+            title: "Agente",
+            ...TextSearchFilter("agent", "Agente")
 
-        },
-        {
-          key: "buyer",
-          dataIndex: "buyer",
-          title: "Comprador",
-          width: "100px",
-        },
-        {
-          key: "client",
-          dataIndex: "client",
-          title: "Cliente",
-          width: "100px",
-          ...TextSearchFilter("client", "Cliente")
-        },
-        {
-          key: "expiration_date",
-          dataIndex: "expiration_date",
-          title: "Fecha de expiración",
-          width: "150px",
-          render: (value, record) => { return new Date(value).toLocaleDateString() }
-        },
+          },
+          {
+            key: "buyer",
+            dataIndex: "buyer",
+            title: "Comprador",
+            width: "100px",
+          },
+          {
+            key: "client",
+            dataIndex: "client",
+            title: "Cliente",
+            width: "100px",
+            ...TextSearchFilter("client", "Cliente")
+          },
+          {
+            key: "expiration_date",
+            dataIndex: "expiration_date",
+            title: "Fecha de expiración",
+            width: "150px",
+            render: (value, record) => { return new Date(value).toLocaleDateString() }
+          },
 
 
-      ]} />
+        ]} />
     </div>
   )
 }

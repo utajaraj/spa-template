@@ -40,7 +40,6 @@ ReadMyQuotes.get("/total", async (req, res) => {
       .leftJoin('buyers', 'quotes.buyerID', '=', 'buyers.id')
       .leftJoin('users', 'quotes.agentID', '=', 'users.id')
 
-
     const partitionsByQuoteID = {}
     for (let i = 0; i < partitions.length; i++) {
       const partition = partitions[i]
@@ -51,6 +50,7 @@ ReadMyQuotes.get("/total", async (req, res) => {
 
         // set quote object to store information
         partitionsByQuoteID[partition.quoteID] = {
+          key:`partition_${i}`,
           quoteID: partition.quoteID,
           reference: partition.reference,
           total: partition.amount,

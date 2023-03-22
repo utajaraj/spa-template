@@ -172,7 +172,6 @@ const createDatabaseSchemas = async () => {
 
             await knex.schema.createTable('partitions', function (t) {
                 t.increments('id').primary().unique().notNullable();
-                t.string('partition_name', 100).notNullable();
                 t.string('description', 100).notNullable();
                 t.string('status', 100);
                 t.string('part_number', 100)

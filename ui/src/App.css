@@ -97,7 +97,10 @@ input {
   outline: none !important;
   box-shadow: none !important;
 }
-
+input:not(.ant-input) {
+  border: 1px solid var(--coolor2);
+  background: var(--coolor1);
+}
 .ant-input-number-affix-wrapper:focus,
 .ant-input-number-affix-wrapper-focused,
 .ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover,

@@ -64,6 +64,7 @@ UpdateOneQuote.patch("/one", async (req, res) => {
 
             const { id } = req.body
             delete req.body.id
+            req.body.expiration_date = new Date(new Date(req.body.expiration_date).toLocaleString('en-US', {timeZone: 'America/Denver'})).toISOString().replace(/T/, ' ').replace(/\..+/, '')
             knex("quotes").update(req.body).where({ created_by: req.body.created_by, id }).then(async (e) => {
 
                 const updatedQuote = await knex("quotes").select().where({ created_by: req.body.created_by, id }).limit(1)
@@ -71,7 +72,9 @@ UpdateOneQuote.patch("/one", async (req, res) => {
                 res.status(200).send({ status: true, message: "Cotización actualizada", data: updatedQuote })
 
             }).catch((err) => {
+
                 res.status(400).send({ status: false, message: err.sqlMessage })
+
             })
 
         } else {

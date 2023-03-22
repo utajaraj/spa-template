@@ -28,7 +28,6 @@ interface PartitionInterface {
   key: any,
   status?: string,
   id?: string,
-  partition_name?: string,
   description?: string,
   unit?: string,
   quoteID?: string,
@@ -64,13 +63,13 @@ interface PartitionInterface {
 const Partitions = ({ ...props }) => {
 
   const [tablePartitions, setTablePartitions] = useState<PartitionInterface[] | []>([])
-
+  const [loadingPartitions, setLoadingPartitions] = useState<boolean>(true)
 
 
   const loadTablePartitions = async () => {
-
+    setLoadingPartitions(true)
     const savedQuotePartitions = await new Requester({ url: import.meta.env.VITE_APP_APIURL + "/partitions/read/mine", method: "get" }).send()
-
+    setLoadingPartitions(false)
 
     setTablePartitions(savedQuotePartitions.map((partition: any, i: number) => {
       partition.key = `partition_table_entry_${i}`
@@ -81,7 +80,7 @@ const Partitions = ({ ...props }) => {
 
   useEffect(() => {
     loadTablePartitions()
-  }, [])
+  }, [props.loadQuote])
 
   type PartitionKey = keyof PartitionInterface;
 
@@ -453,6 +452,9 @@ const Partitions = ({ ...props }) => {
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
   return (
     <div>
+       <div style={{ textAlign: "right", padding: "15px 0" }}>
+        <Button onClick={() => { loadTablePartitions() }}>Refrescar</Button>
+      </div>
       {
         viewQuoteLink == null ? null :
           <Modal closable={true} onCancel={() => { setViewQuoteLink(null); setShowQuoteView(false); viewQuoteLink.remove() }} style={{ height: "100%", top: 10 }} open={showQuoteView} cancelButtonProps={{ style: { display: 'none' } }} onOk={() => { setViewQuoteLink(null); setShowQuoteView(false); viewQuoteLink.remove() }}>
@@ -469,7 +471,7 @@ const Partitions = ({ ...props }) => {
           </Modal>
       }
       <ContextMenu />
-      <Table onRow={
+      <Table loading={loadingPartitions} onRow={
         (record) => {
           return {
             onContextMenu: (e: any) => {
@@ -503,14 +505,6 @@ const Partitions = ({ ...props }) => {
           width: "150px",
           title: "Referencía",
           ...TextSearchFilter("reference", "Referencia")
-
-        },
-        {
-          key: "name",
-          dataIndex: "partition_name",
-          width: "250px",
-          title: "Nombre",
-          ...TextSearchFilter("partition_name", "Nombre")
 
         },
         {
