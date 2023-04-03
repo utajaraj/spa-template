@@ -6,6 +6,7 @@ const puppeteer = require('puppeteer');
 const { toSpanish } = require("../../../factors/math/NumberToSpanish");
 const fs = require('fs');
 SubmitMyPartitions.patch("/submit", async (req, res) => {
+
     delete req.query.modified_by
 
     if (Number.isInteger(req.body.id)) {
@@ -17,6 +18,8 @@ SubmitMyPartitions.patch("/submit", async (req, res) => {
             "quotes.agentID",
             "quotes.reference",
             "quotes.companyID",
+            "quotes.created_at",
+            "quotes.date_emitted",
             "quotes.clientID",
             "quotes.emitted",
             "quotes.companyID",
@@ -47,12 +50,16 @@ SubmitMyPartitions.patch("/submit", async (req, res) => {
             const total = quoteInformation.map((partition) => { return partition.cost * (1 + partition.factor / 100) * partition.quantity }).reduce((partialSum, a) => partialSum + a, 0);
             const totalInWords = toSpanish(total)
 
-            const { reference, currency, buyer_name, buyer_last_name, client_name, expiration_date, user_name, user_middle_name, user_last_name, company_address, logo_name, company_commercial_name, company_color, company_name } = quoteInformation[0]
-            const quote = { reference, currency, buyer_name, buyer_last_name, client_name, expiration_date, user_name, user_middle_name, user_last_name, total, totalInWords, company_address, logo_name, company_commercial_name, company_color, company_name }
+            let { reference, currency, buyer_name, buyer_last_name, client_name, expiration_date, user_name, user_middle_name, user_last_name, company_address, logo_name, company_commercial_name, company_color, company_name, created_at,date_emitted } = quoteInformation[0]
+            const quote = { reference, currency, buyer_name, buyer_last_name, client_name, expiration_date, user_name, user_middle_name, user_last_name, total, totalInWords, company_address, logo_name, company_commercial_name, company_color, company_name, created_at,date_emitted }
 
     
-
-            const changeEmitted = await trx("quotes").update({ emitted: true }).where({ id: req.body.id })
+            
+            if(!date_emitted){
+                
+                date_emitted = new Date(new Date().toLocaleString('en-US', {timeZone: 'America/Denver'})).toISOString().replace(/T/, ' ').replace(/\..+/, '')
+                const changeEmitted = await trx("quotes").update({ emitted: true, date_emitted }).where({ id: req.body.id })
+            }
 
 
 
@@ -65,12 +72,15 @@ SubmitMyPartitions.patch("/submit", async (req, res) => {
             const logo = fs.readFileSync(__dirname + `/../../../assets/${quote.logo_name}.svg`)
             
             const quoteBackground = fs.readFileSync(__dirname + `/../../../assets/quote-background.svg`)
+            const brandsImage = fs.readFileSync(__dirname + `/../../../assets/brands.png`,{encoding: 'base64'})
 
-            ejs.renderFile(path.join(__dirname + "/../../../views/QuoteTemplate.ejs"), { quote, partitions, includeBrand: false, logo, quoteBackground }, async function (err, str) {
+
+            ejs.renderFile(path.join(__dirname + "/../../../views/QuoteTemplate.ejs"), { quote, partitions, includeBrand: false, logo, quoteBackground, brandsImage }, async function (err, str) {
     
 
                 if (err) {
-                    res.status(400).send({ status: false, message: "Cotización generada pero no se pude descargar PDF", error: err.toString() })
+                    console.log(err);
+                    res.status(400).send({ status: false, message: "Cotización generada pero no se pudó descargar PDF", error: err.toString() })
                     return
                 }
 
@@ -79,9 +89,9 @@ SubmitMyPartitions.patch("/submit", async (req, res) => {
                     const page = await browser.newPage();
                     await page.setContent(str, {
                         waitUntil: 'domcontentloaded',
-                        encoding: "base64"
+                        encoding: "base64",
                     })
-                    const pdf = await page.pdf({ format: 'A4' })
+                    const pdf = await page.pdf({ format: 'A4', landscape: true })
                     res.status(200).send({ status: true, message: "Cotización iniciada", data: pdf })
                     browser.close()
 
@@ -109,6 +119,7 @@ SubmitMyPartitions.patch("/submit", async (req, res) => {
 
 
 SubmitMyPartitions.patch("/submit/brands", async (req, res) => {
+
     delete req.query.modified_by
 
     if (Number.isInteger(req.body.id)) {
@@ -123,6 +134,8 @@ SubmitMyPartitions.patch("/submit/brands", async (req, res) => {
                 "quotes.clientID",
                 "quotes.emitted",
                 "quotes.companyID",
+                "quotes.created_at",
+                "quotes.date_emitted",
                 "quotes.expiration_date",
                 "users.user_name",
                 "users.user_middle_name",
@@ -150,14 +163,16 @@ SubmitMyPartitions.patch("/submit/brands", async (req, res) => {
             const total = quoteInformation.map((partition) => { return partition.cost * (1 + partition.factor / 100) * partition.quantity }).reduce((partialSum, a) => partialSum + a, 0);
             const totalInWords = toSpanish(total)
 
-            const { company_address, reference, currency, buyer_name, buyer_last_name, client_name, expiration_date, user_name, user_middle_name, user_last_name, logo_name, company_commercial_name, company_color, company_name } = quoteInformation[0]
-            const quote = { reference, currency, buyer_name, buyer_last_name, client_name, expiration_date, user_name, user_middle_name, user_last_name, total, totalInWords, company_address, logo_name, company_commercial_name, company_color, company_name }
+            let { company_address, reference, currency, buyer_name, buyer_last_name, client_name, expiration_date, user_name, user_middle_name, user_last_name, logo_name, company_commercial_name, company_color, company_name, created_at, date_emitted } = quoteInformation[0]
+            const quote = { reference, currency, buyer_name, buyer_last_name, client_name, expiration_date, user_name, user_middle_name, user_last_name, total, totalInWords, company_address, logo_name, company_commercial_name, company_color, company_name, created_at, date_emitted }
 
-
-            const changeEmitted = await trx("quotes").update({ emitted: true }).where({ id: req.body.id })
-
-
-
+         
+            
+            if(!date_emitted){
+                
+                date_emitted = new Date(new Date().toLocaleString('en-US', {timeZone: 'America/Denver'})).toISOString().replace(/T/, ' ').replace(/\..+/, '')
+                const changeEmitted = await trx("quotes").update({ emitted: true, date_emitted }).where({ id: req.body.id })
+            }
             const partitions = quoteInformation
 
             return { quote, partitions }
@@ -167,8 +182,10 @@ SubmitMyPartitions.patch("/submit/brands", async (req, res) => {
 
             const logo = fs.readFileSync(__dirname + `/../../../assets/${quote.logo_name}.svg`)
             const quoteBackground = fs.readFileSync(__dirname + `/../../../assets/quote-background.svg`)
+            
+            const brandsImage = fs.readFileSync(__dirname + `/../../../assets/brands.png`,{encoding: 'base64'})
 
-            ejs.renderFile(path.join(__dirname + "/../../../views/QuoteTemplate.ejs"), { quote, partitions, includeBrand: true, logo,quoteBackground}, async function (err, str) {
+            ejs.renderFile(path.join(__dirname + "/../../../views/QuoteTemplate.ejs"), { quote, partitions, includeBrand: true, logo,quoteBackground, brandsImage}, async function (err, str) {
 
                 if (err) {
                     res.status(400).send({ status: false, message: "Cotización generada pero no se pudo descargar PDF", error: err.toString() })
@@ -180,9 +197,9 @@ SubmitMyPartitions.patch("/submit/brands", async (req, res) => {
                     const page = await browser.newPage();
                     await page.setContent(str, {
                         waitUntil: 'domcontentloaded',
-                        encoding: "base64"
+                        encoding: "base64",
                     })
-                    const pdf = await page.pdf({ format: 'A4' })
+                    const pdf = await page.pdf({ format: 'A4', landscape: true })
                     res.status(200).send({ status: true, message: "Cotización iniciada", data: pdf })
                     browser.close()
 

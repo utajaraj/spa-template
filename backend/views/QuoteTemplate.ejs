@@ -7,8 +7,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cotización</title>
     <style>
+    
+
+        * {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
         html {
             -webkit-print-color-adjust: exact;
+            height: fit-content;
+        }
+        body{
+            position: relative;
         }
 
         h4 {
@@ -22,25 +32,37 @@
 
         thead>tr>td {
             color: white;
+            font-size: 11px;
             padding: 5px 15px;
+        }
+
+        tbody>tr>td {
+            font-size: 11px;
         }
 
         .companyInfo {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             flex-wrap: wrap;
             flex-direction: column;
             align-items: center;
+            margin: 0;
+            padding-bottom: 0f;
         }
-        
-        .companyInfo,.companyInfo>*,.companyInfo>*>* {
-          margin: 0;
+
+        .companyInfo,
+        .companyInfo>*,
+        .companyInfo>*>* {
+            margin: 0;
         }
 
         .logoContainer {
-            padding: 50px 0 20px;
+            position: absolute;
+            left: 40px;
+            top: 70px;
         }
-        .logoContainer > svg{
+
+        .logoContainer>svg {
             width: 200px;
         }
 
@@ -53,14 +75,36 @@
             top: 0;
             left: 0;
             width: 100vw;
-            height: 100vh;
-            background: rgb(240,240,240);
-background: linear-gradient(90deg, rgb(255, 255, 255) 0%, rgb(241, 241, 241) 48%, rgba(255,255,255,1) 100%); 
+            background: rgb(240, 240, 240);
+            background: linear-gradient(90deg, rgb(255, 255, 255) 0%, rgb(241, 241, 241) 48%, rgba(255, 255, 255, 1) 100%);
             z-index: -1;
         }
+
         .bg>* {
             width: 100%;
-            height: 100%;
+        }
+
+        .infoP {
+            display: flex;
+            width: 320px;
+            padding: 2px;
+            font-size: 9px;
+            border: 1px solid black;
+            margin: 0;
+        }
+
+        .infoP>span {
+            width: 100px;
+            padding: 2px;
+            margin: 0;
+            text-align: left;
+            font-size: 9px;
+            margin-right: 5px;
+            border-right: 1px solid black;
+        }
+
+        .notes>* {
+            font-size: 9px !important;
         }
     </style>
 </head>
@@ -68,10 +112,12 @@ background: linear-gradient(90deg, rgb(255, 255, 255) 0%, rgb(241, 241, 241) 48%
 
     <%const { reference, company_address, currency, buyer_name, buyer_last_name, client_name, expiration_date,
         user_name, user_middle_name, user_last_name, total, totalInWords, company_color, company_commercial_name,
-        company_name }=quote %>
+        company_name, created_at, date_emitted }=quote %>
 
+        <%const tax = total*.84%>
         <div class="bg">
         </div>
+
         <body style="padding:25px">
             <p style="color: #909090; font-size: 9px;">
                 <%-fecha%> - <%-client_name%>
@@ -80,60 +126,46 @@ background: linear-gradient(90deg, rgb(255, 255, 255) 0%, rgb(241, 241, 241) 48%
                 <div class="logoContainer" style="height: 100%">
                     <%-logo||""%>
                 </div>
-                <div>
-                    <h1 style="font-size:18px;margin:0;text-align:center;color:black">
+                <div style="text-align: center;">
+                    <h1 style=<%-`"font-size:18px;margin:0;text-align:center;color:${company_color}"`%>>
                         <%-company_name||company_commercial_name%>
                     </h1>
-                    <p style="padding:15px;text-align:center;margin: 0;">Tel. 6563605285</p>
+                    <p><%-company_address%></p>
+                    <p style="text-align:center;margin: 0;">Tel. 6563605285</p>
                     <h2 style="text-align:center;margin:0">Sucursales</h2>
-                    <p style="padding:0 0 15px;text-align:center;margin:0">Ciudad Juárez-El Paso TX</p>
+                    <p style="text-align:center;margin:0">Ciudad Juárez-El Paso TX</p>
                 </div>
             </div>
-         
-            <div style="display:flex; justify-content: space-between; padding: 35px 0;align-items: flex-end;">
+
+            <div style="display:flex; justify-content: space-between;align-items: flex-start;">
                 <div>
-                    <p style="margin-top: 5px;">
-                        <b>Nombre del cliente:</b>
+                    <p class="infoP">
+                        <span><b>Nombre del cliente:</b></span>
                         <%-client_name%>
                     </p>
-                    <p>
-                        <b>Contacto:</b>
-                        <%-buyer_name%>
-                            <%-buyer_last_name%>
+                    <p class="infoP">
+                        <span><b>Contacto:</b></span>
+                        <%-buyer_name%> <%-buyer_last_name%>
                     </p>
-                    <% if(fecha){%>
-                        <p>
-                            <b>Fecha:</b>
-                            <%-fecha.toISOString().split("T")[0].replaceAll("-"," /")%>
+
+
+                </div>
+                <div>
+                    <p class="infoP" style="margin: 0;text-align: right;"><span><b>Número de cotización:</b></span><%-reference%></p>
+                    <% if(date_emitted){%>
+                        <p class="infoP">
+                            <span><b>Fecha de cotización:</b></span>
+                            <%-date_emitted.toISOString().split("T")[0].replaceAll("-"," /")%>
                         </p>
 
                         <%}%>
-                            <% if(expiration_date){%>
-                                <p>
-                                    <b>Válida hasta:</b>
-                                    <%-expiration_date.toISOString().split("T")[0].replaceAll("-"," /")%>
-                                </p>
-                                <%}%>
+                            <p class="infoP" style="margin: 0;text-align: right">
+                                <span><b>Fecha:</b></span><%-created_at?.toISOString().split("T")[0].replaceAll("-","/")%></p>
+
+                            <p class="infoP" style="margin: 0;text-align: right;">
+                                <span><b>Cotizó:</b></span><%-`${user_name||""} ${user_middle_name||""}${user_last_name||""}`%></p>
+
                 </div>
-                <div style="width: 375px;">
-                    <h1 style="text-align: right;">
-                        Cotización
-                    </h1>
-                    <p style="margin: 0;text-align: right;"><b>Número de cotización:</b><%-reference%></p>
-                    <p style="margin: 0;text-align: right;"><b>Vendedor:</b><%-`${user_name||""} ${user_middle_name||""}
-                            ${user_last_name||""}`%></p>
-                    <p style="margin: 0;text-align: right"><b>Dirección:</b><%-company_address%></p>
-                </div>
-            </div>
-            <div>
-                <!-- <h4>
-                    <b>Dirección:</b>
-                    N/A
-                </h4> -->
-                <!-- <h4>
-                    <b>N. Móvil:</b>
-                    N/A
-                </h4> -->
             </div>
             <table width="100%">
                 <thead style=<%-`"background-color: ${company_color||"#000"}"`%>>
@@ -213,25 +245,32 @@ background: linear-gradient(90deg, rgb(255, 255, 255) 0%, rgb(241, 241, 241) 48%
                         <% } %>
                 </tbody>
             </table>
-            <h3 style="text-align: right;"><b>Total:</b>
-                <%-Number(total).toLocaleString('en')%> <%-currency%>
-            </h3>
-            <h3 style="text-align: right;"><b>Total Redondeado: </b>
-                <%-Number(total).toLocaleString('en')%> <%-currency%>
-            </h3>
-            <p style="text-align: right;"><b>En palabras:</b>
-                <%-currency%>
-                    <%-totalInWords%>.
-            </p>
 
-            <p>Nota: Al generar su orden de compra favor de agregar este número de cotización.</p>
-            <p>Esta cotización tiene vigencia de 15 días</p>
-            <h3>Notas Importantes</h3>
-            <p>Precios son en <%-currency%>. </p>
-            <p>El tiempo de entrega esta sujeto a disponibilidad al momento de recibir su orden de compra y esta
-                expresado en días hábiles. </p>
-            <p>La generación de su orden de compra implica la aceptación de los términos y condiciones de esta
-                cotización.</p>
+            <div style="display:flex;justify-content: flex-end;flex-direction: column; align-items: flex-end;">
+                <p class="infoP" style="text-align: right;"><span><b>Sub-total:</b></span>
+                    <%-Number(total-tax).toLocaleString('en')%> <%-currency%>
+                </p>
+                <p class="infoP" style="text-align: right;"><span><b>IVA: </b></span>
+                    <%-Number(tax).toLocaleString('en')%> <%-currency%>
+                </p>
+                <p class="infoP" style="text-align: right;"><span><b>Total</b></span>
+                    <%-Number(total).toLocaleString('en')%> <%-currency%>
+                </p>
+            </div>
+
+            <div class="notes">
+                <p>Nota: Al generar su orden de compra favor de agregar este número de cotización.</p>
+                <p>Esta cotización tiene vigencia de 15 días</p>
+                <p class="margin:0">Notas Importantes</p>
+                <p>Precios son en <%-currency%>. </p>
+                <p>El tiempo de entrega esta sujeto a disponibilidad al momento de recibir su orden de compra y esta
+                    expresado en días hábiles. </p>
+                <p>La generación de su orden de compra implica la aceptación de los términos y condiciones de esta
+                    cotización.</p>
+            </div>
+            <div style="width:100%">
+                <img style="width:100%" src="data:image/png;base64, <%-brandsImage%>" />
+            </div>
         </body>
 
 </html>

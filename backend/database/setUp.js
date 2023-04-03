@@ -186,6 +186,7 @@ const createDatabaseSchemas = async () => {
                 t.decimal('amount', 12, 4);
                 t.integer('created_by', 100).notNullable()
                 t.integer('modified_by', 100).notNullable()
+                t.datetime('date_emitted', { precision: 6 }).defaultTo(knex.fn.now(6))
                 t.datetime('created_at', { precision: 6 }).defaultTo(knex.fn.now(6)).notNullable()
                 t.datetime('modified_at', { precision: 6 }).defaultTo(knex.fn.now(6)).notNullable()
             })
