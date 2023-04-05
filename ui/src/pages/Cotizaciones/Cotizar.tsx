@@ -328,8 +328,8 @@ const QuotePartitionForm = (props: any) => {
                     <div>
                         <label>Tiempo de entrega <span className='requiredMark' /></label>
 
-                        <Form.Item name="edd" hasFeedback>
-                            <InputNumber min={0} max={100} addonBefore={"días"} />
+                        <Form.Item name="edd" hasFeedback rules={[{ required: true, message: "Cantidad es obligatoria" }]}>
+                            <InputNumber min={0} max={365} addonBefore={"días"} />
                         </Form.Item>
                     </div>
                     <div>

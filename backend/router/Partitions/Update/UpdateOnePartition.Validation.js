@@ -29,11 +29,7 @@ const UpdateOnePartitionsValidation = async (body, verbose = false) => {
       missingMessage: "Cotización es obligatoria",
       invalidMessage: "Cotización inválida",
     },
-    edd: {
-      missingMessage: "Fecha de entrega",
-      invalidMessage: "Fecha de entrega inválida",
-      dataType: Integer,
-    },
+ 
     quantity: {
       missingMessage: "Cantidad es obligatorio",
       invalidMessage: "Cantidad inválido",
@@ -57,6 +53,11 @@ const UpdateOnePartitionsValidation = async (body, verbose = false) => {
     },
     part_number: {
       missingMessage: "Número de parte es obligatorio",
+    },
+    edd: {
+      missingMessage: "Fecha de entrega",
+      invalidMessage: "Fecha de entrega inválida",
+      dataType: Integer,
     },
     brandID: {
       invalidMessage: "Marca inválida",

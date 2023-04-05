@@ -171,13 +171,10 @@
                 <thead style=<%-`"background-color: ${company_color||"#000"}"`%>>
                     <tr>
                         <td>
-                            Sr
+                            #
                         </td>
                         <td>
                             Número de Parte
-                        </td>
-                        <td>
-                            Articulo
                         </td>
                         <td>
                             Descripción
@@ -214,9 +211,6 @@
                                 <%-partitions[i].part_number%>
                             </td>
                             <td>
-                                <%-partitions[i].partition_name%>
-                            </td>
-                            <td>
                                 <%-partitions[i].description%>
                             </td>
                             <%if(includeBrand){%>
@@ -228,7 +222,11 @@
                                         <%-Number(partitions[i].quantity).toLocaleString('en')%>
                                     </td>
                                     <td>
-                                        <%-partitions[i].edd%> días
+                                        <%if(partitions[i].edd<16){%>
+                                            <%-partitions[i].edd%> días
+                                        <%}else{%>
+                                            <%-Math.round(partitions[i].edd/7)%> semanas
+                                        <%}%>
                                     </td>
                                     <td>
                                         <%-partitions[i].unit%>
@@ -248,10 +246,10 @@
 
             <div style="display:flex;justify-content: flex-end;flex-direction: column; align-items: flex-end;">
                 <p class="infoP" style="text-align: right;"><span><b>Sub-total:</b></span>
-                    <%-Number(total-tax).toLocaleString('en')%> <%-currency%>
+                    <%-Number(tax).toLocaleString('en')%> <%-currency%>
                 </p>
                 <p class="infoP" style="text-align: right;"><span><b>IVA: </b></span>
-                    <%-Number(tax).toLocaleString('en')%> <%-currency%>
+                    <%-Number(total-tax).toLocaleString('en')%> <%-currency%>
                 </p>
                 <p class="infoP" style="text-align: right;"><span><b>Total</b></span>
                     <%-Number(total).toLocaleString('en')%> <%-currency%>

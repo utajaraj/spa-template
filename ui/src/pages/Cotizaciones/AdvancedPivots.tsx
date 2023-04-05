@@ -63,6 +63,7 @@ const PivotesAvanzados = ({ ...props }) => {
                 "Comprador": `${partition.buyer_name || ""} ${partition.buyer_last_name || ""}`,
                 "Categoría": partition.category_name,
                 "Costo": partition.cost,
+                "Estatus": partition.status,
                 "Cantidad": partition.quantity,
                 "Moneda": partition.currency,
                 "Monto": partition.amount,

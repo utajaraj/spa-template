@@ -67,7 +67,7 @@ const Users: React.FC = () => {
 
 
     const loadCompanySites = async (id: any) => {
-        
+
         try {
             const companySitesResult = await new Requester({ url: import.meta.env.VITE_APP_APIURL + `/companysites/read/id/${id}`, method: "get" }).send()
             setCompanySites(companySitesResult)
@@ -159,7 +159,7 @@ const Users: React.FC = () => {
         </Form>
     }
 
-    
+
     return (
         <div id="usersPage">
             <Drawer title={title} open={editUserDrawerVisible} closable onClose={() => { setEditUserDrawerVisible(false) }}>
@@ -314,14 +314,14 @@ const Users: React.FC = () => {
                                 activationForm.setFields([
                                     {
                                         name: "status",
-                                        value: row.active||false
+                                        value: row.active || false
                                     },
                                     {
                                         name: "id",
                                         value: row.id
                                     },
                                 ])
-                                
+
                                 await loadCompanySites(row.companyID)
                                 updateUserForm.setFields([
                                     {

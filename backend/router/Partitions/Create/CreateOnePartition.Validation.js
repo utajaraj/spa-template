@@ -29,11 +29,7 @@ const AddOnePartitionsValidation = async (body, verbose = false) => {
       missingMessage: "Cotización es obligatoria",
       invalidMessage: "Cotización inválida",
     },
-    edd: {
-      missingMessage: "Fecha de entrega",
-      invalidMessage: "Fecha de entrega inválida",
-      dataType: Integer,
-    },
+   
     quantity: {
       missingMessage: "Cantidad es obligatorio",
       invalidMessage: "Cantidad inválido",
@@ -51,6 +47,11 @@ const AddOnePartitionsValidation = async (body, verbose = false) => {
     },
   };
   const optionalParameters = {
+    edd: {
+      missingMessage: "Fecha de entrega",
+      invalidMessage: "Fecha de entrega inválida",
+      dataType: Integer,
+    },
     categoryID: {
       invalidMessage: "Categoría inválida",
       dataType: Integer,

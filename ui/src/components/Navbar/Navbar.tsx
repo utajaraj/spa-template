@@ -93,6 +93,14 @@ export const Links = ({ show, setShow, company }: Props) => {
                 <p>Configuración</p>
             </div>
         </Link>
+        <Link to="/crm/clients">
+            <div className="linkContent">
+                <div className="circle">
+                    <AiFillSecurityScan />
+                </div>
+                <p>Clientes</p>
+            </div>
+        </Link>
         <Link to="/crm/users">
             <div className="linkContent">
                 <div className="circle">

@@ -391,7 +391,6 @@ const Quotes = ({ ...props }) => {
             width: "80px",
             title: "No. Cotización",
             ...TextSearchFilter("reference", "No. Cotización"),
-
           },
           {
             key: "profit",
