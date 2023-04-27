@@ -31,6 +31,11 @@ SubmitMyPartitions.patch("/submit", async (req, res) => {
             "buyers.buyer_last_name",
             "clients.client_name",
             "clients.client_serialization",
+            "clients.street",
+            "clients.postalCode",
+            "clients.city",
+            "clients.state",
+            "clients.country",
             "companies.company_address",
             "companies.logo_name",
             "companies.company_color",
@@ -50,8 +55,8 @@ SubmitMyPartitions.patch("/submit", async (req, res) => {
             const total = quoteInformation.map((partition) => { return partition.cost * (1 + partition.factor / 100) * partition.quantity }).reduce((partialSum, a) => partialSum + a, 0);
             const totalInWords = toSpanish(total)
 
-            let { reference, currency, buyer_name, buyer_last_name, client_name, expiration_date, user_name, user_middle_name, user_last_name, company_address, logo_name, company_commercial_name, company_color, company_name, created_at,date_emitted } = quoteInformation[0]
-            const quote = { reference, currency, buyer_name, buyer_last_name, client_name, expiration_date, user_name, user_middle_name, user_last_name, total, totalInWords, company_address, logo_name, company_commercial_name, company_color, company_name, created_at,date_emitted }
+            let { reference, currency, buyer_name, buyer_last_name, client_name, expiration_date, user_name, user_middle_name, user_last_name, company_address, logo_name, company_commercial_name, company_color, company_name, created_at,date_emitted, iva_tax, street,postalCode,city,state } = quoteInformation[0]
+            const quote = { reference, currency, buyer_name, buyer_last_name, client_name, expiration_date, user_name, user_middle_name, user_last_name, total, totalInWords, company_address, logo_name, company_commercial_name, company_color, company_name, created_at,date_emitted, iva_tax ,street,postalCode,city,state }
 
     
             
@@ -79,7 +84,6 @@ SubmitMyPartitions.patch("/submit", async (req, res) => {
     
 
                 if (err) {
-                    console.log(err);
                     res.status(400).send({ status: false, message: "Cotización generada pero no se pudó descargar PDF", error: err.toString() })
                     return
                 }
@@ -97,15 +101,10 @@ SubmitMyPartitions.patch("/submit", async (req, res) => {
 
                 } catch (error) {
 
-                    console.log(error)
-
                     res.status(400).send({ status: false, message: "Cotización generada, pero hubo fallo al generar PDF" })
                 }
             })
         }).catch(function (transaction) {
-
-
-            console.log(transaction);
 
             res.status(400).send({ status: false, message: "Cotización no generada" })
         })
@@ -144,6 +143,11 @@ SubmitMyPartitions.patch("/submit/brands", async (req, res) => {
                 "buyers.buyer_last_name",
                 "clients.client_name",
                 "clients.client_serialization",
+                "clients.street",
+                "clients.postalCode",
+                "clients.city",
+                "clients.state",
+                "clients.country",
                 "companies.company_address",
                 "companies.logo_name",
                 "companies.company_color",
@@ -163,8 +167,8 @@ SubmitMyPartitions.patch("/submit/brands", async (req, res) => {
             const total = quoteInformation.map((partition) => { return partition.cost * (1 + partition.factor / 100) * partition.quantity }).reduce((partialSum, a) => partialSum + a, 0);
             const totalInWords = toSpanish(total)
 
-            let { company_address, reference, currency, buyer_name, buyer_last_name, client_name, expiration_date, user_name, user_middle_name, user_last_name, logo_name, company_commercial_name, company_color, company_name, created_at, date_emitted } = quoteInformation[0]
-            const quote = { reference, currency, buyer_name, buyer_last_name, client_name, expiration_date, user_name, user_middle_name, user_last_name, total, totalInWords, company_address, logo_name, company_commercial_name, company_color, company_name, created_at, date_emitted }
+            let { company_address, reference, currency, buyer_name, buyer_last_name, client_name, expiration_date, user_name, user_middle_name, user_last_name, logo_name, company_commercial_name, company_color, company_name, created_at, date_emitted,iva_tax,street,postalCode,city,state  } = quoteInformation[0]
+            const quote = { reference, currency, buyer_name, buyer_last_name, client_name, expiration_date, user_name, user_middle_name, user_last_name, total, totalInWords, company_address, logo_name, company_commercial_name, company_color, company_name, created_at, date_emitted,iva_tax ,street,postalCode,city,state }
 
          
             
@@ -174,6 +178,7 @@ SubmitMyPartitions.patch("/submit/brands", async (req, res) => {
                 const changeEmitted = await trx("quotes").update({ emitted: true, date_emitted }).where({ id: req.body.id })
             }
             const partitions = quoteInformation
+
 
             return { quote, partitions }
 

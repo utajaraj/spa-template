@@ -101,6 +101,9 @@ input:not(.ant-input) {
   border: 1px solid var(--coolor2);
   background: var(--coolor1);
 }
+.ant-input-number-group-wrapper{
+  width: 100%;
+}
 .ant-input-number-affix-wrapper:focus,
 .ant-input-number-affix-wrapper-focused,
 .ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover,
@@ -110,6 +113,19 @@ input:not(.ant-input) {
   border-color: var(--coolor19);
   outline: none !important;
   box-shadow: none !important;
+}
+.ant-input-number-group .ant-input-number-group-addon:first-child {
+  border: 1px solid var(--coolor8);
+  color: var(--coolor15);
+}
+
+.ant-input-number-group .ant-input-number-group-addon .ant-select {
+  margin: -5px -12px;
+}
+
+.ant-input-number-group .ant-input-number-group-addon .ant-select.ant-select-single:not(.ant-select-customize-input) .ant-select-selector {
+  background-color: var(--coolor3) !important;
+border: 1px solid var(--coolor5) !important;
 }
 
 .ant-input-affix-wrapper {
@@ -167,23 +183,8 @@ input:not(.ant-input) {
   background-color: var(--coolor5);
 }
 .ant-table-wrapper .ant-table-row-expand-icon {
-  color: inherit;
-  text-decoration: none;
-  outline: none;
-  cursor: pointer;
-  transition: all 0.3s;
-  position: relative;
-  float: left;
-  box-sizing: border-box;
-  width: 17px;
-  height: 17px;
-  padding: 0;
-  line-height: 17px;
   background: var(--coolor20);
   border: 1px solid var(--coolor18);
-  border-radius: 6px;
-  transform: scale(0.9411764705882353);
-  user-select: none;
 }
 .ant-pagination .ant-pagination-item-active {
   font-weight: 600;
@@ -876,4 +877,10 @@ table.pvtTable tbody tr th {
 
 #companiesPage>*:nth-child(1) {
   width: 20%;
+}
+.selectableList > div > div >div>div{
+  cursor: pointer;
+}
+.selectableList > div > div >div>div>div>table>tbody>tr.ant-table-row:hover>.ant-table-cell-row-hover{
+  background: var(--coolor3)!important;
 }

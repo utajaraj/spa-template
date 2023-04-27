@@ -1,10 +1,9 @@
 import { Dispatch, useEffect, useState } from "react"
 import { AiFillSecurityScan } from "react-icons/ai";
-import { MdPrecisionManufacturing } from "react-icons/md"
+import { FaFileInvoiceDollar } from "react-icons/fa"
 import { RiBillFill } from "react-icons/ri"
-import { HiUserCircle, HiChartBar } from "react-icons/hi"
-import { GiCardboardBoxClosed } from "react-icons/gi"
-import { MdDashboard, MdFormatColorFill } from "react-icons/md"
+import { HiUserCircle } from "react-icons/hi"
+import { MdFormatColorFill } from "react-icons/md"
 import chroma from "chroma-js"
 import "./Navbar.css"
 import { Link } from "react-router-dom";
@@ -91,6 +90,14 @@ export const Links = ({ show, setShow, company }: Props) => {
                     <AiFillSecurityScan />
                 </div>
                 <p>Configuración</p>
+            </div>
+        </Link>
+        <Link to="/crm/clients">
+            <div className="linkContent">
+                <div className="circle">
+                    <FaFileInvoiceDollar />
+                </div>
+                <p>Clientes</p>
             </div>
         </Link>
         <Link to="/crm/users">

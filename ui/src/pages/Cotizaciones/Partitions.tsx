@@ -57,6 +57,7 @@ interface PartitionInterface {
   buyer_name?: string,
   buyer_last_name?: string,
   client_name?: string,
+  iva_tax?: string,
 
 }
 
@@ -399,7 +400,7 @@ const Partitions = ({ ...props }) => {
     }
 
   }
-  const statuses =  ["Abierta","Requerida", "No Requerida", "Adquisición", "Stock", "Tránsito", "Entregado", "En Tienda","Retraso","Lento Movimiento","Sin Cliente"]
+  const statuses = ["Abierta", "Requerida", "No Requerida", "Adquisición", "Stock", "Tránsito", "Entregado", "En Tienda", "Retraso", "Lento Movimiento", "Sin Cliente"]
   const [selectedStatus, setSelectedStatus] = useState<any>("")
   const updatePartitionStatus = async (a: any) => {
 
@@ -452,12 +453,12 @@ const Partitions = ({ ...props }) => {
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
   return (
     <div>
-       <div style={{ textAlign: "right", padding: "15px 0" }}>
+      <div style={{ textAlign: "right", padding: "15px 0" }}>
         <Button onClick={() => { loadTablePartitions() }}>Refrescar</Button>
       </div>
       {
         viewQuoteLink == null ? null :
-          <Modal width={1000} centered  closable={true} onCancel={() => { setViewQuoteLink(null); setShowQuoteView(false); viewQuoteLink.remove() }} style={{ height: "100%", top: 10 }} open={showQuoteView} cancelButtonProps={{ style: { display: 'none' } }} onOk={() => { setViewQuoteLink(null); setShowQuoteView(false); viewQuoteLink.remove() }}>
+          <Modal width={1000} centered closable={true} onCancel={() => { setViewQuoteLink(null); setShowQuoteView(false); viewQuoteLink.remove() }} style={{ height: "100%", top: 10 }} open={showQuoteView} cancelButtonProps={{ style: { display: 'none' } }} onOk={() => { setViewQuoteLink(null); setShowQuoteView(false); viewQuoteLink.remove() }}>
 
 
             <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.3.122/build/pdf.worker.js">
@@ -544,6 +545,16 @@ const Partitions = ({ ...props }) => {
           ...NumberRangeFilter("quantity", "Cantidad"),
           render: (value) => {
             return formatter.format(Number(value))
+          }
+        },
+        {
+          key: "iva",
+          dataIndex: "iva_tax",
+          title: "IVA",
+          width: "150px",
+          ...NumberRangeFilter("iva_tax", "IVA"),
+          render: (value) => {
+           return `${value} %`
           }
         },
         {

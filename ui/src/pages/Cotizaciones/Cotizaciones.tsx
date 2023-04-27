@@ -251,6 +251,15 @@ const Quotes = ({ ...props }) => {
         }
       },
       {
+        key: "iva",
+        dataIndex: "iva_tax",
+        title: "IVA",
+        width: "150px",
+        render: (value) => {
+          return `${value} %`
+        }
+      },
+      {
         key: "factor",
         dataIndex: "factor",
         title: "Factor",
@@ -391,7 +400,6 @@ const Quotes = ({ ...props }) => {
             width: "80px",
             title: "No. Cotización",
             ...TextSearchFilter("reference", "No. Cotización"),
-
           },
           {
             key: "profit",

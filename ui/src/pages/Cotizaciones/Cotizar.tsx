@@ -10,7 +10,7 @@ import { notify } from '../../factors/notify';
 import { addRowsWithCalculations } from '../../factors/AddRowsWithCalculations';
 
 function addMinutes(date: any,) {
-    return new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+    return new Date(date.getTime() - date.getTimezoneOffset() * 60000);
 }
 
 
@@ -328,8 +328,18 @@ const QuotePartitionForm = (props: any) => {
                     <div>
                         <label>Tiempo de entrega <span className='requiredMark' /></label>
 
-                        <Form.Item name="edd" hasFeedback>
-                            <InputNumber min={0} max={100} addonBefore={"días"} />
+                        <Form.Item name="edd" hasFeedback rules={[{ required: true, message: "Cantidad es obligatoria" }]}>
+                            <InputNumber min={0} max={365} addonBefore={"días"} />
+                        </Form.Item>
+                    </div>
+                    <div>
+                        <label>IVA.</label>
+                        <Form.Item initialValue={""} name="iva_tax" hasFeedback rules={[{ required: true, message: "IVA es obligatorio" }]}>
+                            <Select showSearch optionFilterProp="children">
+                                <Select.Option value="" selected disabled>Selecciona IVA.</Select.Option>
+                                <Select.Option value="8" >8%</Select.Option>
+                                <Select.Option value="16" >16%</Select.Option>
+                            </Select>
                         </Form.Item>
                     </div>
                     <div>
@@ -348,7 +358,7 @@ const QuotePartitionForm = (props: any) => {
                                         </Select>
                                     </Form.Item>
                                 }
-                                formatter={(value) => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                                 parser={(value) => value!.replace(/\$\s?|(,*)/g, '')}
                                 onChange={calculatePartitionAmount}
                             />
@@ -369,7 +379,7 @@ const QuotePartitionForm = (props: any) => {
                         <Form.Item name="factor" hasFeedback rules={[{ required: true, message: "Factor es obligatorio" }, { pattern: /^[+-]?((\d+(\.\d*)?)|(\.\d+))$/, message: "Este campo solo acepta decimales" }]}>
                             <InputNumber
                                 min={0}
-                                max={100}
+                                max={300}
                                 addonBefore={"%"}
                                 onChange={calculatePartitionAmount}
                             />
@@ -377,7 +387,7 @@ const QuotePartitionForm = (props: any) => {
                     </div>
                     <div>
                         <label>Monto</label>
-                        <h2 style={{ margin: 0 }}>{`$ ${partitionAmount}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</h2>
+                        <h2 style={{ margin: 0 }}>{`$ ${Math.round(partitionAmount*100)/100}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</h2>
                         <Form.Item name="amount" hidden={true} initialValue={partitionAmount}>
                             <Input />
                         </Form.Item>
@@ -596,7 +606,7 @@ const QuotePartitionsTable = (props: QuotePartitionsTableProps) => {
                 <Button disabled={selectedPartitionRows.length === 0} onClick={deletePartition}>Eliminar Partida(s)</Button>
             </div>
             <Table rowSelection={{ type: "checkbox", ...rowSelection }} dataSource={quotePartitions} style={{ width: "100%" }} scroll={{ x: "100%", y: "80vh" }} columns={[
-           
+
                 {
                     key: "description",
                     dataIndex: "description",
@@ -840,7 +850,7 @@ const Cotizar = ({ ...props }) => {
 
         try {
             setFetchingProperty('initialSelects', true)
-            const quotesPromise = new Requester({ url: import.meta.env.VITE_APP_APIURL + "/quotes/mine/all", method: "get", params: { emitted: false } }).send()
+            const quotesPromise = new Requester({ url: import.meta.env.VITE_APP_APIURL + "/quotes/read/mine", method: "get", params: { emitted: false } }).send()
             const clientsPromise = new Requester({ url: import.meta.env.VITE_APP_APIURL + "/clients/read/all", method: "get" }).send()
             const usersPromise = new Requester({ url: import.meta.env.VITE_APP_APIURL + "/users/read/all", method: "get" }).send()
             const companiesPromise = new Requester({ url: import.meta.env.VITE_APP_APIURL + "/companies/read/all", method: "get" }).send()
@@ -887,7 +897,7 @@ const Cotizar = ({ ...props }) => {
 
         setSelectedQuote(quoteToSelect)
 
-        const startQuoteFormSavedFields :any = [] 
+        const startQuoteFormSavedFields: any = []
 
         for (let i: number = 0; i < Object.keys(quoteToSelect).length; i++) {
 
@@ -905,9 +915,9 @@ const Cotizar = ({ ...props }) => {
                 await selectClientAndSearchBuyers(value)
             }
             if (key === "id") {
-                
+
                 startQuoteFormSavedFields.push({ name: key, value: value.toString() })
-            }else{
+            } else {
 
                 startQuoteFormSavedFields.push({ name: key, value: value })
             }
@@ -1188,7 +1198,7 @@ const Cotizar = ({ ...props }) => {
                         <div>
                             <div style={{ textAlign: "right" }}>
                                 <label>Incluir marcas</label>
-                                <Checkbox checked={includeBrand} onChange={(e) => {  setIncludeBrand(e.target.checked) }} />
+                                <Checkbox checked={includeBrand} onChange={(e) => { setIncludeBrand(e.target.checked) }} />
                             </div>
                             <div style={{ display: "flex" }}>
                                 <Button disabled={id ? false : true} onClick={deleteQuote}>Eliminar Cotización</Button>

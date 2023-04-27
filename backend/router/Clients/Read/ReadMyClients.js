@@ -11,6 +11,16 @@ ReadMyClients.get("/all", async (req, res) => {
 });
 
 
+ReadMyClients.get("/all", async (req, res) => {
+  try {
+    const clients = await knex("clients")
+    res.status(200).send(clients)
+  } catch (error) {
+    res.status(200).send([])
+  }
+})
+
+
 ReadMyClients.get("/mine", async (req, res) => {
   try {
     const clients = await knex("clients").where({ created_by: req.query.created_by })

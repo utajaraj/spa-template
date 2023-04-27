@@ -9,71 +9,79 @@ const isDecimal = (string) => {
 const AddOnePartitionsValidation = async (body, verbose = false) => {
   const requiredParameters = {
     description: {
-      missingMessage: "Descripción de articulo es obligatorio",
+      missingMessage: "Descripción de articulo es obligatorio.",
     },
     unit: {
-      missingMessage: "Unidad es obligatoria",
-      invalidMessage: "Unidad inválida",
+      missingMessage: "Unidad es obligatoria.",
+      invalidMessage: "Unidad inválida.",
       function: (value) => {
         return ["pzs", "lt", "kg", "unt", "mt", "mt3"].includes(value)
       }
     },
+    iva_tax: {
+      missingMessage: "Categoría IVA es obligatoria.",
+      invalidMessage: "Opción de IVA inválida.",
+      function: (value) => {
+        return ["16", "8"].includes(value)
+      }
+    },
     status: {
-      missingMessage: "Estatus es obligatoria",
-      invalidMessage: "Estatus inválido",
+      missingMessage: "Estatus es obligatoria.",
+      invalidMessage: "Estatus inválido.",
       function: (value) => {
         return ["Abierta","Requerida", "No Requerida", "Adquisicion", "Stock", "Transito", "Entregado", "En Tienda","Retraso","Lento Movimiento","Sin Cliente"].includes(value)
       }
     },
     quoteID: {
-      missingMessage: "Cotización es obligatoria",
-      invalidMessage: "Cotización inválida",
+      missingMessage: "Cotización es obligatoria.",
+      invalidMessage: "Cotización inválida.",
     },
-    edd: {
-      missingMessage: "Fecha de entrega",
-      invalidMessage: "Fecha de entrega inválida",
-      dataType: Integer,
-    },
+   
     quantity: {
-      missingMessage: "Cantidad es obligatorio",
-      invalidMessage: "Cantidad inválido",
+      missingMessage: "Cantidad es obligatorio.",
+      invalidMessage: "Cantidad inválido.",
       dataType: LongDecimal,
     },
     created_by: {
-      missingMessage: "Usuario creador es requerido",
-      invalidMessge: "Usuario creador es inválido",
+      missingMessage: "Usuario creador es requerido.",
+      invalidMessge: "Usuario creador es inválido.",
       dataType: Integer,
     },
     modified_by: {
-      missingMessage: "Usuario modificando es requerido",
-      invalidMessge: "Usuario modificando es inválido",
+      missingMessage: "Usuario modificando es requerido.",
+      invalidMessge: "Usuario modificando es inválido.",
       dataType: Integer,
     },
   };
   const optionalParameters = {
+    edd: {
+      missingMessage: "Fecha de entrega.",
+      invalidMessage: "Fecha de entrega inválida.",
+      dataType: Integer,
+    },
     categoryID: {
-      invalidMessage: "Categoría inválida",
+      invalidMessage: "Categoría inválida.",
       dataType: Integer,
     },
     part_number: {
-      missingMessage: "Número de parte es obligatorio",
+      missingMessage: "Número de parte es obligatorio.",
     },
     brandID: {
-      invalidMessage: "Marca inválida",
+      invalidMessage: "Marca inválida.",
       dataType: Integer,
     },
     cost: {
-      invalidMessage: "Costo inválido",
+      invalidMessage: "Costo inválido.",
       dataType: LongDecimal,
     },
     factor: {
-      invalidMessage: "Factor es inválido",
+      invalidMessage: "Factor es inválido.",
       function: (value) => {
-        return value >= 0 && value <= 100
+        return value >= 0 && value <= 300
       },
     },
     amount: {
-      invalidMessage: "Monto es inválido",
+      invalidMessage: "Monto es inválido.",
       function: (value, body) => {
         const { cost, factor, quantity } = body
         if (isDecimal(cost) && isDecimal(factor) && isDecimal(quantity)) {

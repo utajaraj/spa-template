@@ -36,6 +36,7 @@ const createDatabaseSchemas = async () => {
                 t.increments('id').primary().unique().notNullable();
                 t.string('clientID', 100).notNullable().unique();
                 t.string('site_name', 100).notNullable().unique();
+                t.string('tax_identifaction_number', 100).notNullable().unique();
                 t.string('client_address', 100).notNullable().unique();
                 t.datetime('created_at', { precision: 6 }).defaultTo(knex.fn.now(6)).notNullable()
                 t.integer('created_by', 100).notNullable()
@@ -74,9 +75,9 @@ const createDatabaseSchemas = async () => {
                 t.string('user_middle_name', 100);
                 t.string('user_last_name', 100).notNullable();
                 t.string('email', 100).unique().notNullable();
-                t.string('color', 100).notNullable();
-                t.boolean('collapsed', 100).notNullable();
-                t.boolean('theme', 100).notNullable();
+                t.string('color', 100).notNullable().defautlTo("#000");
+                t.boolean('collapsed', 100).notNullable().defaultTo(true);
+                t.boolean('theme', 100).notNullable().defaultTo(true);
                 t.string('password', 255).notNullable();
                 t.string('company_siteID', 255).notNullable();
                 t.integer('created_by', 100).notNullable()
@@ -174,6 +175,7 @@ const createDatabaseSchemas = async () => {
                 t.increments('id').primary().unique().notNullable();
                 t.string('description', 100).notNullable();
                 t.string('status', 100);
+                t.string('iva_tax', 2);
                 t.string('part_number', 100)
                 t.string('unit', 100).notNullable();
                 t.integer('edd', 100);

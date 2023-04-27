@@ -11,7 +11,7 @@ UpdateUsers.patch("/one", async (req, res) => {
         delete req.body.companyID
         if(isValid.status){
             await knex("users").update(req.body).where({ id: req.body.id })
-            res.status(200).send({ status: true, message: "Usuarioactualizado con éxito." })
+            res.status(200).send({ status: true, message: "Usuario actualizado con éxito." })
 
         }else{
             res.status(400).send({ status: false, message: `${isValid.data.invalidParameters.toString()}` + `${isValid.data.missingParameters.toString()}` })

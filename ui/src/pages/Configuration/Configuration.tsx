@@ -15,16 +15,16 @@ const CompaniesTabbingPage = ({ ...props }) => {
             label: `Empresas`,
             children: <Companies />
         },
-        {
-            key: 'marcas',
-            label: `Marcas`,
-            children: <Brands />
-        },
-        {
-            key: 'categorias',
-            label: `Categorias`,
-            children: <Categories />
-        },
+        // {
+        //     key: 'marcas',
+        //     label: `Marcas`,
+        //     children: <Brands />
+        // },
+        // {
+        //     key: 'categorias',
+        //     label: `Categorias`,
+        //     children: <Categories />
+        // },
     ];
 
     return (

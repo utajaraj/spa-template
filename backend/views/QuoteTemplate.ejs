@@ -112,9 +112,9 @@
 
     <%const { reference, company_address, currency, buyer_name, buyer_last_name, client_name, expiration_date,
         user_name, user_middle_name, user_last_name, total, totalInWords, company_color, company_commercial_name,
-        company_name, created_at, date_emitted }=quote %>
+        company_name, created_at, date_emitted, street,postalCode, city, state,country }=quote %>
 
-        <%const tax = total*.84%>
+<%let globalTotal = 0%>
         <div class="bg">
         </div>
 
@@ -131,9 +131,9 @@
                         <%-company_name||company_commercial_name%>
                     </h1>
                     <p><%-company_address%></p>
-                    <p style="text-align:center;margin: 0;">Tel. 6563605285</p>
+                    <p style="text-align:center;margin: 0;">TELS. 656-624-76-56, 624-79-06 &nbsp;&nbsp;&nbsp;01-800-GARLE-MX</p>
                     <h2 style="text-align:center;margin:0">Sucursales</h2>
-                    <p style="text-align:center;margin:0">Ciudad Juárez-El Paso TX</p>
+                    <p style="text-align:center;margin:0">CD JUÁREZ - CHIHUAHUA - HERMOSILLO - LEON - MEXICO DF - EL PASO TX - JUÁREZ GFYA</p>
                 </div>
             </div>
 
@@ -146,6 +146,10 @@
                     <p class="infoP">
                         <span><b>Contacto:</b></span>
                         <%-buyer_name%> <%-buyer_last_name%>
+                    </p>
+                    <p class="infoP">
+                        <span><b>Dirección:</b></span>
+                        <%-street?street+",":""%><%-postalCode?postalCode+",":""%><%city?city+",":""%><%state?state+",":""%><%country?country+".":""%>
                     </p>
 
 
@@ -171,13 +175,13 @@
                 <thead style=<%-`"background-color: ${company_color||"#000"}"`%>>
                     <tr>
                         <td>
-                            Sr
+                            #
                         </td>
-                        <td>
-                            Número de Parte
+                        <td style="width:50px">
+                            Cantidad
                         </td>
-                        <td>
-                            Articulo
+                        <td style="width:70px;">
+                            # de Parte
                         </td>
                         <td>
                             Descripción
@@ -187,9 +191,7 @@
                                 Marca
                             </td>
                             <%}%>
-                                <td style="width:50px">
-                                    Cantidad
-                                </td>
+                                
                                 <td>
                                     Tiempo de entrega
                                 </td>
@@ -200,7 +202,7 @@
                                     Precio
                                 </td>
                                 <td>
-                                    Total
+                                    Sub-total
                                 </td>
                     </tr>
                 </thead>
@@ -211,10 +213,10 @@
                                 <%-i+1%>
                             </td>
                             <td>
-                                <%-partitions[i].part_number%>
+                                <%-Number(partitions[i].quantity).toLocaleString('en')%>
                             </td>
                             <td>
-                                <%-partitions[i].partition_name%>
+                                <%-partitions[i].part_number%>
                             </td>
                             <td>
                                 <%-partitions[i].description%>
@@ -224,23 +226,25 @@
                                     <%-partitions[i].brand_name%>
                                 </td>
                                 <%}%>
+                                 
                                     <td>
-                                        <%-Number(partitions[i].quantity).toLocaleString('en')%>
-                                    </td>
-                                    <td>
-                                        <%-partitions[i].edd%> días
+                                        <%if(partitions[i].edd<16){%>
+                                            <%-partitions[i].edd%> días
+                                        <%}else{%>
+                                            <%-Math.round(partitions[i].edd/7)%> semanas
+                                        <%}%>
                                     </td>
                                     <td>
                                         <%-partitions[i].unit%>
                                     </td>
                                     <td>
-                                        <%-Number((1+partitions[i].factor /100 ) *
-                                            partitions[i].cost).toLocaleString('en')%>
+                                        <%-Number((1+partitions[i].factor /100 ) * partitions[i].cost).toLocaleString('en')%>
                                     </td>
                                     <td>
-                                        <%-Number(((1+partitions[i].factor /100 ) *
-                                            partitions[i].cost)*partitions[i].quantity).toLocaleString('en')%>
+                                        <%-Number(((1+partitions[i].factor /100 ) *  partitions[i].cost)*partitions[i].quantity).toLocaleString('en')%>
                                     </td>
+                                   <% console.log((Number(((1+partitions[i].factor /100 ) * partitions[i].cost)*partitions[i].quantity)),(1+Number(partitions[i].iva_tax?Number(partitions[i].iva_tax)/100:.16)))%>
+                                    <%globalTotal=globalTotal+(Number(((1+partitions[i].factor /100 ) * partitions[i].cost)*partitions[i].quantity))*(1+Number(partitions[i].iva_tax?Number(partitions[i].iva_tax)/100:.16))%>
                         </tr>
                         <% } %>
                 </tbody>
@@ -248,13 +252,13 @@
 
             <div style="display:flex;justify-content: flex-end;flex-direction: column; align-items: flex-end;">
                 <p class="infoP" style="text-align: right;"><span><b>Sub-total:</b></span>
-                    <%-Number(total-tax).toLocaleString('en')%> <%-currency%>
+                    <%-Number(total).toLocaleString('en')%> <%-currency%>
                 </p>
                 <p class="infoP" style="text-align: right;"><span><b>IVA: </b></span>
-                    <%-Number(tax).toLocaleString('en')%> <%-currency%>
+                    <%-Number(globalTotal-total).toLocaleString('en')%> <%-currency%>
                 </p>
                 <p class="infoP" style="text-align: right;"><span><b>Total</b></span>
-                    <%-Number(total).toLocaleString('en')%> <%-currency%>
+                    <%-Number(globalTotal).toLocaleString('en')%> <%-currency%>
                 </p>
             </div>
 
