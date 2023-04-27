@@ -1,6 +1,14 @@
 const { knex } = require("../../../database/connection");
 const ReadMyClients = require("express").Router();
 
+ReadMyClients.get("/all", async (req, res) => {
+  try {
+    const clients = await knex("clients")
+    res.status(200).send(clients)
+  } catch (error) {
+    res.status(200).send([])
+  }
+});
 
 
 ReadMyClients.get("/mine", async (req, res) => {

@@ -55,14 +55,14 @@ CreateOneQuote.post("/one", async (req, res) => {
           res.status(200).send({ status: true, message: "Cliente ha sido añadido", data: response })
         }).catch((err) => {
           if (err.code === "ER_DUP_ENTRY") {
-            res.status(400).send({ status: false, message: `El cliente: ${req.body.name} ya ha sido registrado`, data: err.sqlMessage })
+            res.status(400).send({ status: false, message: `El cliente: ${req.body.client_name} ya ha sido registrado`, data: err.sqlMessage })
           } else {
             res.status(400).send({ status: false, message: "No se pudo crear el client nuevo", data: err.sqlMessage })
           }
         })
       } catch (error) {
         if (error.code === "ER_DUP_ENTRY") {
-          res.status(400).send({ status: false, message: `El cliente: ${req.body.name} ya ha sido registrado`, data: error.sqlMessage })
+          res.status(400).send({ status: false, message: `El cliente: ${req.body.client_name} ya ha sido registrado`, data: error.sqlMessage })
         } else {
           res.status(400).send({ status: false, message: "No se pudo crear el client nuevo", data: error.sqlMessage })
         }

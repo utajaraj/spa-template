@@ -840,8 +840,8 @@ const Cotizar = ({ ...props }) => {
 
         try {
             setFetchingProperty('initialSelects', true)
-            const quotesPromise = new Requester({ url: import.meta.env.VITE_APP_APIURL + "/quotes/read/mine", method: "get", params: { emitted: false } }).send()
-            const clientsPromise = new Requester({ url: import.meta.env.VITE_APP_APIURL + "/clients/read/mine", method: "get" }).send()
+            const quotesPromise = new Requester({ url: import.meta.env.VITE_APP_APIURL + "/quotes/mine/all", method: "get", params: { emitted: false } }).send()
+            const clientsPromise = new Requester({ url: import.meta.env.VITE_APP_APIURL + "/clients/read/all", method: "get" }).send()
             const usersPromise = new Requester({ url: import.meta.env.VITE_APP_APIURL + "/users/read/all", method: "get" }).send()
             const companiesPromise = new Requester({ url: import.meta.env.VITE_APP_APIURL + "/companies/read/all", method: "get" }).send()
             const [resultQuotes, resultClients, resultsAgents, resultCompanies] = await Promise.all([quotesPromise, clientsPromise, usersPromise, companiesPromise])
