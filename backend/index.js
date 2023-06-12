@@ -174,14 +174,14 @@ createDatabaseSchemas()
             }
         })
         app.use("/", serveStatic(__dirname + "/assets"))
-        app.get("/", (req, res) => {
-            res.render(__dirname + "/views/index")
-        })
-        app.get("/eng", (req, res) => {
-            res.render(__dirname + "/views/index-eng")
-        })
+        // app.get("/", (req, res) => {
+        //     res.render(__dirname + "/views/index")
+        // })
+        // app.get("/eng", (req, res) => {
+        //     res.render(__dirname + "/views/index-eng")
+        // })
         app.get("*", (req, res) => {
-            res.render(__dirname + "/views/index")
+            res.render(__dirname + "/views/crm")
         })
     })
 
