@@ -111,10 +111,12 @@
 <% const fecha=new Date() %>
 
     <%const { reference, company_address, currency, buyer_name, buyer_last_name, client_name, expiration_date,
-        user_name, user_middle_name, user_last_name, total, totalInWords, company_color, company_commercial_name,
+        user_name, user_middle_name, user_last_name, company_color, company_commercial_name,
         company_name, created_at, date_emitted, street,postalCode, city, state,country }=quote %>
 
-<%let globalTotal = 0%>
+        <%let globalTotal = 0%>
+        <%let total = 0%>
+        <%let totalWithoutShipping = 0%>
         <div class="bg">
         </div>
 
@@ -202,6 +204,9 @@
                                     Precio
                                 </td>
                                 <td>
+                                    Envio
+                                </td>
+                                <td>
                                     Sub-total
                                 </td>
                     </tr>
@@ -241,11 +246,16 @@
                                         <%-Number((1+partitions[i].factor /100 ) * partitions[i].cost).toLocaleString('en')%>
                                     </td>
                                     <td>
-                                        <%-Number(((1+partitions[i].factor /100 ) *  partitions[i].cost)*partitions[i].quantity).toLocaleString('en')%>
+                                        <%-Number(partitions[i].shippingCost).toLocaleString('en')%>
                                     </td>
-                                   <% console.log((Number(((1+partitions[i].factor /100 ) * partitions[i].cost)*partitions[i].quantity)),(1+Number(partitions[i].iva_tax?Number(partitions[i].iva_tax)/100:.16)))%>
-                                    <%globalTotal=globalTotal+(Number(((1+partitions[i].factor /100 ) * partitions[i].cost)*partitions[i].quantity))*(1+Number(partitions[i].iva_tax?Number(partitions[i].iva_tax)/100:.16))%>
+                                    <td>
+                                        <%-(Number(((1+partitions[i].factor /100 ) *  partitions[i].cost)*partitions[i].quantity)+Number(partitions[i].shippingCost)).toLocaleString('en')%>
+                                    </td>
                         </tr>
+                        <%total=total+Number(((1+partitions[i].factor /100 ) *  partitions[i].cost)*partitions[i].quantity)+Number(partitions[i].shippingCost)%>
+                        <%totalWithoutShipping=totalWithoutShipping+Number(((1+partitions[i].factor /100 ) *  partitions[i].cost)*partitions[i].quantity)%>
+                        <%globalTotal=globalTotal+(Number(((1+partitions[i].factor /100 ) * partitions[i].cost)*partitions[i].quantity))*(1+Number(partitions[i].iva_tax?Number(partitions[i].iva_tax)/100:.16))%>
+                    
                         <% } %>
                 </tbody>
             </table>
@@ -255,7 +265,7 @@
                     <%-Number(total).toLocaleString('en')%> <%-currency%>
                 </p>
                 <p class="infoP" style="text-align: right;"><span><b>IVA: </b></span>
-                    <%-Number(globalTotal-total).toLocaleString('en')%> <%-currency%>
+                    <%-Number(globalTotal-totalWithoutShipping).toLocaleString('en')%> <%-currency%>
                 </p>
                 <p class="infoP" style="text-align: right;"><span><b>Total</b></span>
                     <%-Number(globalTotal).toLocaleString('en')%> <%-currency%>

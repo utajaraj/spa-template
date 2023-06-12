@@ -544,9 +544,18 @@ const Partitions = ({ ...props }) => {
           width: "150px",
           ...NumberRangeFilter("quantity", "Cantidad"),
           render: (value) => {
-            return formatter.format(Number(value))
+            return formatter.format(Number(value)||0)
           }
         },
+        {
+          key: "shippingCost",
+          dataIndex: "shippingCost",
+          title: "Envio",
+          width: "100px",
+          render: (value) => {
+              return formatter.format(Number(value)||0)
+          }
+      },
         {
           key: "iva",
           dataIndex: "iva_tax",
@@ -554,7 +563,7 @@ const Partitions = ({ ...props }) => {
           width: "150px",
           ...NumberRangeFilter("iva_tax", "IVA"),
           render: (value) => {
-           return `${value} %`
+           return `${value||'N/A'} %`
           }
         },
         {

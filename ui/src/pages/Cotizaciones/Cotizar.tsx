@@ -375,6 +375,16 @@ const QuotePartitionForm = (props: any) => {
                         </Form.Item>
                     </div>
                     <div>
+                        <label>Envio</label>
+                        <Form.Item name="shippingCost" hasFeedback rules={[{ required: true, message: "Costo de envio." }, { pattern: /^[+-]?((\d+(\.\d*)?)|(\.\d+))$/, message: "Este campo solo acepta decimales" }]}>
+                            <InputNumber
+                                formatter={(value) => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                parser={(value) => value!.replace(/\$\s?|(,*)/g, '')}
+                                onChange={calculatePartitionAmount}
+                            />
+                        </Form.Item>
+                    </div>
+                    <div>
                         <label>Factor</label>
                         <Form.Item name="factor" hasFeedback rules={[{ required: true, message: "Factor es obligatorio" }, { pattern: /^[+-]?((\d+(\.\d*)?)|(\.\d+))$/, message: "Este campo solo acepta decimales" }]}>
                             <InputNumber
@@ -637,7 +647,16 @@ const QuotePartitionsTable = (props: QuotePartitionsTableProps) => {
                     title: "Costo",
                     width: "100px",
                     render: (value) => {
-                        return formatter.format(Number(value))
+                        return formatter.format(Number(value)||0)
+                    }
+                },
+                {
+                    key: "shippingCost",
+                    dataIndex: "shippingCost",
+                    title: "Envio",
+                    width: "100px",
+                    render: (value) => {
+                        return formatter.format(Number(value)||0)
                     }
                 },
                 {
@@ -655,7 +674,7 @@ const QuotePartitionsTable = (props: QuotePartitionsTableProps) => {
                     title: "Monto",
                     width: "100px",
                     render: (value) => {
-                        return formatter.format(Number(value))
+                        return formatter.format(Number(value)||0)
                     }
                 }
             ]} />

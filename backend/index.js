@@ -101,6 +101,7 @@ createDatabaseSchemas()
             app.use("/crm", serveStatic(path.resolve(__dirname + "/public")))
 
         } else {
+            console.log("here")
             app.all("*", (req, res) => {
                 res.status(500).send("Error Interno, porfavor contacta a soporte");
             })

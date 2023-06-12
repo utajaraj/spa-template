@@ -170,7 +170,6 @@ const createDatabaseSchemas = async () => {
 
         const hasQuotePartitions = await knex.schema.hasTable('partitions')
         if (!hasQuotePartitions) {
-
             await knex.schema.createTable('partitions', function (t) {
                 t.increments('id').primary().unique().notNullable();
                 t.string('description', 100).notNullable();
@@ -181,6 +180,7 @@ const createDatabaseSchemas = async () => {
                 t.integer('edd', 100);
                 t.integer('quoteID', 100).notNullable();
                 t.decimal('quantity').notNullable();
+                t.decimal('shippingCost').notNullable();
                 t.integer('categoryID', 100);
                 t.integer('brandID', 100);
                 t.decimal('cost', 12, 4);

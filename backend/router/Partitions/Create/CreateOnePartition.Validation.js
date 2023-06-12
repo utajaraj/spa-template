@@ -36,7 +36,11 @@ const AddOnePartitionsValidation = async (body, verbose = false) => {
       missingMessage: "Cotización es obligatoria.",
       invalidMessage: "Cotización inválida.",
     },
-   
+    shippingCost: {
+      missingMessage: "Costo de envio es obligatorio",
+      invalidMessage: "Cost de envio inválido",
+      dataType: LongDecimal,
+    },
     quantity: {
       missingMessage: "Cantidad es obligatorio.",
       invalidMessage: "Cantidad inválido.",

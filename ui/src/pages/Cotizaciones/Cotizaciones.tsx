@@ -251,6 +251,15 @@ const Quotes = ({ ...props }) => {
         }
       },
       {
+        key: "shippingCost",
+        dataIndex: "shippingCost",
+        title: "Envio",
+        width: "100px",
+        render: (value) => {
+            return formatter.format(Number(value)||0)
+        }
+    },
+      {
         key: "iva",
         dataIndex: "iva_tax",
         title: "IVA",

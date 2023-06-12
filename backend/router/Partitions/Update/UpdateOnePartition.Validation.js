@@ -35,6 +35,11 @@ const UpdateOnePartitionsValidation = async (body, verbose = false) => {
       invalidMessage: "Cantidad inválido",
       dataType: LongDecimal,
     },
+    shippingCost: {
+      missingMessage: "Costo de envio es obligatorio",
+      invalidMessage: "Cost de envio inválido",
+      dataType: LongDecimal,
+    },
     created_by: {
       missingMessage: "Usuario creador es requerido",
       invalidMessge: "Usuario creador es inválido",
