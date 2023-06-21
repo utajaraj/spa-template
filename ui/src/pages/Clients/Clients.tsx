@@ -26,10 +26,10 @@ const Clients = ({ ...props }) => {
 
     const swapOneWithNew = (object: any, array: any, setter: any) => {
 
-        setter(array.map((item:any)=>{
-            if(item.id===object.id){
+        setter(array.map((item: any) => {
+            if (item.id === object.id) {
                 return object
-            }else{
+            } else {
                 return item
             }
         }))
@@ -54,7 +54,7 @@ const Clients = ({ ...props }) => {
     }, [clickedClient])
 
     const ClientsList = () => {
-        if (clients.length !== 0) {
+        if (clients.length !== undefined && clients.length !== null) {
             return (
                 <div>
                     <Table className="selectableList"
@@ -109,7 +109,7 @@ const Clients = ({ ...props }) => {
             const changedStatus = await new Requester({ url: import.meta.env.VITE_APP_APIURL + "/clients/update/one", body, method: "patch" }).send()
             if (changedStatus.status) {
                 notify("success", changedStatus.message)
-                swapOneWithNew(changedStatus.data[0],clients,setClients)
+                swapOneWithNew(changedStatus.data[0], clients, setClients)
             } else {
                 notify("error", changedStatus.message)
             }
