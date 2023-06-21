@@ -1,5 +1,5 @@
 const { executeValidation } = require("../../../factors/login/validate");
-const { UTC, Integer, LongString, Alphabetical, Email, AlphabeticalSpace } = require("../../../utlis/regex");
+const { UTC, Integer, LongString, Alphabetical, Email, AlphabeticalSpace, TrueFalse } = require("../../../utlis/regex");
 
 
 const UpdateOneUserValidation = async (body, verbose = false) => {
@@ -31,6 +31,10 @@ const UpdateOneUserValidation = async (body, verbose = false) => {
             missingMessage: "Planta es obligatorio",
             invalidMessage: "Planta inválido"
         },
+        active:{
+            dataType:TrueFalse,
+            invalidMessage:"Status inválido"
+        }
     };
     const requiredParameters = {
         id: {

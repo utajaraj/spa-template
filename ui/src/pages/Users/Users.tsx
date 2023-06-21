@@ -15,7 +15,7 @@ interface ColumnInterface {
 }
 
 interface UsersInterface {
-    status: boolean,
+    active: boolean,
     id: number,
     user_name: string,
     user_middle_name?: string,
@@ -126,10 +126,10 @@ const Users: React.FC = () => {
 
     const updateUser = async (user: UsersInterface) => {
         const body = user
-        body.status = !body.status
+        body.active = !body.active
         const updatedUserResult = await new Requester({ url: import.meta.env.VITE_APP_APIURL + "/users/update/one", method: "patch", body: body }).send()
-        if (user.status !== undefined) {
-            activationForm.setFieldValue("status", body.status)
+        if (user.active !== undefined) {
+            activationForm.setFieldValue("active", body.active)
         }
         if (updatedUserResult.status) {
             loadUsers()
@@ -151,11 +151,11 @@ const Users: React.FC = () => {
                 <Input />
             </Form.Item>
 
-            <Form.Item hidden={true} name="status" rules={[{ required: true, message: "Estatus es requerido." }]}>
+            <Form.Item hidden={true} name="active" rules={[{ required: true, message: "Estatus es requerido." }]}>
                 <Input />
             </Form.Item>
 
-            <Switch className="greenRed" checkedChildren="Activo" unCheckedChildren="Inactivo" defaultChecked={activationForm.getFieldValue("status")} onChange={() => { activationForm.submit() }} />
+            <Switch className="greenRed" checkedChildren="Activo" unCheckedChildren="Inactivo" defaultChecked={activationForm.getFieldValue("active")} onChange={() => { activationForm.submit() }} />
         </Form>
     }
 
@@ -313,7 +313,7 @@ const Users: React.FC = () => {
                             onClick: async (e) => {
                                 activationForm.setFields([
                                     {
-                                        name: "status",
+                                        name: "active",
                                         value: row.active || false
                                     },
                                     {
