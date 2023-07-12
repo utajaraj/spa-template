@@ -211,6 +211,12 @@
                 </thead>
                 <tbody>
                     <% for( let i=0; i < partitions.length; i++ ) { %>
+                        <%const item = partitions[i]%>
+                        <%const {amount,quantity,cost,factor,iva_tax,shippingCost} = partitions[i]%>
+                        <%const iva = iva_tax==="16"?Number(.16):Number(.08)%>
+                        <%const price = Number(shippingCost+cost)%>
+                        <%const tax = price*iva%>
+                        <%const priceWithTax = price+tax%>
                         <tr>
                             <td>
                                 <%-i+1%>
@@ -241,14 +247,14 @@
                                         <%-partitions[i].unit%>
                                     </td>
                                     <td>
-                                        <%-(Number(((1+partitions[i].factor /100 ) *  partitions[i].cost)*partitions[i].quantity)+Number(partitions[i].shippingCost)).toLocaleString('en')%>
+                                        <%-priceWithTax.toLocaleString('en')%>
                                     </td>
                                     <td>
-                                        <%-(Number(((1+partitions[i].factor /100 ) *  partitions[i].cost)*partitions[i].quantity)+Number(partitions[i].shippingCost)).toLocaleString('en')%>
+                                        <%-(priceWithTax*quantity).toLocaleString('en')%>
                                     </td>
                         </tr>
-                        <%total=total+Number(((1+partitions[i].factor /100 ) *  partitions[i].cost)*partitions[i].quantity)+Number(partitions[i].shippingCost)%>
-                        <%globalTotal=globalTotal+(Number(((1+partitions[i].factor /100 ) * partitions[i].cost)*partitions[i].quantity))*(1+Number(partitions[i].iva_tax?Number(partitions[i].iva_tax)/100:.16))+Number(partitions[i].shippingCost)%>
+                        <%total=total+(price+quantity)%>
+                        <%globalTotal=globalTotal+(priceWithTax+quantity)%>
                     
                         <% } %>
                 </tbody>
