@@ -253,8 +253,8 @@
                                         <%-(priceWithTax*quantity).toLocaleString('en')%>
                                     </td>
                         </tr>
-                        <%total=total+(price+quantity)%>
-                        <%globalTotal=globalTotal+(priceWithTax+quantity)%>
+                        <%total=total+(price*quantity)%>
+                        <%globalTotal=globalTotal+(priceWithTax*quantity)%>
                     
                         <% } %>
                 </tbody>
