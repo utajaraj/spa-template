@@ -247,10 +247,10 @@
                                         <%-partitions[i].unit%>
                                     </td>
                                     <td>
-                                        <%-priceWithTax.toLocaleString('en')%>
+                                        <%-price.toLocaleString('en')%>
                                     </td>
                                     <td>
-                                        <%-(priceWithTax*quantity).toLocaleString('en')%>
+                                        <%-(price*quantity).toLocaleString('en')%>
                                     </td>
                         </tr>
                         <%total=total+(price*quantity)%>
