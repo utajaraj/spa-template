@@ -214,7 +214,7 @@
                         <%const item = partitions[i]%>
                         <%const {amount,quantity,cost,factor,iva_tax,shippingCost} = partitions[i]%>
                         <%const iva = iva_tax==="16"?Number(.16):Number(.08)%>
-                        <%const price = Number(shippingCost+cost)%>
+                        <%const price = Number(shippingCost+(cost*(1+(factor/100))))%>
                         <%const tax = price*iva%>
                         <%const priceWithTax = price+tax%>
                         <tr>
