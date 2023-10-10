@@ -15,3 +15,4 @@ DBUSER=
 DB=
 PORT=
 PASSWORD=# spa-template
+# spa-template
