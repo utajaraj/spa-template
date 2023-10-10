@@ -14,4 +14,4 @@ KEYPATH=
 DBUSER=
 DB=
 PORT=
-PASSWORD=
+PASSWORD=# spa-template
