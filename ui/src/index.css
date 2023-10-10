@@ -15,6 +15,10 @@
   -webkit-text-size-adjust: 100%;
 }
 
+::-webkit-scrollbar {
+  width: 12x;
+}
+
 a {
   font-weight: 500;
   color: #646cff;
@@ -30,6 +34,7 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  overflow: hidden;
 }
 
 h1 {

@@ -16,7 +16,7 @@ export const sidenavState = new Subject();
 const setMyTheme = async (color: string | undefined, theme: boolean | undefined, collapsed: boolean | undefined) => {
     const updateMyColor = await new Requester({ url: import.meta.env.VITE_APP_APIURL + "/users/update/theme", method: "patch", body: { color, theme, collapsed } }).send()
     if (updateMyColor.status == true) {
-        sidenavState.next(updateMyColor.data.collapsed);
+        sidenavState.next(updateMyColor.data);
         chroma.scale(updateMyColor.data.theme ? ["#161616", "#2f2f2f", "#4f4f4f", "#5d5d5d", "#fff", updateMyColor.data.color] : ["#fff", "#e6e6e6", "#a5a5a5", "#595959", "#000000", updateMyColor.data.color,]).colors(20).forEach((coolor: string, i: number) => {
             document.documentElement.style.setProperty(`--coolor${i + 1}`, coolor);
         });
@@ -34,11 +34,10 @@ const setMyTheme = async (color: string | undefined, theme: boolean | undefined,
 interface Props {
     show: boolean;
     setShow: Dispatch<boolean>,
-    company:any
 }
 
 
-export const Links = ({ show, setShow, company }: Props) => {
+export const Links = ({ show, setShow }: Props) => {
 
 
     const [openDrawer, setOpenDrawer] = useState<boolean>(false)
@@ -74,38 +73,54 @@ export const Links = ({ show, setShow, company }: Props) => {
             </div>
         </Modal>
         <div id="sidenavLogo" style={{ justifyContent: "center" }}>
-            <img id="logo" style={{ width: show ? "170px" : "65px" }} src={company.logo_name ? `/${ company.logo_name}.svg` : ""} />
+            <img id="logo" style={{ width: show ? "170px" : "65px" }} src={"/logo.png"} />
         </div>
-        <Link to="/crm/cotizaciones">
+        <Link to="/crm/clientes">
             <div className="linkContent">
                 <div className="circle">
                     <RiBillFill />
                 </div>
-                <p>Cotizaciones</p>
+                <p>Clientes</p>
             </div>
         </Link>
-        <Link to="/crm/configuration">
+        <Link to="/crm/inteligencia">
             <div className="linkContent">
                 <div className="circle">
                     <AiFillSecurityScan />
                 </div>
-                <p>Configuración</p>
+                <p>Inteligencia</p>
             </div>
         </Link>
-        <Link to="/crm/clients">
+        <Link to="/crm/mercadotecnia">
             <div className="linkContent">
                 <div className="circle">
                     <FaFileInvoiceDollar />
                 </div>
-                <p>Clientes</p>
+                <p>Mercadotécnia</p>
             </div>
         </Link>
-        <Link to="/crm/users">
+        <Link to="/crm/tratamientos">
+            <div className="linkContent">
+                <div className="circle">
+                    <FaFileInvoiceDollar />
+                </div>
+                <p>Tratamientos</p>
+            </div>
+        </Link>
+        <Link to="/crm/usuarios">
             <div className="linkContent">
                 <div className="circle">
                     <HiUserCircle />
                 </div>
                 <p>Usuarios</p>
+            </div>
+        </Link>
+        <Link to="/crm/configuracion">
+            <div className="linkContent">
+                <div className="circle">
+                    <FaFileInvoiceDollar />
+                </div>
+                <p>Configuración</p>
             </div>
         </Link>
         <Link to={"#"} onClick={() => { setOpenDrawer(true) }}>
@@ -118,13 +133,13 @@ export const Links = ({ show, setShow, company }: Props) => {
         </Link>
     </div>
 }
-const Navbar = ({ show, setShow, company }: Props) => {
+const Navbar = ({ show, setShow }: Props) => {
 
 
 
     return (
         <div id="nav" className={`${show ? "showLinks" : "hideLinks"}`}>
-            <Links show={show} setShow={setShow}  company={company}/>
+            <Links show={show} setShow={setShow}  />
         </div>
     )
 }

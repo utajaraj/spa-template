@@ -1,11 +1,13 @@
-import { Drawer, Button, Table, Form, Input, Select, Modal, Switch } from "antd"
+import { Drawer, Table, Form, Input, Select, Modal, Switch, message } from "antd"
 import { ColumnsType } from "antd/es/table";
-import { useState, useEffect } from "react";
-import { NumberRangeFilter } from "../../factors/Filters/NumberRangeFilter";
+import { useState, useEffect, useRef } from "react";
 import { TextSearchFilter } from "../../factors/Filters/TextSearchFilter";
 import { notify } from "../../factors/notify";
 import { Requester } from "../../factors/Requester";
-
+import { AiFillLock, AiFillCopy, AiFillPlusCircle, AiFillCheckCircle } from "react-icons/ai";
+import { BsFillShieldLockFill } from "react-icons/bs"
+import MyButton from "../../components/Navbar/MyButton";
+import toClipBoard from "../../factors/toClipBoard"
 interface ColumnInterface {
     title: string,
     dataIndex: string,
@@ -18,7 +20,6 @@ interface UsersInterface {
     active: boolean,
     id: number,
     user_name: string,
-    user_middle_name?: string,
     user_last_name: string,
     email: string,
     color: string,
@@ -33,58 +34,14 @@ interface UsersInterface {
     modified_at: string,
 }
 
-interface CompanySitesInterface {
-    id: number,
-    companyID: string,
-    company_site_name: string,
-    company_site_address: string,
-    created_at: string,
-    created_by: number,
-    modified_at: string,
-    modified_by: number,
-}
-
-
-interface CompanyInterface {
-    id: number,
-    companyID: string,
-    company_name: string,
-    company_address: string,
-    created_at: string,
-    created_by: number,
-    modified_at: string,
-    modified_by: number,
-}
-
-
 
 const Users: React.FC = () => {
 
     const [open, setOpen] = useState(false)
-    const [companySites, setCompanySites] = useState<CompanySitesInterface[] | []>([])
-    const [companies, setCompanies] = useState<CompanyInterface[] | []>([])
     const [users, setUsers] = useState<UsersInterface[] | []>([])
+    const [openPasswordReset, setOpenPasswordReset] = useState(false)
+    const [messageApi, contextHolder] = message.useMessage();
 
-
-    const loadCompanySites = async (id: any) => {
-
-        try {
-            const companySitesResult = await new Requester({ url: import.meta.env.VITE_APP_APIURL + `/companysites/read/id/${id}`, method: "get" }).send()
-            setCompanySites(companySitesResult)
-        } catch (error) {
-            notify("error", "No se pudieron cargar las sucursales.")
-        }
-    }
-
-    const loadCompanies = async () => {
-        const companiesResult = await new Requester({ url: import.meta.env.VITE_APP_APIURL + "/companies/read/all", method: "get" }).send()
-
-        try {
-            setCompanies(companiesResult)
-        } catch (error) {
-            notify("error", "No se pudieron cargar las sucursales.")
-        }
-    }
 
     const loadUsers = async () => {
         const usersResult = await new Requester({ url: import.meta.env.VITE_APP_APIURL + "/users/read/all", method: "get" }).send()
@@ -101,7 +58,6 @@ const Users: React.FC = () => {
 
     useEffect(() => {
         loadUsers()
-        loadCompanies()
     }, [])
 
     const [createUserForm] = Form.useForm()
@@ -159,9 +115,70 @@ const Users: React.FC = () => {
         </Form>
     }
 
+    const openResetModal = () => {
+        setOpenPasswordReset(true)
+    }
+    const closeResetModal = () => {
+        setOpenPasswordReset(false)
+    }
+
+    const NewPasswordRef = useRef(null)
+
+    const generateRandomNist = async (): Promise<string> => {
+        const { GeneratePassword } = await import("js-generate-password")
+
+        const password = GeneratePassword({
+            length: 14,
+            symbols: true,
+        });
+
+        return password
+    }
+
+    const clipboardNotification = (value: string) => {
+        toClipBoard(value)
+        messageApi.open({
+            type: "success",
+            content: "Contraseña copiada."
+        })
+    }
+
+
+    function ResetModal() {
+        const inputRef: any = useRef(null)
+        const setGen = async () => {
+            inputRef.current.value = await generateRandomNist()
+        }
+
+        const saveNewPass = async () => {
+            try {
+                const newPasswordSet = await new Requester({ url: import.meta.env.VITE_APP_APIURL + "/users/update/password", method: "patch", body: { password: inputRef.current.value } }).send()
+                if (newPasswordSet.status) {
+                    notify("success", "Contraseña actualizada con éxito")
+                    return
+                } else {
+                    notify("error", "Error al actualizar contraseña", newPasswordSet.message || "Contacta al administrador")
+                }
+            } catch (error) {
+                notify("error", "Error inesperado en el servidor contacta al administrador.")
+            }
+        }
+
+        return <Modal open={openPasswordReset} onCancel={closeResetModal} footer={null} >
+            <h2>Restablecer contraseña</h2>
+            <p>Para restablecer la contraseña puedes generar una o crear una tú.</p>
+            <MyButton icon={<BsFillShieldLockFill />} text="Generar" onClick={setGen} />
+            <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
+                <AiFillCopy onClick={() => { inputRef.current ? clipboardNotification(inputRef.current.value) : notify("error", "Error al copiar texto", "Por favor copialo por tu cuenta.") }} style={{ position: "absolute", fontSize: "24px", marginRight: "15px", cursor: "pointer" }} />
+                <input ref={inputRef} />
+            </div>
+            <MyButton icon={<AiFillCheckCircle />} text="Guardar contraseña" onClick={saveNewPass} />
+        </Modal>
+    }
 
     return (
         <div id="usersPage">
+            {contextHolder}
             <Drawer title={title} open={editUserDrawerVisible} closable onClose={() => { setEditUserDrawerVisible(false) }}>
 
                 <StatusForm />
@@ -178,15 +195,14 @@ const Users: React.FC = () => {
                             <Input />
                         </Form.Item>
                     </div>
+                    <div style={{ marginBottom: "24px" }}>
+                        <ResetModal />
+                        <label>Contraseña</label>
+                        <MyButton onClick={openResetModal} icon={<AiFillLock />} text="Restablecer contraseña" style={{ width: "100%" }} />
+                    </div>
                     <div>
                         <label>Nombre <span className='requiredMark' /></label>
                         <Form.Item name="user_name" rules={[{ required: true, message: "Nombre es onbligatorio." }]}>
-                            <Input />
-                        </Form.Item>
-                    </div>
-                    <div>
-                        <label>Segundo Nombre <span className='requiredMark' /></label>
-                        <Form.Item name="user_middle_name">
                             <Input />
                         </Form.Item>
                     </div>
@@ -196,44 +212,10 @@ const Users: React.FC = () => {
                             <Input />
                         </Form.Item>
                     </div>
-                    <div>
-                        <label>Empresa <span className='requiredMark' /></label>
-                        <Form.Item name={"companyID"} rules={[{ required: true, message: "Empresa es obligatorio." }]}>
-                            <Select onChange={loadCompanySites}>
-                                {
-                                    companies.map((company, i) => {
-                                        return <Select.Option value={company.id}>
-                                            {company.company_name}
-                                        </Select.Option>
-                                    })
-                                }
-                            </Select>
-                        </Form.Item>
-                    </div>
-                    <div>
-                        <label>Sucursal <span className='requiredMark' /></label>
-                        <Form.Item name="company_siteID" rules={[{ required: true, message: "Sucursal ese requerido." }]}>
-                            <Select>
-                                {
-                                    companySites.map((companySite, i) => {
-                                        return <Select.Option value={companySite.id}>
-                                            {companySite.company_site_name}
-                                        </Select.Option>
-                                    })
-                                }
-                            </Select>
-                        </Form.Item>
-                    </div>
-                    <div>
-                        <Button htmlType="submit">Actualizar usuario</Button>
-                    </div>
+                    <MyButton icon={<AiFillLock />} text="Actualizar usuario" />
                 </Form>
             </Drawer>
-            <div style={{ padding: "15px 0", textAlign: "right" }}>
-                <Button onClick={() => { setOpen(true) }}>
-                    Nuevo Usuario
-                </Button>
-            </div>
+            <MyButton icon={<AiFillPlusCircle />} text="Agregar usuario" onClick={() => { setOpen(true) }} />
             <Drawer title="Agregar Usuario" placement="right" onClose={() => { setOpen(false) }} open={open}>
                 <Form form={createUserForm} onFinish={createUser}>
                     <div>
@@ -255,58 +237,16 @@ const Users: React.FC = () => {
                         </Form.Item>
                     </div>
                     <div>
-                        <label>Segundo Nombre <span className='requiredMark' /></label>
-                        <Form.Item name="user_middle_name">
-                            <Input />
-                        </Form.Item>
-                    </div>
-                    <div>
                         <label>Apellido <span className='requiredMark' /></label>
                         <Form.Item name="user_last_name" rules={[{ required: true, message: "Apellido se requerido." }]}>
                             <Input />
                         </Form.Item>
                     </div>
-                    <div>
-                        <label>Empresa <span className='requiredMark' /></label>
-                        <Form.Item initialValue={""} rules={[{ required: true, message: "Empresa es obligatorio." }]}>
-                            <Select onChange={loadCompanySites} defaultValue={""}>
-                                <Select.Option value={""} selected disabled>
-                                    Selecciona una empresa
-                                </Select.Option>
-                                {
-                                    companies.map((company, i) => {
-                                        return <Select.Option value={company.id}>
-                                            {company.company_name}
-                                        </Select.Option>
-                                    })
-                                }
-                            </Select>
-                        </Form.Item>
-                    </div>
-                    <div>
-                        <label>Sucursal <span className='requiredMark' /></label>
-                        <Form.Item name="company_siteID" rules={[{ required: true, message: "Sucursal ese requerido." }]}>
-                            <Select defaultValue={""}>
-                                <Select.Option value={""} selected disabled>
-                                    Selecciona una sucursal
-                                </Select.Option>
-                                {
-                                    companySites.map((companySite, i) => {
-                                        return <Select.Option value={companySite.id}>
-                                            {companySite.company_site_name}
-                                        </Select.Option>
-                                    })
-                                }
-                            </Select>
-                        </Form.Item>
-                    </div>
-                    <div style={{ padding: "15px 0", textAlign: "right" }}>
-                        <Button htmlType="submit">Agregar usuario</Button>
-                    </div>
+                    <MyButton icon={<AiFillCheckCircle />} text="Agregar usuario" htmlType="submit" />
                 </Form>
             </Drawer>
 
-            <Table
+            <Table className="usersTable"
                 onRow={
                     (row: any, key) => {
                         return {
@@ -321,8 +261,6 @@ const Users: React.FC = () => {
                                         value: row.id
                                     },
                                 ])
-
-                                await loadCompanySites(row.companyID)
                                 updateUserForm.setFields([
                                     {
                                         name: "user_name",
@@ -333,24 +271,12 @@ const Users: React.FC = () => {
                                         value: row.id
                                     },
                                     {
-                                        name: "user_middle_name",
-                                        value: row.user_middle_name
-                                    },
-                                    {
                                         name: "user_last_name",
                                         value: row.user_last_name
                                     },
                                     {
                                         name: "email",
                                         value: row.email
-                                    },
-                                    {
-                                        name: "companyID",
-                                        value: Number(row.companyID)
-                                    },
-                                    {
-                                        name: "company_siteID",
-                                        value: Number(row.company_siteID)
                                     },
 
                                 ])
@@ -369,26 +295,12 @@ const Users: React.FC = () => {
                         ...TextSearchFilter("user_name", "Nombre"),
                     },
                     {
-                        key: "user_middle_name",
-                        dataIndex: "user_middle_name",
-                        width: "50px",
-                        title: "Segundo Nombre",
-                        ...TextSearchFilter("user_middle_name", "Segundo Nombre"),
-                    },
-                    {
                         key: "user_last_name",
                         dataIndex: "user_last_name",
                         width: "50px",
                         title: "Apellido",
                         ...TextSearchFilter("user_last_name", "Apellido"),
-                    },
-                    {
-                        key: "company_site_name",
-                        dataIndex: "company_site_name",
-                        width: "85px",
-                        title: "Sucursal",
-                        ...TextSearchFilter("company_site_name", "Sucursal"),
-                    },
+                    }
                 ]} />
         </div>
     )

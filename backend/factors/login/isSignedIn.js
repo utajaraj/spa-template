@@ -1,5 +1,5 @@
-const {AES, enc} = require("crypto-js");
-const {verify, decode} = require("jsonwebtoken")
+const { AES, enc } = require("crypto-js");
+const { verify, decode } = require("jsonwebtoken")
 const turnReqCookiesIntoObject = (req) => {
     const list = {};
     const cookieHeader = req.headers?.cookie;
@@ -26,13 +26,15 @@ module.exports = {
                 var bytes = AES.decrypt(grtkn, process.env.AESKEY);
                 var jwt = bytes.toString(enc.Utf8);
                 const userID = Number(decode(jwt))
-                req.params.created_by=userID
-                req.params.modified_by=userID
-                req.query.created_by=userID
-                req.query.modified_by=userID
-                req.body.created_by=userID
-                req.body.modified_by=userID
-                const isValidCookie = verify(jwt,process.env.JWTSIGNATURE)
+                if (req.method !== "PATCH") {
+                    req.params.created_by = userID
+                    req.query.created_by = userID
+                    req.body.created_by = userID
+                }
+                req.params.modified_by = userID
+                req.query.modified_by = userID
+                req.body.modified_by = userID
+                const isValidCookie = verify(jwt, process.env.JWTSIGNATURE)
                 return isValidCookie
             } catch (error) {
                 return false

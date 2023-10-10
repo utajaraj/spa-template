@@ -26,11 +26,6 @@ const UpdateOneUserValidation = async (body, verbose = false) => {
         password: {
             missingMessage: "Contraseña es obligatoria",
         },
-        company_siteID: {
-            dataType: LongString,
-            missingMessage: "Planta es obligatorio",
-            invalidMessage: "Planta inválido"
-        },
         active:{
             dataType:TrueFalse,
             invalidMessage:"Status inválido"

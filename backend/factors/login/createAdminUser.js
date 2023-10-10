@@ -14,34 +14,7 @@ const createAdminUser = async ({ username, password, company_name, company_addre
             if (Email.test(username) === false) {
                 throw { status: false, message: "Correo Inválido" }
             }
-            const company = {
-                company_name: company_name,
-                company_address: company_address,
-                tax_id: tax_id,
-                created_by: 0,
-                modified_by: 0,
-            }
-            const newCompany = await trx("companies").insert(company);
 
-            const adminRoleBody = {
-                role_name:"Administrador",
-                quotes_permission:"all",
-                clients_permission:"all",
-                buyers_permission:"all",
-                wos_permission:true,
-                users_permission:"all",
-                configuration_permission:true,
-                modified_by:0,
-            }
-
-            const companySite = {
-                companyID: newCompany,
-                company_site_name: `${company_name} - Planta 1`,
-                company_site_address: company_address,
-                created_by: 0,
-                modified_by: 0,
-            }
-            const newCompanySite = await trx("companysites").insert(companySite);
 
             const salt = generateSalt(12)
             const hash = hashPassword(password, salt)
@@ -54,7 +27,6 @@ const createAdminUser = async ({ username, password, company_name, company_addre
                 collapsed: true,
                 theme: true,
                 password: hash,
-                company_siteID: newCompanySite,
                 created_by: 0,
                 modified_by: 0,
             }

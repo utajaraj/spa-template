@@ -6,7 +6,6 @@ export const notify = (type: NotificationType, title: string, description?:any) 
     notification[type]({
         message: title,
         description: description,
-        placement: "top",
-        
+        placement: "top"
     })
 }

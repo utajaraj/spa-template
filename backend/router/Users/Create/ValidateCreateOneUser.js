@@ -22,11 +22,6 @@ const AddOneUserValidation = async (body, verbose = false) => {
         password: {
             missingMessage: "Contraseña es obligatoria",
         },
-        company_siteID: {
-            dataType: LongString,
-            missingMessage: "Planta es obligatorio",
-            invalidMessage: "Planta inválido"
-        },
         created_by: {
             missingMessage: "Fecha de creación es obligatoria",
         },

@@ -1,10 +1,10 @@
 const path = require("path")
 var https = require("https")
-const { readFileSync } = require("fs")
+// const { readFileSync } = require("fs")
 require("dotenv").config()
-var privateKey = readFileSync(path.join(__dirname + process.env.KEYPATH), "utf8")
-var certificate = readFileSync(path.join(__dirname + process.env.CERTPATH), "utf8")
-var credentials = { key: privateKey, cert: certificate }
+// var privateKey = readFileSync(path.join(__dirname + process.env.KEYPATH), "utf8")
+// var certificate = readFileSync(path.join(__dirname + process.env.CERTPATH), "utf8")
+// var credentials = { key: privateKey, cert: certificate }
 const express = require("express")
 const app = express()
 const serveStatic = require("serve-static")
@@ -74,9 +74,7 @@ createDatabaseSchemas()
                     if (loadSetUp) {
                         res.status(200).render(__dirname + "/views/setUp.ejs")
                     } else {
-                        const result = await knex("companies").select()
-                        const title = result[0].company_name
-                        res.status(200).render(__dirname + "/views/login.ejs",{title})
+                        res.status(200).render(__dirname + "/views/login.ejs", { title: process.env.TITLE })
                     }
                 }
             })
@@ -111,74 +109,8 @@ createDatabaseSchemas()
             res.status(500).send("DB Unavailable");
         })
     }).finally(() => {
-
-        app.post("/callMe", async (req, res) => {
-            try {
-                const { phone, name } = req.body
-                require("dotenv").config();
-
-                const request = require("request")
-                const a = await request.post({
-                    url: `https://login.microsoftonline.com/${"9ad8c5b8-9a18-488b-86b2-e8fdd9be586e"}/oauth2/v2.0/token/`,
-
-                    form: {//append the body of the request
-                        "scope": "https://graph.microsoft.com/.default",
-                        "grant_type": "client_credentials",
-                        "client_secret": "KJW8Q~Z8CWot4qtoZP_odgjp5tZrXQBQR2msTbnF",
-                        "client_id": "91b75915-877d-48c8-a65b-3c8c91d2c3f8"
-                    }
-
-                }, (err, result) => {
-                    const { access_token } = JSON.parse(result.body)
-
-                    const { Client } = require("@microsoft/microsoft-graph-client")
-                    require('isomorphic-fetch')
-                    Client.init({
-                        authProvider: async (done) => {
-                            done(null, access_token)
-                        }
-                    })
-                        // define the endpoint to be called
-                        .api(`https://graph.microsoft.com/v1.0/users/jesus.chavez@emdemex.com/sendMail`)
-                        // append the body 
-                        .post({
-                            message: {
-                                subject: 'Solicitud de Llamada',
-                                body: {
-                                    contentType: 'Text',
-                                    content: `${name} solicito que lo contactaramos al phone: ${phone}, desde el sitio de Emdemex Ingeniería`
-                                },
-                                toRecipients: [
-                                    {
-                                        emailAddress: {
-                                            address: 'ventas@Emdemex.com.mx'
-                                        }
-                                    }
-                                ],
-                            },
-                            saveToSentItems: 'false'
-                        })
-                        .then((good) => {
-                            res.status(200).send({ status: true, message: "Solicitud de llamada generada" })
-                            return
-                        })
-                        .catch((bad) => {
-                            res.status(400).send({ status: false, message: "Error al generar solicitud de llamada generada" })
-                            return
-                        })
-                })
-
-            } catch (error) {
-                console.log(error);
-            }
-        })
+        //routes
         app.use("/", serveStatic(__dirname + "/assets"))
-        // app.get("/", (req, res) => {
-        //     res.render(__dirname + "/views/index")
-        // })
-        // app.get("/eng", (req, res) => {
-        //     res.render(__dirname + "/views/index-eng")
-        // })
         app.get("*", (req, res) => {
             res.redirect("/crm")
         })
@@ -186,7 +118,7 @@ createDatabaseSchemas()
 
 
 // middleware
-var httpsServer = https.createServer(credentials, app);
-httpsServer.listen(process.env.SRVPORT, () => {
+// var httpsServer = https.createServer(credentials, app);
+app.listen(process.env.SRVPORT, () => {
     console.log(`Running on port: ${process.env.SRVPORT}`)
 })
