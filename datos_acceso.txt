@@ -1,0 +1,48 @@
+
+- CPanel
+https://medworld.mx:2083/
+U: medworld
+P: w6GkePc!x1r#B
+
+- Sitio WP
+https://medworld.mx/wp-login.php
+User: soporte
+Pass: medworld%BDOL47198%l
+
+
+- Kommo
+https://medworld.kommo.com/
+U: contacto@medworld.mx
+C: 567Med321
+
+- Sistemas prueba
+Agentes
+https://agentesmw.apphub.mx/
+U: contacto@medworld.mx
+P: 123456
+
+Doli 
+https://dolidemo.apphub.mx
+U: didemo
+P: D0l1Demo
+
+Conector
+https://doliconn.apphub.mx/
+JWT: Mhi6xsZPadRekLbzcs90gGxoK2Dkjllw
+
+
+- Sistemas producción
+Agentes
+https://agentes.medworld.mx/
+U: contacto@medworld.mx
+P: 123456
+
+Doli
+Solicitar a Medworld
+
+Conector
+https://conector.medworld.mx/
+JWT: Mhi6xsZPadRekLbzcs90gGxoK2Dkjllw
+
+
+
